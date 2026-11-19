@@ -239,8 +239,6 @@ def draw_stickman(p: Painter, sk, ink, face_fill, expression, mouth_open, t, fx=
             x0 = pts["hip"][0] - f * U * (0.25 + 0.05 * i)
             ln = U * (0.12 + 0.05 * math.sin(t * 30 + i))
             p.line([(x0, y), (x0 - f * ln, y)], ink, lw * 0.45)
-    if fx.get("sipping"):
-        pass
     # hand props
     for side, name in (hand_props or {}).items():
         draw_hand_prop(p, name, pts[side + "_hand"], U, t, theme, lw, side)

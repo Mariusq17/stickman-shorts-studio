@@ -17,7 +17,7 @@ from .figure import draw_stickman, draw_mic
 from .painter import Painter, font
 from .props import PROPS
 from .rig import (StickmanRig, action_pose, lerp_pose, mirror_pose, guest_reaction,
-                  DEFAULT_EXPRESSION, ACTIONS)
+                  DEFAULT_EXPRESSION)
 from .script_model import Script
 from .subtitles import SubtitleRenderer, chunk_words
 
@@ -138,7 +138,6 @@ class SceneRenderer:
         props = [p for p in shot.props if p in PROPS]
         if "laptop" in props and "desk" not in props:
             props.append("desk")
-        fxn = ACTIONS.get(shot.action)
         if shot.action == "type_on_laptop":
             for need in ("desk", "laptop"):
                 if need not in props:
@@ -227,10 +226,8 @@ class SceneRenderer:
             if slot == "above":
                 return (sk.head_c[0] + U * 0.05, sk.head_c[1] - sk.head_r - U * 0.17)
             if slot == "back":
-                bx = 0.14 * W if char_x >= self.x_solo - 1 or self.fmt == "horizontal" else 0.86 * W
-                if char_x < self.x_solo - 1:
-                    bx = 0.86 * W if not any(s in SIDE_SLOTS for _, s in slots) else 0.10 * W
-                return (bx, self.floor)
+                side_busy = shot.guest or any(s in SIDE_SLOTS for _, s in slots)
+                return ((0.10 if side_busy else 0.84) * W, self.floor)
             if slot == "front":
                 return (char_x, self.floor)
             return (W / 2, H / 2)
@@ -401,7 +398,7 @@ def mic_drop_hit_time(d: float) -> float:
 
 def _labels(lang: str) -> dict:
     if lang == "ro":
-        return {"subscribe": "ABONEAZĂ-TE", "subscribed": "ABONAT ✓".replace(" ✓", "!"),
+        return {"subscribe": "ABONEAZĂ-TE", "subscribed": "ABONAT!",
                 "like": "LIKE", "comment": "COMENTARII", "save": "SALVEAZĂ", "monday": "LUNI"}
     return {"subscribe": "SUBSCRIBE", "subscribed": "SUBSCRIBED", "like": "LIKE",
             "comment": "COMMENTS", "save": "SAVE", "monday": "MONDAY"}
