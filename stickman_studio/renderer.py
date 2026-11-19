@@ -75,8 +75,8 @@ class SceneRenderer:
         self.total = timeline[-1].start + timeline[-1].duration if timeline else 0.0
         W, H = self.W, self.H
         if self.fmt == "vertical":
-            self.U = 0.68 * W
-            self.floor = 0.615 * H
+            self.U = 0.64 * W
+            self.floor = 0.62 * H
             self.stage_c = (0.5 * W, 0.40 * H)
             self.zoom_scale = 0.8
             self.x_solo, self.x_side, self.side_x = 0.5 * W, 0.33 * W, 0.76 * W
@@ -214,7 +214,32 @@ class SceneRenderer:
         p.ellipse((hip[0], self.floor + U * 0.012), U * 0.16 * (0.5 + 0.5 * lift), U * 0.022,
                   fill=th.bg2)
 
+        header_on = bool((self.script.hook_text or self.script.title or "").strip()) and \
+            (self.fmt == "vertical" or i == 0)
+        if not header_on:
+            min_screen_y = 0.05 * H
+        elif self.fmt == "vertical":
+            min_screen_y = (0.215 if i == 0 else 0.15) * H
+        else:
+            min_screen_y = 0.20 * H
+
+        def below_header(x, y, half_h):
+            ymin = (min_screen_y + half_h * U * zoom - p.ay) / zoom + p.fy
+            return (x, max(y, ymin))
+
         def prop_pos(slot, k):
+            if slot in ("above", "above_side", "cta"):
+                rx, ry = _raw_pos(slot)
+                x, y = below_header(rx, ry, 0.17 if slot == "cta" else 0.15)
+                if slot == "above" and y - ry > 0.06 * U:
+                    # no room above the head: float next to it instead of covering the face
+                    side = 1 if sk.head_c[0] < W * 0.62 else -1
+                    x = sk.head_c[0] + side * (sk.head_r + 0.16 * U)
+                    y = max(sk.head_c[1] - 0.05 * U, below_header(x, ry, 0.15)[1])
+                return x, y
+            return _raw_pos(slot)
+
+        def _raw_pos(slot):
             if slot == "side":
                 return (self.side_x, self.floor - 0.42 * U)
             if slot == "side_floor":
@@ -321,7 +346,7 @@ class SceneRenderer:
             return
         big = i == 0
         k = ease_out_back(lt / 0.4) if big else 1.0
-        size = int((W * 0.068 if self.fmt == "vertical" else H * 0.06) * (1.0 if big else 0.72) * max(0.2, k))
+        size = int((W * 0.068 if self.fmt == "vertical" else H * 0.06) * (1.0 if big else 0.6) * max(0.2, k))
         f = font(size)
         max_w = W * 0.84
         words, lines, cur = title.upper().split(), [], ""
@@ -336,7 +361,7 @@ class SceneRenderer:
             lines.append(cur)
         lines = lines[:3]
         lh = size * 1.18
-        cy = H * (0.135 if self.fmt == "vertical" else 0.10)
+        cy = H * ((0.135 if big else 0.105) if self.fmt == "vertical" else 0.10)
         bw = max(dr.textlength(l, font=f) for l in lines) + size * 0.9
         bh = lh * len(lines) + size * 0.5
         box = (W / 2 - bw / 2, cy - bh / 2, W / 2 + bw / 2, cy + bh / 2)

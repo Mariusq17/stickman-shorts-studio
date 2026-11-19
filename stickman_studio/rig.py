@@ -243,7 +243,7 @@ def a_type_on_laptop(t, d, e):
 def a_celebrate_jump(t, d, e):
     per = 0.75
     ph = (t % per) / per
-    h = 0.22 * e
+    h = 0.17 * e
     y = 4 * h * ph * (1 - ph)
     land = math.exp(-((min(ph, 1 - ph)) / 0.07) ** 2)
     air = math.sin(math.pi * ph)

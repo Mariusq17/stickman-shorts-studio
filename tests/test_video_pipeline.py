@@ -50,7 +50,7 @@ def test_180s_timeline_and_audio_sync(tmp_path):
     st = RenderSettings(target_duration=180)
     timeline, clips, engine = synthesize_timeline(script, st)
     total = timeline[-1].start + timeline[-1].duration
-    assert 160 <= total <= 185
+    assert 160 <= total <= 180.0 + 1e-6
     # each shot lasts at least as long as its voiceover
     for tm, c in zip(timeline, clips):
         assert tm.duration >= c.duration

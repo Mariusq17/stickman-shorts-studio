@@ -39,24 +39,7 @@ def _speech_total(clips):
     return sum(c.duration for c in clips) + len(clips) * (LEAD + TAIL)
 
 
-def synthesize_timeline(script: Script, st: RenderSettings, log=None):
-    texts = [s.text for s in script.shots]
-    rate = st.voice_rate
-    clips, engine = synthesize_all(texts, st.tts_engine, rate, st.voice_id, st.language,
-                                   st.voice_pitch, seed=script.seed)
-    target = float(st.target_duration or script.target_duration)
-    if st.fit_to_target:
-        total = _speech_total(clips)
-        ratio = total / max(target, 1.0)
-        # too long -> speak faster; too short -> slower (but never sluggish)
-        if ratio > 1.06 or ratio < 0.85 or total > MAX_DURATION:
-            new_rate = rate * max(0.8, min(1.4, ratio if ratio > 1 else max(ratio, 0.88)))
-            if total > MAX_DURATION:
-                new_rate = max(new_rate, rate * total / (MAX_DURATION - 1))
-            if log:
-                log(f"Ajustez viteza vocii {rate:.2f} -> {new_rate:.2f} pentru durata țintă")
-            clips, engine = synthesize_all(texts, st.tts_engine, new_rate, st.voice_id, st.language,
-                                           st.voice_pitch, seed=script.seed)
+def _shot_durations(script, clips):
     durs = []
     for sh, c in zip(script.shots, clips):
         d = LEAD + c.duration + TAIL
@@ -67,6 +50,50 @@ def synthesize_timeline(script: Script, st: RenderSettings, log=None):
         if sh.action == "fall_down_dramatic":
             d = max(d, 1.9)
         durs.append(max(MIN_SHOT, d))
+    return durs
+
+
+def _trim_slack(durs, clips, excess):
+    """Shorten the non-speech part of shots proportionally to remove `excess` seconds."""
+    slack = [max(0.0, d - (LEAD + c.duration + 0.08)) for d, c in zip(durs, clips)]
+    tot = sum(slack)
+    if tot <= 0:
+        return durs
+    k = min(1.0, excess / tot)
+    return [d - s_ * k for d, s_ in zip(durs, slack)]
+
+
+def synthesize_timeline(script: Script, st: RenderSettings, log=None):
+    texts = [s.text for s in script.shots]
+    rate = st.voice_rate
+    clips, engine = synthesize_all(texts, st.tts_engine, rate, st.voice_id, st.language,
+                                   st.voice_pitch, seed=script.seed)
+    target = min(float(st.target_duration or script.target_duration), MAX_DURATION - 0.1)
+    if st.fit_to_target:
+        total = _speech_total(clips)
+        ratio = total / max(target, 1.0)
+        # too long -> speak faster; too short -> slower (but never sluggish)
+        if ratio > 1.06 or ratio < 0.85 or total > MAX_DURATION:
+            new_rate = rate * max(0.8, min(1.4, ratio if ratio > 1 else max(ratio, 0.88)))
+            if total > MAX_DURATION:
+                new_rate = max(new_rate, rate * total / (MAX_DURATION - 1))
+            if log:
+                log(f"Ajustez viteza vocii {rate:.2f} -> {new_rate:.2f} pentru durata țintă")
+            rate = new_rate
+            clips, engine = synthesize_all(texts, st.tts_engine, new_rate, st.voice_id, st.language,
+                                           st.voice_pitch, seed=script.seed)
+    durs = _shot_durations(script, clips)
+    for _ in range(2):  # hard cap: never exceed MAX_DURATION
+        if sum(durs) <= MAX_DURATION:
+            break
+        durs = _trim_slack(durs, clips, sum(durs) - MAX_DURATION + 0.15)
+        if sum(durs) > MAX_DURATION:
+            rate = rate * (sum(durs) / MAX_DURATION) * 1.03
+            if log:
+                log(f"Accelerez vocea la {rate:.2f} pentru a rămâne sub {MAX_DURATION}s")
+            clips, engine = synthesize_all(texts, st.tts_engine, rate, st.voice_id, st.language,
+                                           st.voice_pitch, seed=script.seed)
+            durs = _shot_durations(script, clips)
     total = sum(durs)
     if st.fit_to_target and total < target:
         extra = min(target - total, 0.9 * len(durs))

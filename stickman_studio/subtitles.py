@@ -60,9 +60,13 @@ class SubtitleRenderer:
             return
         s, e, idxs = active_chunk
         pop = ease_out_back(clamp((t - s) / 0.14))
-        size = int(self.size * (0.82 + 0.18 * pop))
-        f = font(size)
         toks = [words[i].upper() for i in idxs]
+        base = self.size
+        widest = max(draw.textlength(tk, font=font(base)) for tk in toks) * 1.1
+        if widest > self.max_w:           # very long word: shrink to fit the safe zone
+            base = int(base * self.max_w / widest)
+        size = int(base * (0.82 + 0.18 * pop))
+        f = font(size)
         space = draw.textlength(" ", font=f)
         widths = [draw.textlength(tk, font=f) for tk in toks]
         # wrap into lines
