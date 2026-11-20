@@ -1,0 +1,373 @@
+"""Animated on-screen widgets (all drawn in screen space at render resolution).
+
+Pop-up dicts (used in a step's "pops" list; "at"/"until" are narration cues):
+  note    {text, pos}                       white chip with a dot
+  warn    {text, pos}                       red warning chip that shakes in
+  check   {text, pos}                       green check chip
+  stamp   {text, color, pos}                rotated rubber stamp that slams in
+  meter   {text, from, to, color, fmt, pos, anim}
+  bars    {title, items:[(label, value 0..1, color)], pos, anim}
+  count   {from, to, fmt, sub, color, pos, anim}
+  equation{parts:[str...], colors:[...], step, pos}  pieces appear one after another
+  graph   {title, track, ymax, color, pos, window}   live line graph of an animation track
+  arrow   {xyz, text, color, off}                    label with a pointer to a 3D point
+  card    {title, sub, tap}                          follow card CTA
+Positions: tl tr ml mr bl br bc c.
+"""
+from __future__ import annotations
+
+import math
+
+from PIL import Image, ImageDraw, ImageFilter
+
+from ...easing import clamp, ease_in_cubic, ease_out_back, ease_out_cubic
+from ...painter import font
+from .palette import BLUE, GREEN, INK, RED
+
+GREY = (110, 115, 128)
+
+
+# ------------------------------------------------------------------ helpers
+def fade(t, t0, t1, fin=0.2, fout=0.25):
+    a = clamp((t - t0) / fin) if fin > 0 else 1.0
+    b = 1.0 - clamp((t - t1) / fout) if fout > 0 else 1.0
+    return min(a, b)
+
+
+def paste(img, layer, x, y, alpha):
+    if alpha <= 0.01:
+        return
+    if alpha < 0.999:
+        a = layer.getchannel("A").point(lambda v: int(v * alpha))
+        layer = layer.copy()
+        layer.putalpha(a)
+    img.paste(layer, (int(x), int(y)), layer)
+
+
+def card(w, h, radius, fill=(255, 255, 255, 255), shadow=0.10):
+    """RGBA rounded card with a soft blurred drop shadow. Returns (layer, pad)."""
+    pad = int(h * 0.35) + 4
+    L = Image.new("RGBA", (int(w + 2 * pad), int(h + 2 * pad)), (0, 0, 0, 0))
+    d = ImageDraw.Draw(L)
+    d.rounded_rectangle((pad, pad + h * 0.08, pad + w, pad + h * 1.08), radius=radius,
+                        fill=(20, 24, 50, int(255 * shadow * 2.2)))
+    L = L.filter(ImageFilter.GaussianBlur(max(2, h * 0.09)))
+    ImageDraw.Draw(L).rounded_rectangle((pad, pad, pad + w, pad + h), radius=radius, fill=fill)
+    return L, pad
+
+
+def anchor(pos, w, h, W, H):
+    m = W * 0.05
+    return {
+        "tl": (m, H * 0.20), "tr": (W - w - m, H * 0.20),
+        "ml": (m, H * 0.40), "mr": (W - w - m, H * 0.40),
+        "bl": (m, H * 0.74), "br": (W - w - m, H * 0.74),
+        "bc": (W / 2 - w / 2, H * 0.79), "c": (W / 2 - w / 2, H * 0.45),
+    }.get(pos, (W / 2 - w / 2, H * 0.79))
+
+
+def icon(d, kind, cx, cy, r, color):
+    lw = max(2, int(r * 0.24))
+    if kind == "warn":
+        d.polygon([(cx, cy - r), (cx + r * 1.1, cy + r * 0.85), (cx - r * 1.1, cy + r * 0.85)], fill=color)
+        d.text((cx, cy + r * 0.15), "!", font=font(int(r * 1.3)), fill=(255, 255, 255), anchor="mm")
+    elif kind == "check":
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=color)
+        d.line([(cx - r * 0.5, cy), (cx - r * 0.1, cy + r * 0.4), (cx + r * 0.55, cy - r * 0.4)],
+               fill=(255, 255, 255), width=lw, joint="curve")
+    else:
+        d.ellipse((cx - r * 0.45, cy - r * 0.45, cx + r * 0.45, cy + r * 0.45), fill=color)
+
+
+def _slide_x(x, k, W):
+    return x + (1 - k) * (W * 0.15 if x > W / 2 else -W * 0.15)
+
+
+# ------------------------------------------------------------------ keyword caption
+def draw_key(img, k, t, W, H):
+    """Keyword caption: pops in when spoken, glides up, fades out (k = [t0, t1, text, color, replaced])."""
+    t0, t1, text, color, replaced = k
+    a = fade(t, t0, t1, 0.18, 0.1 if replaced else 0.25)
+    if a <= 0:
+        return
+    pin = ease_out_back(clamp((t - t0) / 0.28))
+    pout = 0.0 if replaced else ease_in_cubic(clamp((t - t1) / 0.25))
+    size = int(W * 0.080 * (0.88 + 0.12 * pin))
+    f = font(size)
+    tmp = ImageDraw.Draw(img)
+    lines, cur = [], ""
+    for wd in text.split():
+        c = (cur + " " + wd).strip()
+        if tmp.textlength(c, font=f) > W * 0.84 and cur:
+            lines.append(cur)
+            cur = wd
+        else:
+            cur = c
+    lines.append(cur)
+    lw = int(max(tmp.textlength(l, font=f) for l in lines)) + size
+    lh = int(size * 1.15 * len(lines) + size * 0.5)
+    layer = Image.new("RGBA", (lw, lh), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    for j, ln in enumerate(lines):
+        d.text((lw / 2 + size * 0.03, size * 0.80 + j * size * 1.15), ln, font=f, fill=(20, 24, 50, 70), anchor="mm",
+               stroke_width=max(2, int(size * 0.12)), stroke_fill=(20, 24, 50, 70))
+        d.text((lw / 2, size * 0.75 + j * size * 1.15), ln, font=f, fill=tuple(color) + (255,), anchor="mm",
+               stroke_width=max(2, int(size * 0.12)), stroke_fill=(255, 255, 255, 255))
+    y = H * 0.112 + (1 - pin) * H * 0.012 - pout * H * 0.01
+    paste(img, layer, W / 2 - lw / 2, y, a)
+
+
+# ------------------------------------------------------------------ progress tracker
+def draw_tracker(img, t, events, total, label, t_show, t_hide, W, H, color=GREEN):
+    """'FIXES 3/10' pill with segments; each event time fills the next segment with a pulse."""
+    a = fade(t, t_show, t_hide, 0.4, 0.4)
+    if a <= 0:
+        return
+    done = sum(1 for e in events if e <= t)
+    last = max([e for e in events if e <= t], default=-9)
+    pulse = math.exp(-((t - last) / 0.18) ** 2) if t >= last else 0.0
+    size = int(W * 0.034)
+    seg_w, gap = W * 0.030, W * 0.008
+    lab = f"{label} {done}/{total}"
+    tw = ImageDraw.Draw(img).textlength(f"{label} {total}/{total}", font=font(size))
+    w = size * 0.6 + tw + size * 0.7 + total * (seg_w + gap) + size * 0.4
+    h = size * 1.9
+    L, pad = card(w, h, h * 0.5, (255, 255, 255, 235), 0.08)
+    d = ImageDraw.Draw(L)
+    d.text((pad + size * 0.6, pad + h / 2), lab, font=font(size), fill=INK, anchor="lm")
+    x = pad + size * 0.6 + tw + size * 0.7
+    for i in range(total):
+        filled = i < done
+        col = color if filled else (226, 229, 236)
+        grow = 1.0 + (0.35 * pulse if filled and i == done - 1 else 0)
+        sh = h * 0.30 * grow
+        d.rounded_rectangle((x, pad + h / 2 - sh / 2, x + seg_w, pad + h / 2 + sh / 2), radius=sh / 2, fill=col)
+        x += seg_w + gap
+    s = 1.0 + 0.06 * pulse
+    if s != 1.0:
+        L = L.resize((int(L.width * s), int(L.height * s)))
+    paste(img, L, W / 2 - L.width / 2, H * 0.035, a)
+
+
+# ------------------------------------------------------------------ pop-ups
+def draw_pop(img, cam, p, t, W, H, tr=None):
+    kind = p["kind"]
+    t0, t1 = p["t0"], p["t1"]
+    a = fade(t, t0, t1, 0.2, 0.3)
+    if a <= 0:
+        return
+    k = ease_out_back(clamp((t - t0) / 0.35))
+    color = tuple(p.get("color", INK))
+    if kind in ("note", "warn", "check"):
+        text = p["text"]
+        size = int(W * 0.058)
+        f = font(size)
+        tw = ImageDraw.Draw(img).textlength(text, font=f)
+        w, h = tw + size * 2.4, size * 1.9
+        L, pad = card(w, h, h * 0.5)
+        d = ImageDraw.Draw(L)
+        col = {"warn": RED, "check": GREEN}.get(kind, color)
+        icon(d, kind if kind != "note" else "dot", pad + size * 1.05, pad + h / 2, size * 0.55, col)
+        d.text((pad + size * 1.85, pad + h / 2), text, font=f, fill=col if kind != "note" else INK, anchor="lm")
+        x, y = anchor(p.get("pos", "bc"), w, h, W, H)
+        if kind == "warn":
+            x += math.sin(t * 40) * W * 0.005 * clamp(1.2 - (t - t0))
+        paste(img, L, _slide_x(x, k, W) - pad, y - pad, a)
+    elif kind == "stamp":
+        text = p["text"]
+        size = int(W * 0.075)
+        f = font(size)
+        tw = ImageDraw.Draw(img).textlength(text, font=f)
+        w, h = int(tw + size * 1.0), int(size * 1.6)
+        L = Image.new("RGBA", (w + 20, h + 20), (0, 0, 0, 0))
+        d = ImageDraw.Draw(L)
+        col = tuple(p.get("color", GREEN))
+        d.rounded_rectangle((10, 10, 10 + w, 10 + h), radius=size * 0.25, outline=col + (255,), width=max(4, size // 9))
+        d.text((10 + w / 2, 10 + h / 2), text, font=f, fill=col + (255,), anchor="mm")
+        slam = ease_out_cubic(clamp((t - t0) / 0.18))
+        sc = 1.8 - 0.8 * slam
+        L = L.rotate(-12, expand=True, resample=Image.BICUBIC)
+        L = L.resize((max(1, int(L.width * sc)), max(1, int(L.height * sc))))
+        x, y = anchor(p.get("pos", "mr"), L.width, L.height, W, H)
+        paste(img, L, x, y, a * (0.4 + 0.6 * slam))
+    elif kind == "meter":
+        w, h = W * 0.62, W * 0.20
+        L, pad = card(w, h, W * 0.03)
+        d = ImageDraw.Draw(L)
+        v0, v1 = p.get("from", 0.0), p.get("to", 1.0)
+        prog = ease_out_cubic(clamp((t - t0 - 0.25) / p.get("anim", 1.2)))
+        v = v0 + (v1 - v0) * prog
+        d.text((pad + w * 0.06, pad + h * 0.28), p["text"], font=font(int(h * 0.20)), fill=INK, anchor="lm")
+        fmt = p.get("fmt", "{:.0%}")
+        if fmt:
+            d.text((pad + w * 0.94, pad + h * 0.28), fmt.format(v), font=font(int(h * 0.22)), fill=color, anchor="rm")
+        bx0, by0, bx1, by1 = pad + w * 0.06, pad + h * 0.55, pad + w * 0.94, pad + h * 0.80
+        d.rounded_rectangle((bx0, by0, bx1, by1), radius=(by1 - by0) / 2, fill=(230, 232, 238))
+        if v > 0.01:
+            d.rounded_rectangle((bx0, by0, bx0 + (bx1 - bx0) * min(1, v), by1), radius=(by1 - by0) / 2, fill=color)
+        x, y = anchor(p.get("pos", "bc"), w, h, W, H)
+        paste(img, L, x - pad, y + (1 - k) * H * 0.04 - pad, a)
+    elif kind == "bars":
+        items = p["items"]
+        w = W * 0.66
+        rowh = W * 0.10
+        h = W * 0.10 + rowh * len(items)
+        L, pad = card(w, h, W * 0.03)
+        d = ImageDraw.Draw(L)
+        d.text((pad + w * 0.06, pad + W * 0.055), p.get("title", ""), font=font(int(W * 0.04)), fill=INK, anchor="lm")
+        for j, (lab, val, col) in enumerate(items):
+            prog = ease_out_cubic(clamp((t - t0 - 0.2 - j * p.get("stagger", 0.6)) / p.get("anim", 0.9)))
+            y = pad + W * 0.09 + j * rowh
+            d.text((pad + w * 0.06, y + rowh * 0.22), lab, font=font(int(W * 0.03)), fill=GREY, anchor="lm")
+            x0 = pad + w * 0.06
+            x1 = x0 + (w * 0.88) * val * prog
+            d.rounded_rectangle((x0, y + rowh * 0.42, max(x0 + 2, x1), y + rowh * 0.82), radius=rowh * 0.2,
+                                fill=tuple(col))
+        x, y = anchor(p.get("pos", "bc"), w, h, W, H)
+        paste(img, L, x - pad, y + (1 - k) * H * 0.04 - pad, a)
+    elif kind == "count":
+        n0, n1 = p["from"], p["to"]
+        prog = ease_out_cubic(clamp((t - t0) / p.get("anim", 1.0)))
+        big = p.get("fmt", "{}").format(int(round(n0 + (n1 - n0) * prog)))
+        size = int(W * 0.14)
+        sub = p.get("sub", "")
+        dd = ImageDraw.Draw(img)
+        tw = max(dd.textlength(big, font=font(size)), dd.textlength(sub, font=font(int(size * 0.3))))
+        w, h = tw + size * 0.8, size * (1.55 if sub else 1.2)
+        L, pad = card(w, h, size * 0.25)
+        d = ImageDraw.Draw(L)
+        d.text((pad + w / 2, pad + size * 0.62), big, font=font(size), fill=color, anchor="mm")
+        if sub:
+            d.text((pad + w / 2, pad + size * 1.25), sub, font=font(int(size * 0.3)), fill=GREY, anchor="mm")
+        x, y = anchor(p.get("pos", "bc"), w, h, W, H)
+        s = 0.7 + 0.3 * k
+        L = L.resize((max(1, int(L.width * s)), max(1, int(L.height * s))))
+        paste(img, L, x - pad * s + (w * (1 - s)) / 2, y - pad * s + (h * (1 - s)) / 2, a)
+    elif kind == "equation":
+        parts = p["parts"]
+        cols = p.get("colors", [INK] * len(parts))
+        size = int(W * p.get("size", 0.050))
+        f = font(size)
+        dd = ImageDraw.Draw(img)
+        gap = size * 0.35
+        widths = [dd.textlength(x, font=f) for x in parts]
+        w = sum(widths) + gap * (len(parts) - 1) + size * 1.2
+        h = size * 1.9
+        L, pad = card(w, h, h * 0.35)
+        d = ImageDraw.Draw(L)
+        x = pad + size * 0.6
+        step = p.get("step", 0.35)
+        for j, (txt, wd) in enumerate(zip(parts, widths)):
+            kk = clamp((t - t0 - j * step) / 0.25)
+            if kk > 0:
+                c = tuple(cols[j])
+                d.text((x + wd / 2, pad + h / 2 + (1 - kk) * size * 0.4), txt, font=f, fill=c, anchor="mm")
+            x += wd + gap
+        x0, y0 = anchor(p.get("pos", "bc"), w, h, W, H)
+        paste(img, L, x0 - pad, y0 - pad, a)
+    elif kind == "graph" and tr is not None:
+        w, h = W * 0.62, W * 0.34
+        L, pad = card(w, h, W * 0.03)
+        d = ImageDraw.Draw(L)
+        d.text((pad + w * 0.06, pad + h * 0.13), p.get("title", ""), font=font(int(W * 0.036)), fill=INK, anchor="lm")
+        gx0, gy0, gx1, gy1 = pad + w * 0.08, pad + h * 0.26, pad + w * 0.94, pad + h * 0.88
+        d.line((gx0, gy1, gx1, gy1), fill=(210, 213, 222), width=3)
+        d.line((gx0, gy0, gx0, gy1), fill=(210, 213, 222), width=3)
+        win = p.get("window", 8.0)
+        ymax = p.get("ymax", 1.0)
+        pts = []
+        n = 60
+        for j in range(n + 1):
+            tt = t0 + win * j / n
+            if tt > t:
+                break
+            v = clamp(tr.get(p["track"], tt) / ymax)
+            pts.append((gx0 + (gx1 - gx0) * j / n, gy1 - (gy1 - gy0) * v))
+        col = tuple(p.get("color", RED))
+        if len(pts) >= 2:
+            d.line(pts, fill=col, width=max(3, int(W * 0.006)), joint="curve")
+            ex, ey = pts[-1]
+            r = W * 0.01
+            d.ellipse((ex - r, ey - r, ex + r, ey + r), fill=col)
+        x, y = anchor(p.get("pos", "bc"), w, h, W, H)
+        paste(img, L, x - pad, y + (1 - k) * H * 0.04 - pad, a)
+    elif kind == "arrow":
+        tx, ty = cam.p(*p["xyz"])
+        text = p["text"]
+        size = int(W * 0.056)
+        f = font(size)
+        tw = ImageDraw.Draw(img).textlength(text, font=f)
+        w, h = tw + size * 1.2, size * 1.7
+        dx, dy = p.get("off", (0.22, -0.10))
+        bx, by = tx + dx * W, ty + dy * H
+        bx = min(max(bx, W * 0.03 + w / 2), W * 0.97 - w / 2)
+        d = ImageDraw.Draw(img)
+        prog = ease_out_cubic(clamp((t - t0) / 0.35))
+        ex, ey = bx + (tx - bx) * prog, by + (ty - by) * prog
+        if a > 0.5:
+            d.line((bx, by, ex, ey), fill=color, width=max(3, int(W * 0.005)))
+            r = W * 0.012
+            d.ellipse((ex - r, ey - r, ex + r, ey + r), fill=color)
+        L, pad = card(w, h, h * 0.3, color + (255,))
+        ImageDraw.Draw(L).text((pad + w / 2, pad + h / 2), text, font=f, fill=(255, 255, 255), anchor="mm")
+        s = 0.6 + 0.4 * k
+        L = L.resize((max(1, int(L.width * s)), max(1, int(L.height * s))))
+        paste(img, L, bx - L.width / 2, by - L.height / 2, a)
+    elif kind == "card":
+        draw_follow_card(img, p, t, W, H, a)
+
+
+def draw_follow_card(img, p, t, W, H, a=1.0):
+    """CTA: clean follow card; a finger taps the button, it turns into 'Following'."""
+    t0 = p["t0"]
+    k = ease_out_back(clamp((t - t0) / 0.45))
+    w, h = W * 0.90, W * 0.25
+    L, pad = card(w, h, h * 0.22, shadow=0.14)
+    d = ImageDraw.Draw(L)
+    ar = h * 0.30
+    ax, ay = pad + h * 0.48, pad + h / 2
+    d.ellipse((ax - ar, ay - ar, ax + ar, ay + ar), fill=(255, 170, 60), outline=(200, 120, 30), width=3)
+    for sx in (-1, 1):
+        ex = ax + sx * ar * 0.36
+        d.ellipse((ex - ar * 0.24, ay - ar * 0.38, ex + ar * 0.24, ay + ar * 0.10), fill=(255, 255, 255),
+                  outline=(40, 40, 50), width=2)
+        d.ellipse((ex - ar * 0.1, ay - ar * 0.22, ex + ar * 0.1, ay - ar * 0.02), fill=(25, 25, 35))
+    d.chord((ax - ar * 0.35, ay + ar * 0.05, ax + ar * 0.35, ay + ar * 0.55), 0, 180, fill=(60, 20, 30))
+    d.text((pad + h * 0.92, pad + h * 0.38), p.get("title", "How It's Built"), font=font(int(h * 0.15)), fill=INK,
+           anchor="lm")
+    d.text((pad + h * 0.92, pad + h * 0.63), p.get("sub", "step by step"), font=font(int(h * 0.10)), fill=GREY,
+           anchor="lm")
+    tap = t0 + p.get("tap", 1.3)
+    pressed = t >= tap
+    squish = 1 - 0.08 * math.exp(-((t - tap) / 0.07) ** 2)
+    bw, bh = h * 0.95 * squish, h * 0.36 * squish
+    bx, by = pad + w - h * 0.62, pad + h / 2
+    d.rounded_rectangle((bx - bw / 2, by - bh / 2, bx + bw / 2, by + bh / 2), radius=bh / 2,
+                        fill=(235, 236, 240) if pressed else (230, 30, 45))
+    d.text((bx, by), "Following" if pressed else "Follow", font=font(int(h * 0.12 * (0.85 if pressed else 1))),
+           fill=INK if pressed else (255, 255, 255), anchor="mm")
+    if pressed and t - tap < 0.45:
+        rr = (t - tap) * h * 1.6
+        d.ellipse((bx - rr, by - rr, bx + rr, by + rr), outline=(230, 30, 45, int(200 * (1 - (t - tap) / 0.45))),
+                  width=4)
+    x, y = W / 2 - w / 2, H * 0.78 + (1 - k) * H * 0.08
+    paste(img, L, x - pad, y - pad, a)
+    dd = ImageDraw.Draw(img)
+    if t0 + 0.5 < t < tap + 0.7:
+        prog = ease_out_cubic(clamp((t - t0 - 0.5) / max(0.1, tap - t0 - 0.5)))
+        fx = x + (bx - pad) + (1 - prog) * W * 0.12
+        fy = y + (by - pad) + h * 0.20 + (1 - prog) * H * 0.06
+        r = W * 0.035
+        dd.ellipse((fx - r, fy - r, fx + r, fy + r), fill=(255, 220, 190), outline=(120, 80, 60), width=3)
+        dd.rounded_rectangle((fx - r * 0.9, fy, fx + r * 0.9, fy + r * 3), radius=r * 0.8, fill=(255, 220, 190),
+                             outline=(120, 80, 60), width=3)
+    if pressed:
+        for j in range(4):
+            ph = ((t - tap) * 0.8 + j * 0.25) % 1.0
+            hx = x + w * 0.80 + math.sin(j * 2 + ph * 4) * W * 0.03
+            hy = y - ph * H * 0.12
+            r = W * 0.018 * (1 - ph)
+            if r > 1:
+                dd.ellipse((hx - r, hy - r, hx, hy), fill=(235, 60, 80))
+                dd.ellipse((hx, hy - r, hx + r, hy), fill=(235, 60, 80))
+                dd.polygon([(hx - r, hy - r * 0.5), (hx + r, hy - r * 0.5), (hx, hy + r)], fill=(235, 60, 80))
