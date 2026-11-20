@@ -43,6 +43,8 @@ COVERS = {
                       lines=[("WHY FORKS", (255, 255, 255)), ("SPARK", YELLOW), ("IN MICROWAVES", (255, 255, 255))]),
     "self_checkout": dict(t=38.5, cam=((1.9, 0.5, 1.15), 280),
                           lines=[("WHO'S JUDGING YOU", (255, 255, 255)), ("AT SELF-CHECKOUT?", YELLOW)]),
+    "undersea_cable": dict(t=27.0, cam=((1.0, 1.2, -1.2), 100),
+                           lines=[("HOW YOUR MESSAGE", (255, 255, 255)), ("CROSSES THE OCEAN", YELLOW)]),
     "atm_notes": dict(t=44.5, cam=((0.75, 1.3, 0.95), 360),
                       lines=[("HOW AN ATM KNOWS", (255, 255, 255)), ("2 NOTES ARE STUCK", YELLOW)]),
 }
