@@ -18,118 +18,190 @@ from .mascots import PEG_COLORS, draw_peg
 RED, BLUE, INK = (226, 52, 64), (40, 110, 235), (25, 25, 32)
 
 # ----------------------------------------------------------------- the script
-# Each step: narration text, on-screen keyword (+ color), camera (focus xyz, zoom in px/unit at
-# 1080 px width), passenger expression, minimum duration and timed actions on animation tracks:
-#   (track, seconds_from_step_start, value, transition_seconds, ease)
+# Every timing is a cue on the narration ("w:word" = when that word is spoken).
+#   do   : (track, cue, value, duration_or_cue, ease)
+#   keys : ("spoken phrase|shown text", color) - keyword shown exactly when it is said
+#   pops : animated pop-ups (note / warn / check / meter / count / arrow / card)
+#   cams : (cue, (focus_xyz, zoom), duration) extra camera moves inside a step
+GREEN = (40, 160, 90)
 WIDE = ((1.9, 1.3, 5.6), 112)
 STEPS = [
     dict(text="If you put a box on a rope and hang it from a motor at the top of a shaft, "
               "you've got the world's simplest elevator.",
-         label="the simplest elevator", color=INK, cam=WIDE, pegs="neutral",
-         do=[("build", 0, 1, 2.2, "out"), ("car_show", 1.0, 1, 0.6, "back"), ("rope_show", 1.6, 1, 0.5, "out")],
-         sfx=[(1.0, "pop")]),
+         cam=((1.2, 1.0, 2.2), 250), pegs="neutral",
+         cams=[("w:rope", ((1.2, 1.0, 5.0), 160), 0.9), ("w:motor", ((1.0, 1.0, 8.6), 165), 0.8),
+               ("w:shaft", WIDE, 1.3)],
+         do=[("car_show", "w:box", 1, 0.5, "back"), ("rope_show", "w:rope", 1, 0.9, "out"),
+             ("top_show", "w:motor", 1, 0.6, "back"), ("build", "w:shaft", 1, 1.1, "out"),
+             ("facade", "w:simplest", 1, 1.0, "out")],
+         keys=[("box", INK), ("rope|box + rope", INK), ("motor|box + rope + motor", INK),
+               ("simplest elevator", BLUE)],
+         sfx=[("w:box", "pop"), ("w:motor", "pop"), ("w:shaft", "whoosh")]),
     dict(text="Press the button, the motor winds up the rope, and your passengers ride to the third floor.",
-         label="going up", color=BLUE, cam=((1.5, 1.0, 6.2), 130), pegs="happy",
-         do=[("pegs_in", 0, 1, 0.4, "back"), ("car_z", 1.0, 7.0, 3.0, "io")], sfx=[(4.0, "ding")]),
+         cam=((1.4, 1.0, 3.2), 150), pegs="happy",
+         cams=[("w:ride", ((1.4, 1.0, 7.4), 140), 2.6)],
+         do=[("pegs_in", "w:passengers", 1, 0.4, "back"), ("car_z", "w:ride", 7.0, 2.6, "io")],
+         keys=[("passengers", INK), ("third floor|going up", BLUE)],
+         pops=[dict(kind="count", at="w:ride", **{"from": 1, "to": 3}, anim=2.4, fmt="FLOOR {}", pos="tr", dur=2.8)],
+         sfx=[("end-0.2", "ding")]),
     dict(text="But hauling the whole car plus everyone inside takes a monster of a motor.",
-         label="a monster motor", color=RED, cam=((0.8, 1.2, 10.8), 290), pegs="worried",
-         do=[("motor_glow", 0.2, 1, 0.5, "out")], sfx=[(0.2, "sting")]),
+         cam=((0.8, 1.2, 10.8), 290), pegs="worried",
+         do=[("motor_glow", "w:hauling", 1, 0.5, "out")],
+         keys=[("monster|monster motor", RED)],
+         pops=[dict(kind="meter", at="w:hauling", text="MOTOR EFFORT", **{"from": 0.0, "to": 1.0}, color=RED,
+                    fmt="MAX", pos="bc", until="end+0.4"),
+               dict(kind="arrow", at="w:whole", xyz=(0.72, 1.6, 11.1), text="lifts EVERYTHING", color=RED,
+                    off=(-0.05, -0.16), dur=2.6)]),
     dict(text="So you hang a heavy block on the other end of the rope. That's the counterweight.",
-         label="counterweight", color=INK, cam=((0.9, 1.0, 6.2), 135), pegs="neutral",
-         do=[("motor_glow", 0, 0, 0.5, "io"), ("cw_show", 0.3, 1, 0.9, "back")], sfx=[(0.4, "whoosh")]),
+         cam=((0.9, 1.0, 6.2), 135), pegs="neutral",
+         do=[("motor_glow", 0, 0, 0.5, "io"), ("cw_show", "w:heavy", 1, 0.9, "back")],
+         keys=[("heavy block", INK), ("counterweight", INK)],
+         pops=[dict(kind="arrow", at="w:counterweight", xyz=(0.14, 1.0, 2.3), text="counterweight", color=BLUE,
+                    off=(-0.02, 0.12), dur=2.0, sound=False)],
+         sfx=[("w:heavy", "whoosh")]),
     dict(text="It weighs about as much as the empty car plus half a full load, so the motor only moves the "
               "difference. It's a seesaw where your friend is already sitting on the other side.",
-         label="only the difference", color=BLUE, cam=((0.9, 1.0, 6.2), 135), pegs="happy",
-         do=[("bubble", 3.2, 1, 0.5, "back"), ("bubble_kind", 0, 1, 0, "lin"), ("bubble", 99, 0, 0.3, "in")],
-         bubble_off=True),
+         cam=((0.9, 1.0, 6.2), 135), pegs="happy",
+         do=[("bubble_kind", 0, 1, 0, "lin"), ("bubble", "w:seesaw", 1, 0.45, "back"), ("bubble", "end-0.3", 0, 0.3, "in")],
+         keys=[("empty car|car + half a load", INK), ("only moves the difference|only the difference", BLUE),
+               ("seesaw", INK)],
+         pops=[dict(kind="meter", at="w:only", text="MOTOR EFFORT", **{"from": 1.0, "to": 0.3}, color=GREEN,
+                    fmt="", pos="bc", until="end+0.2")]),
     dict(text="And instead of winding the rope, the motor just spins a grooved wheel, and friction drags "
               "the ropes along. That's the traction sheave.",
-         label="traction sheave", color=INK, cam=((0.75, 1.0, 10.7), 280), pegs="neutral",
-         do=[("car_z", 0.6, 4.0, 3.5, "io")]),
+         cam=((0.75, 1.0, 10.7), 280), pegs="neutral",
+         do=[("car_z", "w:friction", 4.0, 3.0, "io")],
+         keys=[("grooved wheel", INK), ("traction sheave", INK)],
+         pops=[dict(kind="arrow", at="w:friction", xyz=(1.2, 1.0, 11.25), text="friction grip", color=BLUE,
+                    off=(0.12, -0.12), dur=2.4)]),
     dict(text="Smooth ride. Until the car starts swinging and scraping the walls.",
-         label="scraping", color=RED, cam=((1.2, 1.0, 5.1), 190), pegs="shocked",
-         do=[("swing", 0.9, 1, 0.3, "out")], sfx=[(0.9, "slap")]),
+         cam=((1.2, 1.0, 5.1), 190), pegs="shocked",
+         do=[("swing", "w:swinging", 1, 0.3, "out")],
+         keys=[("smooth ride", BLUE), ("scraping|scraping the walls", RED)],
+         sfx=[("w:scraping", "slap")]),
     dict(text="So you bolt steel rails up both sides of the shaft, and the car slides along them on guide shoes.",
-         label="guide rails", color=INK, cam=((1.2, 1.0, 5.4), 150), pegs="happy",
-         do=[("swing", 0.2, 0, 0.4, "out"), ("rails", 0.2, 1, 1.6, "out")], sfx=[(0.2, "whoosh")]),
+         cam=((1.2, 1.0, 5.4), 150), pegs="happy",
+         do=[("swing", "w:rails", 0, 0.4, "out"), ("rails", "w:steel", 1, 1.4, "out")],
+         keys=[("steel rails|guide rails", INK), ("guide shoes", INK)],
+         pops=[dict(kind="check", at="w:slides", text="no more swinging", pos="bc", dur=2.2)],
+         sfx=[("w:steel", "whoosh")]),
     dict(text="Then someone in the car asks the obvious question. What if the rope snaps?",
-         label="what if it snaps?", color=RED, cam=((1.2, 1.0, 7.8), 210), pegs="worried",
-         do=[("strain", 1.5, 1, 0.3, "out")]),
+         cam=((1.2, 1.0, 7.8), 210), pegs="worried",
+         do=[("strain", "w:snaps", 1, 0.3, "out")],
+         keys=[("obvious question", INK), ("what if the rope snaps|what if it snaps?", RED)],
+         pops=[dict(kind="warn", at="w:snaps", text="only ONE rope", pos="bc", until="end+0.3")]),
     dict(text="So you don't use one rope. You use several, and each one is strong enough to hold the car by itself.",
-         label="several ropes", color=INK, cam=((1.2, 1.0, 7.8), 210), pegs="happy",
-         do=[("strain", 0, 0, 0.3, "out"), ("ropes", 0.4, 4, 1.4, "out")], sfx=[(0.4, "pop")]),
+         cam=((1.2, 1.0, 7.8), 210), pegs="happy",
+         do=[("strain", 0, 0, 0.3, "out"), ("ropes", "w:several", 4, 1.2, "out")],
+         keys=[("several|several ropes", INK), ("by itself|each one holds it", BLUE)],
+         pops=[dict(kind="check", at="w:strong", text="any one can hold the car", pos="bc", until="end+0.3")],
+         sfx=[("w:several", "pop")]),
     dict(text="But what if the car starts falling anyway? In 1854, Elisha Otis stood on a platform high above "
               "a crowd in New York, and had the only rope cut.",
-         label="1854", color=INK, cam=((1.7, 1.0, 3.2), 175), pegs="worried",
-         do=[("flash", 2.1, 1, 0, "lin"), ("otis_cut", 99, 1, 0, "lin")], cut_at_end=True,
-         sfx=[(2.1, "whoosh")]),
+         cam=((1.2, 1.0, 4.4), 170), pegs="worried",
+         cams=[("w:1854", ((1.7, 1.0, 3.2), 175), 0.01)],
+         do=[("flash", "w:1854", 1, 0, "lin"), ("otis_cut", "w:cut", 1, 0, "lin")],
+         keys=[("falling anyway", RED), ("1854", INK), ("Elisha Otis", INK), ("cut|rope cut", RED)],
+         pops=[dict(kind="count", at="w:1854", **{"from": 2025, "to": 1854}, anim=0.9, sub="New York", pos="tr",
+                    dur=2.6)],
+         sfx=[("w:1854", "whoosh"), ("w:cut", "slap")]),
     dict(text="The platform dropped a few inches. And stopped.",
-         label="it stopped", color=BLUE, cam=((1.4, 1.0, 3.4), 200), pegs="happy", min=3.0,
-         do=[("otis_drop", 0.25, 1, 0.45, "in")], sfx=[(0.7, "thud")]),
+         cam=((1.4, 1.0, 3.4), 200), pegs="happy", min=2.6,
+         do=[("otis_drop", "w:dropped", 1, 0.45, "in")],
+         keys=[("few inches|a few inches", INK), ("stopped", BLUE)],
+         sfx=[("w:stopped", "thud")]),
     dict(text="Today's version works like this. A second rope runs from the car up to a small wheel at the top. "
               "That's the governor.",
-         label="governor", color=INK, cam=((1.9, 1.6, 9.6), 220), pegs="neutral",
-         do=[("flash", 0, 0, 0, "lin"), ("gov", 1.2, 1, 1.2, "out")], sfx=[(1.2, "pop")]),
+         cam=((1.6, 1.3, 6.0), 150), pegs="neutral",
+         cams=[("w:wheel", ((1.9, 1.6, 9.6), 220), 1.2)],
+         do=[("flash", 0, 0, 0, "lin"), ("gov", "w:second", 1, 1.2, "out")],
+         keys=[("second rope", INK), ("governor", INK)],
+         sfx=[("w:second", "whoosh")]),
     dict(text="If the car goes too fast, weights inside the governor swing outward and lock the wheel.",
-         label="too fast", color=RED, cam=((1.5, 1.2, 5.6), 140), pegs="shocked",
-         do=[("falling", 0.2, 1, 0, "lin"), ("car_z", 0.2, 2.6, 3.2, "in"), ("bubble_kind", 0, 2, 0, "lin"),
-             ("bubble", 0.5, 1, 0.4, "back"), ("fly", 1.6, 1, 0.8, "out")], sfx=[(0.2, "whoosh")]),
+         cam=((1.5, 1.2, 5.6), 140), pegs="shocked",
+         do=[("falling", 0, 1, 0, "lin"), ("car_z", 0.1, 3.0, "end", "lin"), ("bubble_kind", 0, 2, 0, "lin"),
+             ("bubble", "w:weights", 1, 0.4, "back"), ("fly", "w:outward", 1, 0.6, "out")],
+         keys=[("too fast", RED), ("swing outward", INK), ("lock|lock the wheel", INK)],
+         pops=[dict(kind="meter", at="w:fast", text="SPEED", **{"from": 0.3, "to": 1.0}, color=RED, fmt="",
+                    pos="bc", until="end+0.3", anim=2.0)]),
     dict(text="The locked wheel grabs the rope, the rope yanks a lever on the car, and steel wedges clamp onto "
               "the rails. That's the safety brake.",
-         label="safety brake", color=INK, cam=((1.2, 1.0, 3.7), 210), pegs="shocked",
-         do=[("bubble", 0, 0, 0.3, "in"), ("brake", 1.6, 1, 0.25, "out"), ("falling", 1.6, 0, 0, "lin"),
-             ("car_z", 1.6, 2.6, 0, "lin")], sfx=[(1.6, "thud")]),
+         cam=((1.2, 1.0, 3.7), 210), pegs="shocked",
+         do=[("bubble", 0, 0, 0.3, "in"), ("car_z", 0, 2.4, "w:clamp", "lin"), ("brake", "w:clamp", 1, 0.25, "out"),
+             ("falling", "w:clamp", 0, 0, "lin")],
+         keys=[("grabs the rope", INK), ("steel wedges", INK), ("safety brake", INK)],
+         pops=[dict(kind="meter", at="w:clamp", text="SPEED", **{"from": 1.0, "to": 0.0}, color=GREEN, fmt="",
+                    pos="bc", until="end+0.3", anim=0.4)],
+         sfx=[("w:clamp", "thud")]),
     dict(text="It's like grabbing a fire pole with both hands while you're sliding down.",
-         label="grab the pole", color=BLUE, cam=((1.2, 1.0, 3.7), 210), pegs="happy",
-         do=[("bubble_kind", 0, 3, 0, "lin"), ("bubble", 0.1, 1, 0.4, "back"), ("bubble", 99, 0, 0.3, "in")],
-         bubble_off=True),
+         cam=((1.2, 1.0, 3.7), 210), pegs="happy",
+         do=[("bubble_kind", 0, 3, 0, "lin"), ("bubble", "w:grabbing", 1, 0.4, "back"),
+             ("bubble", "end-0.3", 0, 0.3, "in")],
+         keys=[("fire pole", BLUE)]),
     dict(text="And just in case, you put giant springs at the bottom of the pit. Those are the buffers.",
-         label="buffers", color=INK, cam=((1.2, 1.0, 1.2), 210), pegs="neutral",
-         do=[("brake", 0.5, 0, 0.3, "io"), ("car_z", 0.5, 4.0, 2.0, "io"), ("buffers", 0.6, 1, 1.0, "back")],
-         sfx=[(0.6, "boing")]),
+         cam=((1.2, 1.0, 1.4), 210), pegs="neutral",
+         do=[("brake", 0.3, 0, 0.3, "io"), ("car_z", 0.3, 4.0, 2.0, "io"), ("buffers", "w:springs", 1, 1.0, "back")],
+         keys=[("just in case", INK), ("giant springs", INK), ("buffers", INK)],
+         sfx=[("w:springs", "boing")]),
     dict(text="Now the car is safe. The doors aren't. Open a door on the wrong floor, and there's nothing "
               "behind it but an empty shaft.",
-         label="empty shaft", color=RED, cam=((1.2, 0.5, 5.4), 175), pegs="neutral",
-         do=[("car_z", 0.3, 7.0, 2.4, "io"), ("visitor", 1.0, 1, 0.5, "back"), ("door2", 2.4, 1, 0.8, "io"),
-             ("visitor_x", 3.4, 1, 1.4, "io")], sfx=[(2.4, "sting")]),
+         cam=((1.2, 0.5, 5.4), 175), pegs="neutral",
+         do=[("car_z", 0.2, 7.0, 2.0, "io"), ("visitor", "w:doors", 1, 0.5, "back"), ("door2", "w:open", 1, 0.8, "io"),
+             ("visitor_x", "w:nothing", 1, 1.2, "io")],
+         keys=[("car is safe", BLUE), ("doors aren't", RED), ("empty shaft", RED)],
+         pops=[dict(kind="warn", at="w:empty", text="nothing there!", pos="bc", until="end+0.3")],
+         sfx=[("w:open", "sting")]),
     dict(text="So every landing door gets a lock that only releases when the car is right there. And the car "
               "won't move until every door is shut and locked.",
-         label="door interlock", color=INK, cam=((1.2, 0.5, 5.4), 165), pegs="neutral",
-         do=[("visitor_x", 0, 0, 0.6, "io"), ("door2", 0.3, 0, 0.7, "io"), ("locks", 0.9, 1, 0.6, "back")],
-         sfx=[(0.9, "click")]),
+         cam=((1.2, 0.5, 5.4), 165), pegs="neutral",
+         do=[("visitor_x", 0, 0, 0.6, "io"), ("door2", "w:lock", 0, 0.7, "io"), ("locks", "w:lock", 1, 0.6, "back")],
+         keys=[("lock|door lock", INK), ("shut and locked", INK)],
+         pops=[dict(kind="check", at="w:right", text="opens only if the car is here", pos="bc", dur=2.6)],
+         sfx=[("w:lock", "click")]),
     dict(text="Then the doors close on someone's backpack.",
-         label="ouch", color=RED, cam=((1.2, 0.5, 5.0), 230), pegs="worried",
-         do=[("car_z", 0, 4.0, 2.0, "io"), ("door2", 1.8, 1, 0.5, "io"), ("visitor", 0, 0, 0, "lin"),
-             ("pegs_in", 0, 0, 0.4, "in"),
-             ("rider", 1.8, 1, 0.3, "back"), ("squeeze", 2.4, 1, 0.25, "in")], sfx=[(2.6, "slap")], min=3.2),
+         cam=((1.2, 0.5, 5.0), 230), pegs="worried", min=3.0,
+         do=[("car_z", 0, 4.0, 1.2, "io"), ("pegs_in", 0, 0, 0.3, "in"), ("rider", 0.4, 1, 0.3, "back"),
+             ("door2", 0.2, 1, 0.3, "io"), ("door2", "w:close", 0, 0.5, "io"), ("squeeze", "w:backpack", 1, 0.2, "in")],
+         keys=[("backpack", RED)],
+         sfx=[("w:backpack", "slap")]),
     dict(text="So you shine a curtain of invisible infrared beams across the doorway. Break a beam, and the doors "
               "pop back open.",
-         label="light curtain", color=INK, cam=((1.2, 0.5, 5.0), 230), pegs="happy",
-         do=[("curtain", 0.4, 1, 0.5, "out"), ("squeeze", 2.6, 0, 0.3, "out")], sfx=[(2.6, "pop")]),
+         cam=((1.2, 0.5, 5.0), 230), pegs="happy",
+         do=[("curtain", "w:curtain", 1, 0.5, "out"), ("door2", "w:pop", 1, 0.4, "out"), ("squeeze", "w:pop", 0, 0.2, "out")],
+         keys=[("infrared beams", INK), ("pop back open", BLUE)],
+         sfx=[("w:pop", "pop")]),
     dict(text="Last problem. The car stops two inches below the floor, and everyone trips on the step.",
-         label="trip hazard", color=RED, cam=((1.2, 0.5, 4.8), 250), pegs="shocked",
-         do=[("door2", 0, 0, 0.4, "io"), ("curtain", 0, 0, 0.3, "io"),
-             ("car_z", 0.6, 3.72, 1.0, "io"), ("door2", 1.7, 1, 0.5, "io")], sfx=[(2.6, "thud")]),
+         cam=((1.2, 0.5, 4.8), 250), pegs="shocked",
+         do=[("rider", 0, 0, 0.3, "in"), ("pegs_in", 0, 1, 0.3, "back"), ("door2", 0, 0, 0.4, "io"),
+             ("curtain", 0, 0, 0.3, "io"), ("car_z", "w:stops", 3.72, 0.8, "io"), ("door2", "w:below", 1, 0.5, "io")],
+         keys=[("last problem", INK), ("two inches", RED), ("trips", RED)],
+         pops=[dict(kind="arrow", at="w:two", xyz=(1.2, 0.0, 4.0), text="2-inch step", color=RED,
+                    off=(0.2, 0.12), until="end+0.3")],
+         sfx=[("w:trips", "thud")]),
     dict(text="So sensors on the rails tell the controller exactly where the car is, and it creeps the last bit "
               "to stop perfectly level.",
-         label="leveling", color=INK, cam=((1.4, 0.7, 4.8), 240), pegs="happy",
-         do=[("sensor", 0.4, 1, 0.5, "back"), ("door2", 0.4, 0, 0.4, "io"), ("car_z", 2.4, 4.0, 1.4, "io"),
-             ("door2", 4.0, 1, 0.5, "io")], sfx=[(4.0, "ding")]),
+         cam=((1.4, 0.7, 4.8), 240), pegs="happy",
+         do=[("sensor", "w:sensors", 1, 0.5, "back"), ("door2", "w:sensors", 0, 0.4, "io"),
+             ("car_z", "w:creeps", 4.0, 1.2, "io"), ("door2", "w:level", 1, 0.5, "io")],
+         keys=[("sensors", INK), ("perfectly level", BLUE)],
+         sfx=[("w:level", "ding")]),
     dict(text="So next time the doors bounce back open when your bag gets in the way, you'll know who saw it.",
-         label="now you know", color=BLUE, cam=((1.2, 0.5, 5.0), 210), pegs="happy",
-         do=[("curtain", 0.3, 1, 0.4, "out")]),
+         cam=((1.2, 0.5, 5.0), 210), pegs="happy",
+         do=[("curtain", "w:bounce", 1, 0.4, "out")],
+         keys=[("bounce back|doors bounce back?", INK), ("you'll know|now you know", BLUE)]),
     dict(text="And congratulations, you just built an elevator. Now you just need to stop people from pressing "
               "every single button. Follow for more.",
-         label="you built an elevator!", color=BLUE, cam=WIDE, pegs="happy",
-         do=[("curtain", 0, 0, 0.4, "io"), ("door2", 0, 0, 0.4, "io"), ("cta", 4.0, 1, 0.5, "back"),
-             ("pegs_in", 0, 1, 0.4, "back"), ("rider", 0, 0, 0.3, "in")],
-         sfx=[(4.0, "pop")], min=6.0),
+         cam=WIDE, pegs="happy", min=8.4,
+         do=[("curtain", 0, 0, 0.4, "io"), ("door2", 0, 0, 0.4, "io"), ("pegs_in", 0, 1, 0.4, "back")],
+         keys=[("built an elevator|you built an elevator!", BLUE), ("every single button", INK)],
+         pops=[dict(kind="card", at="w:follow-0.6", until="end+1", tap=1.4)],
+         sfx=[("w:follow", "pop")]),
 ]
 
-INITIAL = dict(build=0, car_show=0, rope_show=0, car_z=1.0, pegs_in=0, motor_glow=0, cw_show=0, bubble=0,
-               bubble_kind=0, swing=0, rails=0, strain=0, ropes=1, flash=0, otis_cut=0, otis_drop=0, gov=0,
-               falling=0, fly=0, brake=0, buffers=0, visitor=0, visitor_x=0, door2=0, locks=0, rider=0,
-               squeeze=0, curtain=0, sensor=0, cta=0)
+INITIAL = dict(build=0, car_show=0, rope_show=0, top_show=0, facade=0, car_z=1.0, pegs_in=0, motor_glow=0,
+               cw_show=0, bubble=0, bubble_kind=0, swing=0, rails=0, strain=0, ropes=1, flash=0, otis_cut=0,
+               otis_drop=0, gov=0, falling=0, fly=0, brake=0, buffers=0, visitor=0, visitor_x=0, door2=0, locks=0,
+               rider=0, squeeze=0, curtain=0, sensor=0)
 
 FLOORS = (1.0, 4.0, 7.0)
 TOP = 10.0
@@ -222,8 +294,12 @@ class ElevatorScene:
             cam.wheel((2.12, 1.75, 0.3), 0.18, 0.06, (120, 120, 130), "x", 0)
             cam.line([(1.95 + cx, 1.57, car_z + 1.3), (2.12, 1.57, car_z + 1.3)], (80, 80, 90), 0.035)
             cam.box(2.08, 1.53, car_z + 1.24, 0.08, 0.08, 0.12, RED)
-        if build > 0.6:
+        ts = g("top_show")
+        if ts > 0.01:
+            f0 = cam.f
+            cam.f = (f0[0], f0[1], f0[2] - (1 - min(1.0, ts)) * 2.5)
             self._top(cam, tr, t, car_z, n_ropes, cws)
+            cam.f = f0
         sen = g("sensor")
         if sen > 0.01:
             for fz in FLOORS:
@@ -237,11 +313,14 @@ class ElevatorScene:
         h = TOP * min(1.0, build * 1.2)
         # lawn
         cam.poly([(-4, -4, 0.7), (7, -4, 0.7), (7, 7, 0.7), (-4, 7, 0.7)], (214, 230, 200))
-        # facade walls continuing the back walls of the shaft
-        cam.poly([(2.2, 0, 0.7), (5.2, 0, 0.7), (5.2, 0, h), (2.2, 0, h)], FACADE, shade(FACADE, -0.2), 0.01)
-        cam.poly([(0, 2.0, 0.7), (0, 4.6, 0.7), (0, 4.6, h), (0, 2.0, h)], shade(FACADE, -0.1), shade(FACADE, -0.25), 0.01)
+        # facade walls continuing the back walls of the shaft (rise in at the end of the hook)
+        hf = 0.7 + (TOP - 0.7) * g("facade")
+        if hf > 0.75:
+            cam.poly([(2.2, 0, 0.7), (5.2, 0, 0.7), (5.2, 0, hf), (2.2, 0, hf)], FACADE, shade(FACADE, -0.2), 0.01)
+            cam.poly([(0, 2.0, 0.7), (0, 4.6, 0.7), (0, 4.6, hf), (0, 2.0, hf)], shade(FACADE, -0.1),
+                     shade(FACADE, -0.25), 0.01)
         for fz in FLOORS:
-            if fz + 1.0 > h:
+            if fz + 1.9 > hf:
                 continue
             for wx in (2.9, 4.1):
                 cam.poly([(wx, 0.01, fz + 0.7), (wx + 0.7, 0.01, fz + 0.7), (wx + 0.7, 0.01, fz + 1.8),
@@ -504,7 +583,6 @@ def draw_cta(img, k, t, W, H):
 
 def overlays(img, tr, t, W, H):
     draw_bubble(img, int(round(tr.get("bubble_kind", t))), tr.get("bubble", t), t, tr, W, H)
-    draw_cta(img, tr.get("cta", t), t, W, H)
 
 
 def main(argv=None):
@@ -516,8 +594,9 @@ def main(argv=None):
     ap.add_argument("--preview", default=None, help="save a contact sheet PNG instead of a video")
     a = ap.parse_args(argv)
     if a.preview:
-        frames, starts, durs = build_explainer(STEPS, ElevatorScene, None, INITIAL, overlays, ss=a.ss,
-                                               preview_frames=[(i, f) for i in range(len(STEPS)) for f in (0.3, 0.85)])
+        frames, starts, durs, keys = build_explainer(STEPS, ElevatorScene, None, INITIAL, overlays, ss=a.ss,
+                                                     preview_frames=[(i, f) for i in range(len(STEPS))
+                                                                     for f in (0.3, 0.85)])
         w, h = frames[0].size
         sc = 0.25
         tw, th = int(w * sc), int(h * sc)

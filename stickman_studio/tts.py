@@ -155,6 +155,48 @@ def split_sentences(text: str) -> list:
     return [p for p in parts if p.strip()] or [text]
 
 
+def _pauses(x: np.ndarray, min_gap: float = 0.05):
+    """Silent gaps inside a phrase: [(start_s, end_s)] sorted by time."""
+    hop = int(0.01 * SR)
+    n = len(x) // hop
+    if n < 3:
+        return []
+    rms = np.sqrt((x[: n * hop].reshape(n, hop) ** 2).mean(axis=1))
+    thr = max(1e-4, np.percentile(rms, 90) * 0.06)
+    quiet = rms < thr
+    gaps, i = [], 0
+    while i < n:
+        if quiet[i]:
+            j = i
+            while j < n and quiet[j]:
+                j += 1
+            if (j - i) * 0.01 >= min_gap and i > 0 and j < n:
+                gaps.append((i * 0.01, j * 0.01))
+            i = j
+        else:
+            i += 1
+    return gaps
+
+
+def align_words(x: np.ndarray, words: list, offset: float = 0.0):
+    """Word timings for one sentence: split at the real pauses that correspond to
+    commas/colons, then distribute words by syllables inside each chunk."""
+    dur = len(x) / SR
+    breaks = [i for i, w in enumerate(words[:-1]) if re.search(r"[,;:—]$", w)]
+    gaps = _pauses(x)
+    if breaks and len(gaps) >= len(breaks):
+        chosen = sorted(sorted(gaps, key=lambda g: g[1] - g[0], reverse=True)[: len(breaks)])
+        bounds = [0.0] + [g for gap in chosen for g in gap] + [dur]
+        out, start = [], 0
+        for k, b in enumerate(breaks + [len(words) - 1]):
+            seg = words[start:b + 1]
+            s0, s1 = bounds[2 * k], bounds[2 * k + 1]
+            out += estimate_word_times(seg, max(0.05, s1 - s0), offset=offset + s0)
+            start = b + 1
+        return out
+    return estimate_word_times(words, dur, offset=offset)
+
+
 def normalize_voice(x: np.ndarray, target_rms: float = 0.12, peak: float = 0.92) -> np.ndarray:
     """Consistent loudness between shots/engines + soft limiting."""
     if len(x) == 0:
@@ -170,7 +212,7 @@ def _clip_from_sentences(pieces, words_per_piece, engine, gap=0.16):
     out, times, t = [], [], 0.0
     for k, (x, words) in enumerate(zip(pieces, words_per_piece)):
         dur = len(x) / SR
-        times += estimate_word_times(words, dur, offset=t) if words else []
+        times += align_words(x, words, offset=t) if words else []
         out.append(x)
         t += dur
         if k < len(pieces) - 1:
