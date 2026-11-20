@@ -75,7 +75,11 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
   short of their endpoints. The second half of a video gets the same care as the hook.
 - Every prop gets an exit: when its step is over, animate it away (or hide it) unless the payoff reuses it.
 - Use `lib/kit.py` helpers (peg, label, packet, sheet, plate/plane_text) instead of re-writing them.
-- Start rendering each video as soon as its previews pass (background `render <slug>`, max 2 at once)
+- Before the final render: add the video to `COVERS` in `branding.py` and run `branding cover <slug>` - the
+  cover is appended as the last 0.5 s of the MP4 (YouTube Shorts thumbnail picker).
+- One render process uses ~1 core; the container has 4 -> run up to 4 renders at once (`--jobs 4`).
+- `sfx` cues: a number (0.55) or a string cue ("w:word", "end-0.3") - never a number inside quotes.
+- Start rendering each video as soon as its previews pass (background `render <slug>`)
   while writing the next scene - a 3-video batch then takes ~1.5 h of wall time instead of 2+.
 - Full render with motion blur + shadows: ~20 min per 2 min video (4 cores); 2 jobs in parallel
   are fine. Rendering costs no tokens - the token cost is writing scene code and checking previews.

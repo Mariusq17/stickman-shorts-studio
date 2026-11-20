@@ -10,7 +10,10 @@ explainer/
   iso.py          IsoCam: isometric projection + primitives (box, poly, line, wheel, spring, text)
   timeline.py     keyframe tracks + easing names ("io", "smooth", "out", "in", "back", "lin")
   elevator.py     example video (script + scene)          <- copy this structure for new videos
-  videos/         card_tap (shop + bank network), chatbot (word machine + belts), atm_notes (cutaway machine)
+  videos/         card_tap (shop + bank network), chatbot (word machine + belts), atm_notes (cutaway machine),
+                  traffic_light (crossroad + cars), microwave (see-through door + x-ray), self_checkout (store lane),
+                  undersea_cable (diorama with translucent water), streaming (servers -> ISP -> living room TV)
+  branding.py     channel avatar, banner, per-video covers (COVERS dict); cover = last 0.5 s of each video
   lib/
     palette.py    harmonised colours, mix/warm/cool helpers, PEG_COLORS
     camera.py     CameraPath: spring-damped follow, handheld drift, hard-cut detection, speed
@@ -19,7 +22,7 @@ explainer/
     characters.py draw_peg(): 'Pegs' mascots v2 (expressions, poses, look, reaction, hat)
     widgets.py    keywords, progress tracker and all pop-ups (see below)
     parts.py      2.5D parts: bolt, panel_seams, led, button_panel, digital_display, gear, pipe, fan,
-                  screen, crate, light_panel, phone, server_rack, bank_building
+                  screen, crate, light_panel, phone, server_rack, bank_building, car, signal_head
     kit.py        scene helpers: gradient_bg, peg (mascot + contact shadow), label (billboard callout, always drawn on top of the scene),
                   path_point/sub_path, packet (glowing data dot on a path), cable, glow_dot, rings,
                   plate / plane_text (rectangles + perspective-correct text printed on a plane, auto-fit with max_w/max_h), strip, sheet (banknote/ticket
@@ -82,3 +85,8 @@ Positions: `tl tr ml mr bl br bc c`. Timing: `at` + `dur` or `until` (cues).
 - Things that tell a "journey" (packets, notes, words) read best flowing from top-left to bottom-right
   (along +x), with buildings/stations spaced ~2.4 units and a wide camera at zoom ~90.
 - Desks/props in front (+y) of the main object cover it in close-ups: put them further out or aside.
+
+- Translucent volumes (water, glass): draw the inside first, then paste a tinted L-mask over it
+  (see `undersea_cable._water`) - cheap and keeps everything behind visible.
+- See-through fronts (microwave door, cutaway): an "x-ray" track that skips the front panel/top while a
+  hidden part (magnetron) is explained.

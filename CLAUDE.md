@@ -10,6 +10,8 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
    "build it step by step" explainers (2.5D isometric, pure Python, offline render, 1080x1920).
    Reference: `explainer/elevator.py` -> rated **9.5/10** by the owner.
    Library of reusable pieces: `explainer/lib/` - documented in `explainer/LIBRARY.md`.
+3. **Publishing** (`publishing/`): channel brand (avatar, banner, bios in `channel.md`), per-video
+   `post.md` + `cover.png`, `VIDEOS.md` registry (every version + commit), `UPLOAD_LIST.txt` (posting queue).
 
 ## How to handle requests
 | The owner asks for... | Do this |
@@ -49,6 +51,12 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   (title, commit, date) so any old version can be re-rendered exactly (skill `video-archive`).
 - Handle: `@HowItsBuiltShorts_Official` (name "How It's Built"); same on YouTube, Instagram, TikTok.
 - Wants the process as automatic as possible so they can work on other things meanwhile.
+- Open idea (owner asked, NOT approved yet - ask before applying): vary the opening/closing formula per video
+  (paradox question / "Did you know..." / "simplest X, also terrible, let's fix it" / current "If you put...";
+  endings "And that's how you build a...", "Now you know more about X than 99% of people", current
+  "Congratulations..."), never the same one twice in a row in posting order.
+- Channel launched 2026-11-20: card_tap posted on YouTube + Instagram; owner waits 1-2 days for reach, then
+  wants to discuss stats (views, average % watched, traffic sources) to tune the next batch.
 - Prefers working in fresh sessions per batch (cheaper/faster than one huge chat); expects the
   `studio` skill + this file to carry all context between sessions.
 - Cares about token/credit usage: keep previews targeted (contact sheets at ss=1), avoid re-reading
