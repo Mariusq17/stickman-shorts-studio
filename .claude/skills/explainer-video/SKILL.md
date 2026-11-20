@@ -63,6 +63,11 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
 - Mascot behaviour per step: `pegs="<expr>"` and optional `pose="<pose>"` (see lib/characters.py).
 - Romanian Piper voice (ro_RO-mihai) needs Hugging Face; untested from the container. Videos are
   English by default.
+- Cutaway machines: internals must sit near the open (+y) face or they hide behind the front panel; check
+  the first preview specifically for "is the mechanism visible?".
+- Use `lib/kit.py` helpers (peg, label, packet, sheet, plate/plane_text) instead of re-writing them.
+- Start rendering each video as soon as its previews pass (background `render <slug>`, max 2 at once)
+  while writing the next scene - a 3-video batch then takes ~1.5 h of wall time instead of 2+.
 - Full render with motion blur + shadows: ~20 min per 2 min video (4 cores); 2 jobs in parallel
   are fine. Rendering costs no tokens - the token cost is writing scene code and checking previews.
 

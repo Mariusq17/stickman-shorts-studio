@@ -10,6 +10,7 @@ explainer/
   iso.py          IsoCam: isometric projection + primitives (box, poly, line, wheel, spring, text)
   timeline.py     keyframe tracks + easing names ("io", "smooth", "out", "in", "back", "lin")
   elevator.py     example video (script + scene)          <- copy this structure for new videos
+  videos/         card_tap (shop + bank network), chatbot (word machine + belts), atm_notes (cutaway machine)
   lib/
     palette.py    harmonised colours, mix/warm/cool helpers, PEG_COLORS
     camera.py     CameraPath: spring-damped follow, handheld drift, hard-cut detection, speed
@@ -18,7 +19,11 @@ explainer/
     characters.py draw_peg(): 'Pegs' mascots v2 (expressions, poses, look, reaction, hat)
     widgets.py    keywords, progress tracker and all pop-ups (see below)
     parts.py      2.5D parts: bolt, panel_seams, led, button_panel, digital_display, gear, pipe, fan,
-                  screen, crate, light_panel
+                  screen, crate, light_panel, phone, server_rack, bank_building
+    kit.py        scene helpers: gradient_bg, peg (mascot + contact shadow), label (billboard plate),
+                  path_point/sub_path, packet (glowing data dot on a path), cable, glow_dot, rings,
+                  plate / plane_text (rectangles + text on wall planes), strip, sheet (banknote/ticket
+                  moving along a path, can be doubled or crumpled)
 ```
 
 ## Writing a new video
@@ -69,3 +74,11 @@ Positions: `tl tr ml mr bl br bc c`. Timing: `at` + `dur` or `until` (cues).
 - A new kind of pop-up -> `lib/widgets.py` (`draw_pop` branch + table above).
 - New mascot pose/expression -> `lib/characters.py` (`POSES`, expression branches).
 - Keep things readable at phone size: minimum text ~0.045 x width, thick strokes, few colours.
+
+## Layout lessons (2.5D)
+
+- The camera looks from +x,+y. A **cutaway** (open +y face) only shows internals with x < y (roughly):
+  anything near the +x front panel hides behind it. Put mechanisms on a plane close to the open face.
+- Things that tell a "journey" (packets, notes, words) read best flowing from top-left to bottom-right
+  (along +x), with buildings/stations spaced ~2.4 units and a wide camera at zoom ~90.
+- Desks/props in front (+y) of the main object cover it in close-ups: put them further out or aside.
