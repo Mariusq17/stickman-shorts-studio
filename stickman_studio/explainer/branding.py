@@ -45,6 +45,8 @@ COVERS = {
                           lines=[("WHO'S JUDGING YOU", (255, 255, 255)), ("AT SELF-CHECKOUT?", YELLOW)]),
     "undersea_cable": dict(t=27.0, cam=((1.0, 1.2, -1.2), 100),
                            lines=[("HOW YOUR MESSAGE", (255, 255, 255)), ("CROSSES THE OCEAN", YELLOW)]),
+    "streaming": dict(t=42.0, cam=((4.0, 1.6, 1.4), 260),
+                      lines=[("WHY MOVIES START", (255, 255, 255)), ("INSTANTLY", YELLOW)]),
     "atm_notes": dict(t=44.5, cam=((0.75, 1.3, 0.95), 360),
                       lines=[("HOW AN ATM KNOWS", (255, 255, 255)), ("2 NOTES ARE STUCK", YELLOW)]),
 }
