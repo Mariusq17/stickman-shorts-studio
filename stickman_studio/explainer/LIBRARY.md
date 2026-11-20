@@ -1,0 +1,71 @@
+# Explainer library
+
+Reusable pieces for "build it step by step" explainer videos (2.5D isometric, rendered in pure
+Python, offline). Every new video should **reuse** what is here and **add** any new generic piece
+back into `lib/`, so the library grows with each video.
+
+```
+explainer/
+  builder.py      narration-driven planner + renderer (cues, tracks, camera, post, overlays, audio, MP4)
+  iso.py          IsoCam: isometric projection + primitives (box, poly, line, wheel, spring, text)
+  timeline.py     keyframe tracks + easing names ("io", "smooth", "out", "in", "back", "lin")
+  elevator.py     example video (script + scene)          <- copy this structure for new videos
+  lib/
+    palette.py    harmonised colours, mix/warm/cool helpers, PEG_COLORS
+    camera.py     CameraPath: spring-damped follow, handheld drift, hard-cut detection, speed
+    post.py       Post: grade, vignette, DOF edge blur, whip-pan smear, old-film look; average() for motion blur
+    shadows.py    ShadowLayer: soft projected shadows (box_on_plane) + ambient occlusion (ao_edge)
+    characters.py draw_peg(): 'Pegs' mascots v2 (expressions, poses, look, reaction, hat)
+    widgets.py    keywords, progress tracker and all pop-ups (see below)
+    parts.py      2.5D parts: bolt, panel_seams, led, button_panel, digital_display, gear, pipe, fan,
+                  screen, crate, light_panel
+```
+
+## Writing a new video
+
+1. **Script first.** Follow the formula: hook that is already the first build step
+   ("If you put X in Y, you've got the simplest Z") -> "but..." problem -> "so you..." fix ->
+   term revealed after the need ("That's the ...") -> repeat every ~8-12 s -> payoff that ties to
+   a real-life moment -> "Congratulations, you just built a ..." + joke + CTA.
+2. **One step per sentence or two**, as dicts in `STEPS` (see `elevator.py`):
+   - `text` narration, `cam` ((focus xyz), zoom), `pegs` expression, optional `pose`, `min` duration
+   - `do`: `(track, cue, value, duration_or_cue, ease)` -> drives the scene
+   - `keys`: `("spoken phrase|shown text", COLOR)` -> keyword shown exactly when spoken
+     (RED = problem, INK = term, BLUE = result)
+   - `pops`: widgets (below), `cams`: extra camera moves on cues, `sfx`: `(cue, name)`
+   - `fix`: cue -> advances the "FIXES n/N" progress tracker
+3. **Cues**: `1.2` seconds, `"w:word"` when the word is spoken, `"w:word+0.3"`, `"end-0.5"`.
+4. **Scene class** with `bg`, `draw(img, cam, tr, t, step_i, step_t)` and optionally
+   `film_amount(tr, t)` (old-film post effect, e.g. flashbacks). Read animation values with
+   `tr.get("track", t)`. Use `ShadowLayer` right after drawing static walls/floors.
+5. Preview cheaply with `preview_times=[...]` (see `elevator.py --preview`), render with `--ss 2`.
+
+## Widgets (pops)
+
+| kind | fields | use for |
+|---|---|---|
+| `note` / `warn` / `check` | `text, pos` | short 2-4 word messages, problems, confirmations |
+| `stamp` | `text, color, pos` | big moment ("SAFE!", "SOLVED") |
+| `meter` | `text, from, to, color, fmt, anim` | a quantity going up/down (effort, temperature) |
+| `bars` | `title, items[(label, value, color)]` | before/after comparisons |
+| `count` | `from, to, fmt, sub` | numbers, years, counters |
+| `equation` | `parts[], colors[], step` | a formula assembling piece by piece |
+| `graph` | `title, track, window, color` | live line graph of an animation track (speed, load) |
+| `arrow` | `xyz, text, color, off` | label pointing at a 3D part |
+| `card` | `title, sub, tap` | follow CTA with tap animation |
+
+Positions: `tl tr ml mr bl br bc c`. Timing: `at` + `dur` or `until` (cues).
+
+## Camera & post (automatic)
+
+- Camera keyframes from `cam`/`cams` are followed by a spring (natural inertia, slight settle).
+  A jump that happens in one frame (duration `0.01`) becomes a **whip-pan** with a whoosh.
+- Motion blur kicks in automatically on fast camera moves; DOF edge blur on close-ups (zoom > ~190).
+- Grade + vignette always on; film grain when the scene reports `film_amount`.
+
+## Adding to the library
+
+- A part that could appear in another video (fan, gear, server, battery, pipe...) -> `lib/parts.py`.
+- A new kind of pop-up -> `lib/widgets.py` (`draw_pop` branch + table above).
+- New mascot pose/expression -> `lib/characters.py` (`POSES`, expression branches).
+- Keep things readable at phone size: minimum text ~0.045 x width, thick strokes, few colours.
