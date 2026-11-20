@@ -258,6 +258,7 @@ class ElevatorScene:
                 cam.spring((bx, 1.0, 0.0), 0.55 * bu, 0.12, (60, 60, 70), 6, 0.035)
                 cam.box(bx - 0.16, 0.84, 0.55 * bu, 0.32, 0.32, 0.06, RED)
             cam.spring((0.14, 1.0, 0.0), 0.4 * bu, 0.07, (60, 60, 70), 5, 0.03)
+            cam.box(0.02, 0.88, 0.4 * bu, 0.24, 0.24, 0.05, RED)
         # counterweight on the left wall
         if cws > 0.01:
             drop = (1 - min(1.0, cws)) * 3.0
@@ -375,12 +376,22 @@ class ElevatorScene:
                 cam.d.rounded_rectangle((lx - s2, ly - s2 * 0.3, lx + s2, ly + s2 * 1.1), radius=s2 * 0.25,
                                         fill=(60, 170, 90) if ok else (226, 52, 64))
 
+    def _side_parts(self, cam, tr, t, shoe_x, brake_x, zz, h, gov):
+        if tr.get("rails", t) > 0.5:
+            for gz in (zz + 0.05, zz + h - 0.2):
+                cam.box(shoe_x, 0.9, gz, 0.08, 0.2, 0.15, (70, 74, 86))
+        br = tr.get("brake", t)
+        if gov > 0.5 or br > 0.01:
+            cam.box(brake_x, 0.86, zz + 0.25, 0.1, 0.28, 0.25, RED if br > 0.5 else (90, 90, 100))
+
     def _car(self, cam, tr, t, cx, z, cs, gov):
         g = lambda k: tr.get(k, t)
         x0, y0, w, d, h = 0.45 + cx, 0.3, 1.5, 1.4, 2.0
         zz = z + (1 - min(1.0, cs)) * 2.5
         door = g("door2") if abs(z - 4.0) < 0.5 else 0.0
         sq = g("squeeze")
+        # left-side guide shoes + safety brake sit behind the left wall: draw them first
+        self._side_parts(cam, tr, t, x0 - 0.08, x0 - 0.14, zz, h, gov)
         # left inner wall + floor; back face is the door side
         cam.poly([(x0, y0, zz), (x0, y0 + d, zz), (x0, y0 + d, zz + h), (x0, y0, zz + h)], shade(CAR, -0.22))
         # door opening in the back face
@@ -427,16 +438,10 @@ class ElevatorScene:
         cam.box(x0, y0 + d - 0.06, zz + h - 0.18, w, 0.06, 0.18, CAR)
         cam.box(x0 + w - 0.06, y0, zz + h - 0.18, 0.06, d, 0.18, CAR)
         cam.box(x0, y0, zz + h, w, d, 0.12, shade(CAR, -0.05))
-        # guide shoes, safety brakes, sparks
-        if g("rails") > 0.5:
-            for gx in (x0 - 0.08, x0 + w):
-                for gz in (zz + 0.05, zz + h - 0.2):
-                    cam.box(gx, 0.9, gz, 0.08, 0.2, 0.15, (70, 74, 86))
+        # right-side guide shoes + safety brake (in front of the car); left side drawn earlier
+        self._side_parts(cam, tr, t, x0 + w, x0 + w + 0.04, zz, h, gov)
         br = g("brake")
         if gov > 0.5 or br > 0.01:
-            col = RED if br > 0.5 else (90, 90, 100)
-            for gx in (x0 - 0.14, x0 + w + 0.04):
-                cam.box(gx, 0.86, zz + 0.25, 0.1, 0.28, 0.25, col)
             if br > 0.5 and (t * 20) % 2 < 1.2:
                 rnd = random.Random(int(t * 30))
                 for _ in range(10):

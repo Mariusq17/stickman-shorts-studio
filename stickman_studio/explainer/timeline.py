@@ -3,7 +3,12 @@ from __future__ import annotations
 
 from ..easing import ease_in_out_cubic, ease_out_back, ease_out_cubic, ease_in_cubic, clamp
 
-EASES = {"io": ease_in_out_cubic, "out": ease_out_cubic, "in": ease_in_cubic, "back": ease_out_back,
+def _smootherstep(t):
+    t = clamp(t)
+    return t * t * t * (t * (t * 6 - 15) + 10)
+
+
+EASES = {"io": ease_in_out_cubic, "smooth": _smootherstep, "out": ease_out_cubic, "in": ease_in_cubic, "back": ease_out_back,
          "lin": lambda t: clamp(t)}
 
 

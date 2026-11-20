@@ -87,8 +87,8 @@ class Timing:
 
 # ------------------------------------------------------------------ build
 def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps=30, size=(1080, 1920),
-                    ss=2, voice_rate=1.4, music_volume=0.07, log=print, progress=None, preview_frames=None,
-                    preview_times=None):
+                    ss=2, voice_rate=1.3, music_volume=0.07, log=print, progress=None, preview_frames=None,
+                    preview_times=None, return_plan=False):
     t0 = time.time()
     texts = [s["text"] for s in steps]
     clips, engine = synthesize_all(texts, "auto", voice_rate, language="en", log=log)
@@ -107,12 +107,13 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
     keys, pops, sfx = [], [], []
     for i, st in enumerate(steps):
         s0 = starts[i]
-        tr.add("cam_f", s0, st["cam"][0], st.get("cam_dur", 0.9), "io")
-        tr.add("cam_z", s0, st["cam"][1] * bz, st.get("cam_dur", 0.9), "io")
+        lead = 0.3 if i > 0 else 0.0
+        tr.add("cam_f", s0 - lead, st["cam"][0], st.get("cam_dur", 1.3), "smooth")
+        tr.add("cam_z", s0 - lead, st["cam"][1] * bz, st.get("cam_dur", 1.3), "smooth")
         for cue, (f, z), *rest in st.get("cams", []):
             d = rest[0] if rest else 1.0
-            tr.add("cam_f", tm.abs(i, cue), f, d, "io")
-            tr.add("cam_z", tm.abs(i, cue), z * bz, d, "io")
+            tr.add("cam_f", tm.abs(i, cue), f, d, "smooth")
+            tr.add("cam_z", tm.abs(i, cue), z * bz, d, "smooth")
         for name, cue, val, td, ease in st.get("do", []):
             ta = tm.abs(i, cue)
             if isinstance(td, str):          # duration given as a cue: animate until that moment
@@ -152,6 +153,9 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
     wd = tempfile.mkdtemp(prefix="explainer_")
     wav = os.path.join(wd, "mix.wav")
     write_wav(wav, np.stack([mix, mix], axis=1))
+    if return_plan:
+        return dict(tracks=tr, keys=keys, pops=pops, starts=starts, durs=durs, total=total, wav=wav,
+                    engine=engine)
     # ---------------------------------------------------------- render
     RW, RH = W * ss, H * ss
     scene = scene_cls(RW, RH)
