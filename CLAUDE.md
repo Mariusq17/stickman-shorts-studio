@@ -19,6 +19,7 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
 | a video from their own idea/topic/notes/video type | skill `explainer-from-idea` -> then `explainer-video` |
 | make / render one or several videos, continue a batch | skill `explainer-video` |
 | end of session / "save progress" | skill `studio` (mode wrap-up) |
+| re-render an OLD video version / list of all videos made | skill `video-archive` (registry `publishing/VIDEOS.md`) |
 | post a video: titles, descriptions, captions, covers/thumbnails, channel avatar/banner/bios | skill `publish-kit` (output in `publishing/`) |
 
 ## Owner preferences (keep this list updated - it is the project's memory)
@@ -41,6 +42,9 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
 - No GPU (work laptop, Intel Arc) -> Blender path was tested (`blender_render.py`) but parked;
   stay on the Python 2.5D renderer.
 - Deliver each finished MP4 immediately (SendUserFile); commit + push code before long renders.
+- Every approved video gets a release commit `[VID-<idx>-v<ver>] ...` and a row in `publishing/VIDEOS.md`
+  (title, commit, date) so any old version can be re-rendered exactly (skill `video-archive`).
+- Handle: `@HowItsBuiltShorts_Official` (name "How It's Built"); same on YouTube, Instagram, TikTok.
 - Wants the process as automatic as possible so they can work on other things meanwhile.
 - Prefers working in fresh sessions per batch (cheaper/faster than one huge chat); expects the
   `studio` skill + this file to carry all context between sessions.

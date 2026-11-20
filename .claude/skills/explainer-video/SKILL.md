@@ -23,7 +23,8 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
 3. **Preview, don't guess**: `python -m stickman_studio.explainer.render <slug> --preview t1,t2,...`
    then Read the PNG. Check every step at ~30% and ~85% of its duration, and the hook second by
    second (0.2, 0.7, 1.1 ... 5 s). Fix before rendering.
-4. **Commit + push the code before the long render** (the container is ephemeral).
+4. **Release commit + push before the long render**: `[VID-<idx>-v<ver>] <slug>: <title>` (see skill
+   `video-archive`), then after the render add the row to `publishing/VIDEOS.md`.
 5. **Render** (background): `python -m stickman_studio.explainer.render <slug>` (~20 min per 2 min
    video on 4 CPU cores). Verify with `stickman_studio.pipeline.verify_video`.
 6. **Deliver immediately**: send the MP4 with SendUserFile as soon as it is verified - never wait
