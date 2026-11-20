@@ -97,7 +97,7 @@ class Timing:
 
 # ------------------------------------------------------------------ build
 def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps=30, size=(1080, 1920),
-                    ss=2, voice_rate=1.3, music_volume=0.07, log=print, progress=None, preview_frames=None,
+                    ss=2, voice_rate=1.2, music_volume=0.07, log=print, progress=None, preview_frames=None,
                     preview_times=None, return_plan=False, tracker=None, motion_blur=True):
     t0 = time.time()
     texts = [s["text"] for s in steps]

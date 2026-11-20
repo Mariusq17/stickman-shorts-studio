@@ -669,6 +669,13 @@ def overlays(img, tr, t, W, H):
     draw_bubble(img, int(round(tr.get("bubble_kind", t))), tr.get("bubble", t), t, tr, W, H)
 
 
+VIDEO = dict(
+    slug="elevator",
+    title="How does an elevator not fall?",
+    steps=STEPS, scene=ElevatorScene, initial=INITIAL, overlays=overlays, tracker=dict(label="FIXES"),
+)
+
+
 def main(argv=None):
     import argparse
     from .builder import build_explainer

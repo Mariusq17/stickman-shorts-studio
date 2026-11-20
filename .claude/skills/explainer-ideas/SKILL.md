@@ -1,0 +1,30 @@
+---
+name: explainer-ideas
+description: Generate ranked ideas for "build it step by step" explainer videos (how real machines/systems work, built piece by piece with problem -> fix loops) that fit the 2.5D explainer engine. Use when the user asks for video ideas, topics, a content plan or "what should we make next" for the explainer format.
+---
+
+# Explainer ideas
+
+Goal: ideas for 2-2.5 min English explainers that people *finish* (high retention) - a real-world
+system everyone has touched but nobody understands, rebuilt from its simplest version.
+
+## What makes an idea good (score each 1-5, keep >= 18/25)
+1. **Relatable**: the viewer has used it (lift, ATM, card tap, microwave, traffic light, Wi-Fi...)
+   or it is in the news (AI data centres, EVs, chips, solar, satellites).
+2. **Chain length**: at least 8 real "problem -> so you add X -> that's the <term>" links.
+3. **Visual**: each fix is a visible object/motion in 2.5D (no abstract-only steps).
+4. **Payoff**: a final "next time you ... you'll know why" moment from everyday life.
+5. **Facts are solid**: the mechanism is well documented; any number used is verifiable.
+Also prefer ideas that reuse/extend `lib/parts.py` (check `stickman_studio/explainer/LIBRARY.md`).
+
+## Output format (per idea)
+- **Title** as a curiosity question (e.g. "Why do elevators almost never fall?")
+- **Hook line** that is already step 1: "If you put X in/on Y, you've got the simplest Z."
+- **Chain**: 8-12 short arrows `problem -> fix (term)`
+- **One exaggerated comparison** and the **aha payoff**
+- **New parts needed** (what the library lacks) and a 1-line difficulty estimate
+- **Score** /25
+
+Give 10 ideas ranked, then ask the user to pick. Append the picked/ranked ideas to `ideas/IDEAS.md`
+(status `idea`), never delete existing entries, and commit. Do not invent facts; mark anything
+uncertain "(verify)" and verify before scripting.
