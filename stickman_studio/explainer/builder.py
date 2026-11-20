@@ -99,7 +99,8 @@ class Timing:
 # ------------------------------------------------------------------ build
 def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps=30, size=(1080, 1920),
                     ss=2, voice_rate=1.2, music_volume=0.07, log=print, progress=None, preview_frames=None,
-                    preview_times=None, return_plan=False, tracker=None, motion_blur=True):
+                    preview_times=None, return_plan=False, tracker=None, motion_blur=True, end_cover=None,
+                    cover_dur=0.5):
     t0 = time.time()
     texts = [s["text"] for s in steps]
     clips, engine = synthesize_all(texts, "auto", voice_rate, language="en", log=log)
@@ -107,6 +108,11 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
     durs = [max(s.get("min", 0.0), LEAD + c.duration + TAIL) for s, c in zip(steps, clips)]
     starts = list(np.cumsum([0.0] + durs[:-1]))
     total = float(sum(durs))
+    content_total = total
+    cover_img = None
+    if end_cover and os.path.exists(end_cover):     # cover frame at the very end: pickable as Shorts thumbnail
+        cover_img = Image.open(end_cover).convert("RGB").resize(size, Image.LANCZOS)
+        total += cover_dur
     tm = Timing(steps, clips, starts, durs)
     tr = StepTracks(starts, steps)
     for k, v in initial.items():
@@ -190,6 +196,8 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
         return img.reduce(ss) if ss > 1 else img, (f, z)
 
     def render(t, blur=False):
+        if cover_img is not None and t >= content_total:
+            return cover_img
         sp = camp.speed_at(t)
         if blur and motion_blur and sp > 0.010:
             subs = [frame(t + dt / fps)[0] for dt in (-0.33, 0.0, 0.33)]

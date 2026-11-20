@@ -317,50 +317,95 @@ def draw_pop(img, cam, p, t, W, H, tr=None):
         draw_follow_card(img, p, t, W, H, a)
 
 
+_AVATAR = {}
+CHANNEL = dict(title="How It's Built", handle="@howitsbuiltshorts_official")
+
+
+def _avatar(size):
+    """Channel avatar (publishing/brand/avatar.png) cropped to a circle with a white + orange ring."""
+    import os
+    key = int(size)
+    if key in _AVATAR:
+        return _AVATAR[key]
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    path = os.path.join(root, "publishing", "brand", "avatar.png")
+    S = key * 2
+    out = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(out)
+    d.ellipse((0, 0, S - 1, S - 1), fill=(255, 150, 60, 255))
+    d.ellipse((S * 0.05, S * 0.05, S * 0.95, S * 0.95), fill=(255, 255, 255, 255))
+    inner = int(S * 0.84)
+    if os.path.exists(path):
+        src = Image.open(path).convert("RGB")
+        c = int(src.width * 0.18)                    # zoom on the mascot so it reads at small size
+        av = src.crop((c, int(c * 0.6), src.width - c, src.height - int(c * 1.4))).resize((inner, inner), Image.LANCZOS)
+    else:
+        av = Image.new("RGB", (inner, inner), (255, 170, 60))
+    m = Image.new("L", (inner, inner), 0)
+    ImageDraw.Draw(m).ellipse((0, 0, inner - 1, inner - 1), fill=255)
+    out.paste(av, ((S - inner) // 2, (S - inner) // 2), m)
+    out = out.resize((key, key), Image.LANCZOS)
+    _AVATAR[key] = out
+    return out
+
+
+def _fit(draw, text, max_w, size):
+    while size > 10 and draw.textlength(text, font=font(size)) > max_w:
+        size -= 2
+    return font(size)
+
+
 def draw_follow_card(img, p, t, W, H, a=1.0):
-    """CTA: clean follow card; a finger taps the button, it turns into 'Following'."""
+    """CTA: channel card (real avatar, name, handle) - a hand taps Follow, it turns into Following."""
     t0 = p["t0"]
     k = ease_out_back(clamp((t - t0) / 0.45))
-    w, h = W * 0.90, W * 0.25
-    L, pad = card(w, h, h * 0.22, shadow=0.14)
+    w, h = W * 0.92, W * 0.26
+    L, pad = card(w, h, h * 0.24, shadow=0.16)
     d = ImageDraw.Draw(L)
-    ar = h * 0.30
-    ax, ay = pad + h * 0.48, pad + h / 2
-    d.ellipse((ax - ar, ay - ar, ax + ar, ay + ar), fill=(255, 170, 60), outline=(200, 120, 30), width=3)
-    for sx in (-1, 1):
-        ex = ax + sx * ar * 0.36
-        d.ellipse((ex - ar * 0.24, ay - ar * 0.38, ex + ar * 0.24, ay + ar * 0.10), fill=(255, 255, 255),
-                  outline=(40, 40, 50), width=2)
-        d.ellipse((ex - ar * 0.1, ay - ar * 0.22, ex + ar * 0.1, ay - ar * 0.02), fill=(25, 25, 35))
-    d.chord((ax - ar * 0.35, ay + ar * 0.05, ax + ar * 0.35, ay + ar * 0.55), 0, 180, fill=(60, 20, 30))
-    d.text((pad + h * 0.92, pad + h * 0.38), p.get("title", "How It's Built"), font=font(int(h * 0.15)), fill=INK,
-           anchor="lm")
-    d.text((pad + h * 0.92, pad + h * 0.63), p.get("sub", "step by step"), font=font(int(h * 0.10)), fill=GREY,
-           anchor="lm")
+    av = _avatar(h * 0.74)
+    L.paste(av, (int(pad + h * 0.13), int(pad + h / 2 - av.height / 2)), av)
+    tx = pad + h * 0.98
     tap = t0 + p.get("tap", 1.3)
     pressed = t >= tap
+    bw0, bh0 = h * 0.92, h * 0.38
+    bx, by = pad + w - h * 0.12 - bw0 / 2, pad + h / 2
+    text_w = (bx - bw0 / 2) - tx - h * 0.08
+    d.text((tx, pad + h * 0.36), p.get("title", CHANNEL["title"]), font=_fit(d, p.get("title", CHANNEL["title"]), text_w,
+                                                                                int(h * 0.17)), fill=INK, anchor="lm")
+    d.text((tx, pad + h * 0.62), p.get("sub", CHANNEL["handle"]), font=_fit(d, p.get("sub", CHANNEL["handle"]), text_w,
+                                                                            int(h * 0.12)), fill=GREY, anchor="lm")
     squish = 1 - 0.08 * math.exp(-((t - tap) / 0.07) ** 2)
-    bw, bh = h * 0.95 * squish, h * 0.36 * squish
-    bx, by = pad + w - h * 0.62, pad + h / 2
-    d.rounded_rectangle((bx - bw / 2, by - bh / 2, bx + bw / 2, by + bh / 2), radius=bh / 2,
-                        fill=(235, 236, 240) if pressed else (230, 30, 45))
-    d.text((bx, by), "Following" if pressed else "Follow", font=font(int(h * 0.12 * (0.85 if pressed else 1))),
-           fill=INK if pressed else (255, 255, 255), anchor="mm")
+    bw, bh = bw0 * squish, bh0 * squish
+    if not pressed:
+        d.rounded_rectangle((bx - bw / 2, by - bh / 2 + 5, bx + bw / 2, by + bh / 2 + 5), radius=bh / 2,
+                            fill=(150, 20, 35))
+        d.rounded_rectangle((bx - bw / 2, by - bh / 2, bx + bw / 2, by + bh / 2), radius=bh / 2, fill=(232, 36, 52))
+        d.rounded_rectangle((bx - bw / 2 + bh * 0.2, by - bh / 2 + bh * 0.1, bx + bw / 2 - bh * 0.2, by - bh * 0.05),
+                            radius=bh / 3, fill=(242, 92, 104))
+        d.text((bx, by), "+ Follow", font=font(int(h * 0.135)), fill=(255, 255, 255), anchor="mm")
+    else:
+        d.rounded_rectangle((bx - bw / 2, by - bh / 2, bx + bw / 2, by + bh / 2), radius=bh / 2, fill=(236, 238, 242),
+                            outline=(210, 212, 220), width=3)
+        d.text((bx, by), "Following", font=font(int(h * 0.115)), fill=INK, anchor="mm")
     if pressed and t - tap < 0.45:
         rr = (t - tap) * h * 1.6
-        d.ellipse((bx - rr, by - rr, bx + rr, by + rr), outline=(230, 30, 45, int(200 * (1 - (t - tap) / 0.45))),
+        d.ellipse((bx - rr, by - rr, bx + rr, by + rr), outline=(232, 36, 52, int(200 * (1 - (t - tap) / 0.45))),
                   width=4)
-    x, y = W / 2 - w / 2, H * 0.78 + (1 - k) * H * 0.08
+    x, y = W / 2 - w / 2, H * 0.77 + (1 - k) * H * 0.08
     paste(img, L, x - pad, y - pad, a)
     dd = ImageDraw.Draw(img)
-    if t0 + 0.5 < t < tap + 0.7:
+    if t0 + 0.5 < t < tap + 0.7:     # pointing hand (mascot orange glove)
         prog = ease_out_cubic(clamp((t - t0 - 0.5) / max(0.1, tap - t0 - 0.5)))
-        fx = x + (bx - pad) + (1 - prog) * W * 0.12
-        fy = y + (by - pad) + h * 0.20 + (1 - prog) * H * 0.06
-        r = W * 0.035
-        dd.ellipse((fx - r, fy - r, fx + r, fy + r), fill=(255, 220, 190), outline=(120, 80, 60), width=3)
-        dd.rounded_rectangle((fx - r * 0.9, fy, fx + r * 0.9, fy + r * 3), radius=r * 0.8, fill=(255, 220, 190),
-                             outline=(120, 80, 60), width=3)
+        fx = x + (bx - pad) + h * 0.05 + (1 - prog) * W * 0.12
+        fy = y + (by - pad) + h * 0.06 + (1 - prog) * H * 0.06
+        r = W * 0.03
+        glove, edge = (255, 170, 60), (170, 100, 30)
+        dd.rounded_rectangle((fx - r * 0.45, fy - r * 0.2, fx + r * 0.45, fy + r * 2.0), radius=r * 0.45, fill=glove,
+                             outline=edge, width=3)
+        dd.rounded_rectangle((fx - r * 0.5, fy + r * 1.3, fx + r * 1.9, fy + r * 3.4), radius=r * 0.8, fill=glove,
+                             outline=edge, width=3)
+        dd.rounded_rectangle((fx + r * 0.1, fy + r * 3.2, fx + r * 1.5, fy + r * 4.4), radius=r * 0.3,
+                             fill=(255, 255, 255), outline=edge, width=3)
     if pressed:
         for j in range(4):
             ph = ((t - tap) * 0.8 + j * 0.25) % 1.0
