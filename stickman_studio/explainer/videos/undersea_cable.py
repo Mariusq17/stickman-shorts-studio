@@ -176,6 +176,7 @@ class CableScene:
             self._front(cam, tr, t, oc)
         if g("land") > 0.01:
             self._land(cam, tr, t)
+            self._cable_ends(cam, tr, t)
         self._surface(cam, tr, t)
 
     # ------------------------------------------------------------- environment
@@ -352,6 +353,37 @@ class CableScene:
             x = a + (b - a) * i / n
             out.append((x, y, sea_z(x) + 0.05))
         return out
+
+    def _cable_ends(self, cam, tr, t):
+        """Shore ends of the cable: up the left cliff into the laser / landing station, and from the right
+        cliff edge across the grass into the receiver / landing station (drawn after the land blocks)."""
+        g = lambda k: tr.get(k, t)
+        top = 0.35 * _sm(g("land")) + 0.012
+        st = g("station") > 0.5
+        armor = g("armor")
+        col = mix((220, 236, 245), (90, 96, 110), 0.8 * armor)
+        w = 0.035 + 0.035 * armor
+        for y, key in ((YC, "thread"), (0.6, "second")):
+            if g(key) < 0.95:
+                continue
+            ys = YC if y == YC else 1.05            # second cable also lands inside the station
+            if st:
+                left = [(X0 - 0.85, ys, top + 0.15), (X0 - 0.6, ys, top), (X0 - 0.6, y, top),
+                        (X0 - 0.59, y, sea_z(X0) + 0.05), (X0 - 0.5, y, sea_z(X0) + 0.05)]
+                right = [(X1 + 0.6, y, top), (X1 + 0.6, ys, top), (X1 + 0.8, ys, top + 0.15)]
+            else:
+                if y != YC:
+                    continue
+                left = [(X0 - 0.5, YC, 0.05), (X0 - 0.59, YC, 0.02), (X0 - 0.59, YC, sea_z(X0) + 0.05),
+                        (X0 - 0.5, YC, sea_z(X0) + 0.05)]
+                right = [(X1 + 0.6, YC, top), (X1 + 0.95, YC, top)]
+            for pts in (left, right):
+                cam.line(pts, shade(col, -0.35), w * 1.4)
+                cam.line(pts, col, w)
+            if not st and y == YC:      # receiver box on the right shore
+                cam.box(X1 + 0.95, YC - 0.2, top - 0.01, 0.4, 0.4, 0.3, (60, 64, 76))
+                parts.led(cam, (X1 + 1.15, YC + 0.21, top + 0.18), (90, 230, 140) if g("pulse") > 0.5 else (70, 74, 86),
+                          g("pulse") > 0.5, 0.04)
 
     def _cable(self, cam, tr, t, y, second=False):
         g = lambda k: tr.get(k, t)

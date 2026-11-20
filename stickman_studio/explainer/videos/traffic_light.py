@@ -59,7 +59,7 @@ STEPS = [
          sfx=[("w:changes", "ding")]),
     dict(text="But a bicycle has so little metal that the loop barely notices it.",
          cam=LOOPCAM, pegs="worried",
-         do=[("car_x", 0.2, 9.0, 2.0, "in"), ("sense", 0.2, 0, 0.4, "in"), ("ms", 0.3, 0, 0, "lin"),
+         do=[("car_x", 0.2, 14.5, 2.2, "in"), ("sense", 0.2, 0, 0.4, "in"), ("ms", 0.3, 0, 0, "lin"),
              ("bike", "w:bicycle", 1, 0.4, "back"), ("bike_x", "w:bicycle", -2.5, 1.0, "out")],
          keys=[("so little metal", RED), ("barely notices|barely noticed", RED)],
          pops=[dict(kind="meter", at="w:little", text="DETECTION", **{"from": 0.0, "to": 0.08}, color=RED, fmt="WEAK",
@@ -80,6 +80,7 @@ STEPS = [
     dict(text="So you add a yellow light, timed for how fast cars drive on that road. Faster road, longer yellow.",
          cam=SIGCAM, pegs="happy",
          do=[("skid", 0, 0, 0.3, "in"), ("car_x", 0.0, -2.5, 0.01, "lin"), ("yel", "w:yellow", 1, 0.4, "back"),
+             ("ms", "end-1.5", 2, 0, "lin"), ("car_x", "end-1.3", 14.5, 1.3, "in"),
              ("ms", "w:yellow", 1, 0, "lin")],
          keys=[("yellow light", INK), ("how fast|timed by speed", INK), ("longer yellow", BLUE)],
          fix="w:yellow",
@@ -89,7 +90,7 @@ STEPS = [
     dict(text="Some drivers still squeeze through on yellow. So for a second or two, every direction is red at the "
               "same time. That's the all red clearance.",
          cam=WIDE, pegs="neutral",
-         do=[("ms", 0.2, 1, 0, "lin"), ("run_x", "w:squeeze", 3.0, 1.4, "lin"), ("ms", "w:every", 0, 0, "lin"),
+         do=[("ms", 0.2, 1, 0, "lin"), ("run_x", "w:squeeze", 14.5, 2.6, "lin"), ("ms", "w:every", 0, 0, "lin"),
              ("ss", "w:every", 0, 0, "lin"), ("ss", "end-0.6", 2, 0, "lin"), ("side_y", "end-0.6", 9.0, 3.0, "in")],
          keys=[("squeeze through", RED), ("every direction is red|all directions red", INK), ("all red clearance", INK)],
          fix="w:all",
@@ -131,7 +132,7 @@ STEPS = [
               "speed limit arrive. That's a green wave.",
          cam=AVENUE, pegs="happy",
          do=[("wave_x", 0.0, -3.0, 0.01, "lin"), ("w1", 0.0, 0, 0, "lin"), ("w2", 0.0, 0, 0, "lin"),
-             ("wave_x", "w:synced", 13.0, "end-0.2", "lin"), ("w1", "w:turns", 2, 0, "lin"), ("w2", "w:speed", 2, 0, "lin"),
+             ("wave_x", "w:synced", 14.5, "end-0.2", "lin"), ("w1", "w:turns", 2, 0, "lin"), ("w2", "w:speed", 2, 0, "lin"),
              ("sync", "w:synced", 1, 0.5, "out")],
          keys=[("synced", INK), ("speed limit", INK), ("green wave", BLUE)],
          fix="w:wave",
@@ -140,7 +141,7 @@ STEPS = [
               "green all the way. That's preemption.",
          cam=((-1.0, 0.6, 0.8), 140), pegs="shocked",
          do=[("sync", 0.0, 0, 0.3, "in"), ("ms", 0.1, 0, 0, "lin"), ("amb_x", "w:ambulance", -3.0, 1.2, "out"),
-             ("beam", "w:signal", 1, 0.3, "out"), ("ms", "w:green", 2, 0, "lin"), ("amb_x", "w:green", 9.0, 2.6, "in")],
+             ("beam", "w:signal", 1, 0.3, "out"), ("ms", "w:green", 2, 0, "lin"), ("amb_x", "w:green", 14.5, 2.4, "in")],
          keys=[("ambulance", INK), ("signal from the vehicle", INK), ("green all the way", BLUE), ("preemption", INK)],
          fix="w:preemption",
          sfx=[("w:ambulance", "sting"), ("w:green", "ding")]),
@@ -153,7 +154,7 @@ STEPS = [
     dict(text="And congratulations, you just built a traffic light. Now you just need people to stop honking the "
               "second it turns green. Follow for more.",
          cam=WIDE, pegs="happy", min=8.4, pose="cheer",
-         do=[("night", 0.1, 0, 0.8, "io"), ("sense", 0.2, 0, 0.3, "in"), ("car_x", 0.4, 9.0, 3.0, "in")],
+         do=[("night", 0.1, 0, 0.8, "io"), ("sense", 0.2, 0, 0.3, "in"), ("car_x", 0.4, 14.5, 3.0, "in")],
          keys=[("built a traffic light|you built a traffic light!", BLUE), ("stop honking", INK)],
          pops=[dict(kind="card", at="w:follow-0.6", until="end+1", tap=1.4)],
          sfx=[("w:follow", "pop")]),
@@ -371,7 +372,7 @@ class TrafficScene:
             if -6 < sy < 6:
                 parts.car(cam, -0.5, sy, 0, "y", (90, 140, 220))
             rx = g("run_x")
-            if -6 < rx < 12 and rx != 3.0:
+            if -6 < rx < 14:
                 parts.car(cam, rx, 0.5, 0, "x", (250, 196, 70))
             return
         cx = g("car_x")
