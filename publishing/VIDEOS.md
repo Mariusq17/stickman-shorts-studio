@@ -25,6 +25,8 @@ Descriptions, captions and covers: `publishing/<slug>/post.md` and `cover.png` (
 | 2 | VID-002-v2 | card_tap | Your Card Has No Battery. So How Does It Pay? | 1:54 | 8 | `c224b85` [VID-002-v2] | 2026-11-20 | delivered; perspective text, on-top labels, new CTA, cover at end |
 | 3 | VID-003-v2 | chatbot | Why AI Chatbots Type One Word at a Time | 2:00 | 8 | `d13c4a1` [VID-003-v2] | 2026-11-20 | delivered; same upgrades |
 | 4 | VID-004-v2 | atm_notes | How an ATM Knows Two Notes Are Stuck Together | 1:48 | 9 | `0f66980` [VID-004-v2] | 2026-11-20 | delivered; new CTA, cover at end |
-| 5 | VID-005-v1 | traffic_light | How the Traffic Light Knows You're Waiting | ~1:42 | 8 | `cc47131` [VID-005-v1] | rendering | idea #8 |
-| 6 | VID-006-v1 | microwave | Why Forks Spark in the Microwave | ~1:42 | 7 | `2cfd497` [VID-006-v1] | rendering | idea #4 |
-| 7 | VID-007-v1 | self_checkout | Who Is Judging You at Self-Checkout? | ~1:32 | 9 | `9ab4ad0` [VID-007-v1] | rendering | idea #3 |
+| 5 | VID-005-v1 | traffic_light | How the Traffic Light Knows You're Waiting | 1:42 | 8 | `cc47131` [VID-005-v1] | 2026-11-20 | delivered; idea #8 |
+| 6 | VID-006-v1 | microwave | Why Forks Spark in the Microwave | 1:41 | 7 | `2cfd497` [VID-006-v1] | 2026-11-20 | delivered; idea #4 |
+| 7 | VID-007-v1 | self_checkout | Who Is Judging You at Self-Checkout? | 1:32 | 9 | `9ab4ad0` [VID-007-v1] | 2026-11-20 | delivered; idea #3 |
+| 8 | VID-008-v1 | undersea_cable | How Your Message Crosses the Ocean | 1:31 | 7 | `876fb6a` [VID-008-v1] | 2026-11-20 | delivered; idea #6 |
+| 9 | VID-009-v1 | streaming | Why Movies Start Instantly Even Though the File Is Huge | 1:23 | 6 | `e5c300d` [VID-009-v1] | 2026-11-20 | delivered; idea #10 (shortest, could get 2-3 more steps) |
