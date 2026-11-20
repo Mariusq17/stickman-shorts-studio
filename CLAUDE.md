@@ -35,6 +35,9 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   every object (`kit.label` is queued and flushed after the scene) - never hidden behind geometry.
 - Channel: "How It's Built" (YouTube Brand Account + Instagram/TikTok). Captions: descriptive and concise,
   max 2 hashtags (owner: hashtags matter less now, descriptive text helps distribution more).
+- Scene hygiene: an object that is no longer relevant to the current step must leave the scene (drive off,
+  fade, hide); moving objects (cars, ambulances, notes...) must NEVER pass through other objects - clear the
+  lane first. Connections (cables, pipes, wires) must visibly reach both endpoints (e.g. into the stations).
 - Keywords only (no full subtitles), appearing exactly when spoken, readable ~1-1.5 s, smooth.
 - Loves: side pop-ups, arrows, progress bars/meters, graphs, counters, the FIXES tracker, smooth
   camera transitions. Dislikes: static screens while talking, objects showing through walls,
@@ -54,6 +57,8 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   -> v2 8.5-9 (narration-synced visuals, pop-ups) -> v3 (fixed see-through objects, 1.3x)
   -> v4 9.5/10 (spring camera, motion blur, shadows, mascots v2, tracker, graphs).
   card_tap (2026-11-20): liked it; text on objects was not in perspective / not fitting -> fixed in engine.
+  batch 2 (2026-11-20): quality drops towards the end of videos - traffic_light: the red car stays all video
+  and other cars/ambulance drive through it; undersea_cable (better): cable ends not connected to the stations.
 
 ## Commands
 ```bash

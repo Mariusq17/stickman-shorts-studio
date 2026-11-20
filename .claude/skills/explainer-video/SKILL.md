@@ -70,6 +70,10 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
   into the plane's perspective and shrunk to fit. Never `cam.d.text` on a 3D surface (only billboards/labels).
 - Callouts: `kit.label(...)` is automatically drawn above the whole scene; use it for part names.
   Use `now=True` only for text that should be occluded on purpose.
+- Check the WHOLE timeline, not only each step: a final contact sheet every ~4 s from start to end, looking
+  for props that linger after their step, objects driving through each other, and cables/pipes that stop
+  short of their endpoints. The second half of a video gets the same care as the hook.
+- Every prop gets an exit: when its step is over, animate it away (or hide it) unless the payoff reuses it.
 - Use `lib/kit.py` helpers (peg, label, packet, sheet, plate/plane_text) instead of re-writing them.
 - Start rendering each video as soon as its previews pass (background `render <slug>`, max 2 at once)
   while writing the next scene - a 3-video batch then takes ~1.5 h of wall time instead of 2+.
