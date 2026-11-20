@@ -133,3 +133,50 @@ def crate(cam, x, y, z, w, d, h, color=(196, 150, 96)):
 def light_panel(cam, x, y, z, w, d, color=(255, 248, 225)):
     """Ceiling light seen from below/above as a glowing quad."""
     cam.poly([(x, y, z), (x + w, y, z), (x + w, y + d, z), (x, y + d, z)], color, mix(color, INK, 0.2), 0.006)
+
+
+def phone(cam, plane, c, u, v, w, h, t=0.0, screen_color=(40, 60, 110), lines=None, lit=1.0):
+    """Smartphone standing on a wall plane (u = left, v = bottom). `lines` = [(text, color)] on screen."""
+    from .kit import plate, plane_text
+    body = (30, 32, 40)
+    plate(cam, plane, c, u, v, u + w, v + h, body, (10, 10, 14), 0.012)
+    m = w * 0.07
+    plate(cam, plane, c, u + m, v + m * 1.6, u + w - m, v + h - m * 1.6, mix(body, screen_color, lit))
+    plate(cam, plane, c, u + w * 0.38, v + h - m * 1.1, u + w * 0.62, v + h - m * 0.55, (10, 10, 14))
+    for k, (text, color) in enumerate(lines or []):
+        plane_text(cam, plane, c, u + w / 2, v + h * (0.68 - 0.17 * k), text, w * (0.17 if k == 0 else 0.13), color)
+
+
+def server_rack(cam, x, y, z, w=0.6, d=0.6, h=1.6, t=0.0, color=(52, 56, 70), busy=0.5, seed=0):
+    """Server rack with blinking LEDs on its front-left (+y) face."""
+    cam.box(x, y, z, w, d, h, color)
+    units = max(3, int(h / 0.22))
+    for k in range(units):
+        zz = z + 0.08 + k * (h - 0.16) / units
+        cam.line([(x + 0.05, y + d + 0.005, zz), (x + w - 0.05, y + d + 0.005, zz)], _shade(color, 0.25), 0.012,
+                 caps=False)
+        on = (math.sin(t * (6 + k) + seed * 3.1 + k * 1.3) > 1 - 2 * busy)
+        led(cam, (x + w - 0.1, y + d + 0.01, zz + 0.06), (90, 230, 140) if on else (60, 64, 76), on, 0.022, glow=False)
+
+
+def bank_building(cam, x, y, w, d, h, color=(225, 228, 238), roof=(120, 128, 150), t=0.0, glow=0.0,
+                  glow_color=(90, 170, 255)):
+    """Classic bank: block with columns and a pediment on its +y face. glow 0..1 lights the windows."""
+    body = mix(color, glow_color, 0.25 * glow)
+    cam.box(x, y, 0, w, d, 0.12, _shade(color, -0.15))
+    cam.box(x + 0.1, y + 0.1, 0.12, w - 0.2, d - 0.35, h - 0.5, body)
+    win = mix((120, 150, 190), (255, 230, 140), glow)
+    for k in range(3):
+        uu = x + 0.25 + k * (w - 0.5) / 2.6
+        cam.poly([(uu, y + d - 0.249, 0.5), (uu + 0.25, y + d - 0.249, 0.5), (uu + 0.25, y + d - 0.249, h - 0.75),
+                  (uu, y + d - 0.249, h - 0.75)], win, _shade(win, -0.4), 0.008)
+    n = 4
+    for k in range(n):
+        cx = x + 0.15 + k * (w - 0.42) / (n - 1)
+        cam.box(cx, y + d - 0.2, 0.12, 0.12, 0.12, h - 0.5, _shade(color, 0.1))
+    cam.box(x, y, h - 0.38, w, d, 0.14, roof)
+    top = h - 0.24
+    cam.poly([(x, y + d, top), (x + w, y + d, top), (x + w / 2, y + d, top + 0.45)], _shade(roof, 0.15),
+             _shade(roof, -0.4), 0.01)
+    cam.poly([(x + w, y, top), (x + w, y + d, top), (x + w / 2, y + d, top + 0.45), (x + w / 2, y, top + 0.45)],
+             _shade(roof, -0.15), _shade(roof, -0.4), 0.01)
