@@ -19,6 +19,7 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
 | a video from their own idea/topic/notes/video type | skill `explainer-from-idea` -> then `explainer-video` |
 | make / render one or several videos, continue a batch | skill `explainer-video` |
 | end of session / "save progress" | skill `studio` (mode wrap-up) |
+| post a video: titles, descriptions, captions, covers/thumbnails, channel avatar/banner/bios | skill `publish-kit` (output in `publishing/`) |
 
 ## Owner preferences (keep this list updated - it is the project's memory)
 - Quality first: premium, viral-ready, but stylised (no realistic textures).
@@ -31,6 +32,8 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   screen-aligned text floating on a slanted surface. Check it in previews at close zoom.
 - Callout labels/remarks (names of parts, "SHOP'S BANK", "CASSETTE"...) must always be drawn ON TOP of
   every object (`kit.label` is queued and flushed after the scene) - never hidden behind geometry.
+- Channel: "How It's Built" (YouTube Brand Account + Instagram/TikTok). Captions: descriptive and concise,
+  max 2 hashtags (owner: hashtags matter less now, descriptive text helps distribution more).
 - Keywords only (no full subtitles), appearing exactly when spoken, readable ~1-1.5 s, smooth.
 - Loves: side pop-ups, arrows, progress bars/meters, graphs, counters, the FIXES tracker, smooth
   camera transitions. Dislikes: static screens while talking, objects showing through walls,
