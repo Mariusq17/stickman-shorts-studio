@@ -25,7 +25,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 PUB = os.path.join(ROOT, "publishing")
 
 BRAND = "HOW IT'S BUILT"
-TAGLINE = "Everyday machines, built step by step"
+TAGLINE = "How things really work, built step by step"
 ORANGE = PEG_COLORS[0]
 INK = (28, 30, 40)
 YELLOW = (255, 206, 70)
@@ -111,21 +111,30 @@ def banner(out=None):
         d.line((x, 0, x, H), fill=(52, 66, 110), width=2)
     for y in range(0, H, 64):
         d.line((0, y, W, y), fill=(52, 66, 110), width=2)
-    # side machines (visible on TV / desktop, decorative only)
-    cam = IsoCam(img, (0, 0, 0), 120, (W * 0.06, H * 0.66))
-    parts.server_rack(cam, -0.6, -0.4, 0, 0.6, 0.7, 2.2, 1.0, busy=0.7)
-    parts.server_rack(cam, 0.2, -0.4, 0, 0.6, 0.7, 2.6, 2.0, busy=0.7, seed=2)
-    cam = IsoCam(img, (0, 0, 0), 120, (W * 0.94, H * 0.72))
-    parts.bank_building(cam, -0.8, -0.7, 1.6, 1.4, 2.3, (225, 228, 238), (120, 128, 150), 0.0, 0.6)
-    parts.gear(cam, (1.6, -0.5, 2.6), 0.6, 12, "y", 0.2, (255, 180, 70))
-    # safe area content
     sx0, sx1 = (W - 1546) / 2, (W + 1546) / 2
     sy0, sy1 = (H - 423) / 2, (H + 423) / 2
-    cam = IsoCam(img, (0, 0, 0), 150, (sx0 + 170, sy1 - 20))
-    kit.peg(cam, (0, 0, 0), ORANGE, "happy", 0.4, 2.3, (0.4, -0.2), seed=1, pose="wave")
-    f = font(150)
-    d.text((sx0 + 330, sy0 + 70), BRAND, font=f, fill=(255, 255, 255), stroke_width=10, stroke_fill=INK)
-    d.text((sx0 + 336, sy0 + 260), TAGLINE, font=font(64), fill=YELLOW)
+    # side machines: inside the desktop band (full width, 423 px high), outside the all-devices area
+    cam = IsoCam(img, (0, 0, 0), 95, ((sx0) / 2 + 20, sy1 - 30))
+    parts.server_rack(cam, -0.9, -0.4, 0, 0.6, 0.7, 2.6, 1.0, busy=0.7)
+    parts.server_rack(cam, -0.1, -0.4, 0, 0.6, 0.7, 3.0, 2.0, busy=0.7, seed=2)
+    cam = IsoCam(img, (0, 0, 0), 95, ((sx1 + W) / 2 - 10, sy1 - 40))
+    parts.bank_building(cam, -0.8, -0.7, 1.6, 1.4, 2.3, (225, 228, 238), (120, 128, 150), 0.0, 0.6)
+    parts.gear(cam, (1.3, -0.5, 2.9), 0.45, 12, "y", 0.2, (255, 180, 70))
+    # all-devices safe area (1546 x 423): mascot + title, with margins
+    m = 40
+    peg_h = 423 - 2 * m
+    scale = 2.3
+    zoom = peg_h / (0.52 * scale * 1.15)
+    cam = IsoCam(img, (0, 0, 0), zoom, (sx0 + m + 0.22 * zoom * scale, sy1 - m - 0.02 * zoom))
+    kit.peg(cam, (0, 0, 0), ORANGE, "happy", 0.4, scale, (0.4, -0.2), seed=1, pose="wave")
+    tx = sx0 + m + 0.62 * zoom * scale
+    max_w = sx1 - m - tx
+    ft = _fit_font(d, BRAND, max_w, 150)
+    fs = _fit_font(d, TAGLINE, max_w, 64)
+    block = ft.size + 24 + fs.size
+    ty = (sy0 + sy1) / 2 - block / 2
+    d.text((tx, ty), BRAND, font=ft, fill=(255, 255, 255), stroke_width=max(4, ft.size // 15), stroke_fill=INK)
+    d.text((tx, ty + ft.size + 24), TAGLINE, font=fs, fill=YELLOW)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     img.save(out)
     return out
