@@ -16,3 +16,15 @@ Older versions (before this rule) are pinned by commit hash only.
 | 4 | VID-004-v1 | atm_notes | How an ATM Knows Two Notes Are Stuck Together | 1:47 | 9 | `81de026` (Callout labels always drawn above the scene ...) | 2026-11-20 | delivered; perspective text + on-top labels. |
 
 Descriptions, captions and covers: `publishing/<slug>/post.md` and `cover.png` (always for the latest version).
+
+## Versions since the release-commit rule
+
+| # | Release ID | Slug | Title (YouTube) | Length | Fixes | Commit (render code) | Rendered | Status / notes |
+|---|---|---|---|---|---|---|---|---|
+| 1 | VID-001-v5 | elevator | Why Elevators Almost Never Fall | 2:09 | 11 | `aba98bc` [VID-001-v5] | 2026-11-20 | delivered; voice 1.2x, new CTA, cover frame at end |
+| 2 | VID-002-v2 | card_tap | Your Card Has No Battery. So How Does It Pay? | 1:54 | 8 | `c224b85` [VID-002-v2] | 2026-11-20 | delivered; perspective text, on-top labels, new CTA, cover at end |
+| 3 | VID-003-v2 | chatbot | Why AI Chatbots Type One Word at a Time | 2:00 | 8 | `d13c4a1` [VID-003-v2] | 2026-11-20 | delivered; same upgrades |
+| 4 | VID-004-v2 | atm_notes | How an ATM Knows Two Notes Are Stuck Together | 1:48 | 9 | `0f66980` [VID-004-v2] | 2026-11-20 | delivered; new CTA, cover at end |
+| 5 | VID-005-v1 | traffic_light | How the Traffic Light Knows You're Waiting | ~1:42 | 8 | `cc47131` [VID-005-v1] | rendering | idea #8 |
+| 6 | VID-006-v1 | microwave | Why Forks Spark in the Microwave | ~1:42 | 7 | `2cfd497` [VID-006-v1] | rendering | idea #4 |
+| 7 | VID-007-v1 | self_checkout | Who Is Judging You at Self-Checkout? | ~1:32 | 9 | `9ab4ad0` [VID-007-v1] | rendering | idea #3 |
