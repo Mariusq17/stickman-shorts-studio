@@ -34,6 +34,13 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   stay on the Python 2.5D renderer.
 - Deliver each finished MP4 immediately (SendUserFile); commit + push code before long renders.
 - Wants the process as automatic as possible so they can work on other things meanwhile.
+- Prefers working in fresh sessions per batch (cheaper/faster than one huge chat); expects the
+  `studio` skill + this file to carry all context between sessions.
+- Cares about token/credit usage: keep previews targeted (contact sheets at ss=1), avoid re-reading
+  big files needlessly, deliver partial results if a batch can't finish.
+- Feedback history: elevator v1 6.5/10 (static hook, keywords timing, empty background, ugly CTA)
+  -> v2 8.5-9 (narration-synced visuals, pop-ups) -> v3 (fixed see-through objects, 1.3x)
+  -> v4 9.5/10 (spring camera, motion blur, shadows, mascots v2, tracker, graphs).
 
 ## Commands
 ```bash

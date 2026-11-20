@@ -4,7 +4,7 @@ Status: idea -> scripted -> rendered -> delivered. Never delete entries; update 
 
 | # | Title | Status | Notes |
 |---|---|---|---|
-| 1 | Why do elevators almost never fall? | delivered (v4, 9.5/10) | `elevator` - reference video |
+| 1 | Why do elevators almost never fall? | delivered (v4, 9.5/10) | `elevator` - reference video. v4 was rendered at voice 1.3x; default is now 1.2x -> re-render when convenient. Owner wants a small script tweak (not specified yet - ask). |
 | 2 | How do you pay with a card in 1 second (with no battery in the card)? | idea | NFC field power, one-time code, tokenization, network -> bank |
 | 3 | "Unexpected item in bagging area": who is judging you at self-checkout? | idea | scanner, weight scale vs database, tolerances, cameras |
 | 4 | Why does a fork spark in the microwave? | idea | magnetron, waveguide, turntable, door mesh, sharp metal edges |

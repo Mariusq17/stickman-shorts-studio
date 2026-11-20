@@ -56,3 +56,13 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
 - Text on screen >= 0.045 x width; keep pops away from the subject (positions tl/tr/bc...).
 - Mascots are our own "Pegs" - never copy other channels' characters, names or visuals.
 - Tracker `fix` cue on every step that introduces a solution (target 8-12 fixes per video).
+- Cue matching is case-insensitive on word prefixes ("w:open" matches "Open"); pick a word that
+  appears once in the step, or the first occurrence is used.
+- A camera jump in `cams` with duration `0.01` becomes an automatic whip-pan + whoosh (used for
+  flashbacks); scenes can return `film_amount(tr, t)` for an old-film look.
+- Mascot behaviour per step: `pegs="<expr>"` and optional `pose="<pose>"` (see lib/characters.py).
+- Romanian Piper voice (ro_RO-mihai) needs Hugging Face; untested from the container. Videos are
+  English by default.
+- Full render with motion blur + shadows: ~20 min per 2 min video (4 cores); 2 jobs in parallel
+  are fine. Rendering costs no tokens - the token cost is writing scene code and checking previews.
+
