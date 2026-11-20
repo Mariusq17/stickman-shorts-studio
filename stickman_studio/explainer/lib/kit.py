@@ -56,8 +56,15 @@ def peg(cam, xyz, color, expr="neutral", t=0.0, scale=1.9, look=(0.0, 0.0), seed
     _draw_peg(cam, xyz, color, expr, pose, t, scale, look, react, seed, hat)
 
 
-def label(cam, xyz, text, size, fg=INK, bg=(255, 255, 255), pad=0.35, outline=None):
-    """Billboard text with a rounded plate, size in world units (scales with zoom)."""
+def label(cam, xyz, text, size, fg=INK, bg=(255, 255, 255), pad=0.35, outline=None, now=False):
+    """Billboard text with a rounded plate, size in world units (scales with zoom).
+    Labels are callouts: they are queued and drawn ON TOP of the whole scene (flush_labels, called by the
+    builder after scene.draw), so no object can ever hide them. now=True draws immediately."""
+    if not now:
+        if not hasattr(cam, "_labels"):
+            cam._labels = []
+        cam._labels.append((xyz, text, size, fg, bg, pad, outline))
+        return
     x, y = cam.p(*xyz)
     f = font(int(size * cam.s))
     tw = cam.d.textlength(text, font=f)
@@ -67,6 +74,13 @@ def label(cam, xyz, text, size, fg=INK, bg=(255, 255, 255), pad=0.35, outline=No
                             radius=h * 0.35, fill=bg, outline=outline or _shade(bg, -0.35),
                             width=max(1, int(0.01 * cam.s)))
     cam.d.text((x, y), text, font=f, fill=fg, anchor="mm")
+
+
+def flush_labels(cam):
+    """Draw every queued label above the scene (called by the builder after scene.draw)."""
+    for xyz, text, size, fg, bg, pad, outline in getattr(cam, "_labels", []):
+        label(cam, xyz, text, size, fg, bg, pad, outline, now=True)
+    cam._labels = []
 
 
 def path_point(pts, s):

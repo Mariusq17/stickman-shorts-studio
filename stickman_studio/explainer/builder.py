@@ -27,6 +27,7 @@ from ..painter import font
 from ..tts import synthesize_all
 from .iso import IsoCam
 from .lib.camera import CameraPath
+from .lib.kit import flush_labels
 from .lib.post import Post, average
 from .lib.widgets import draw_key, draw_pop, draw_tracker  # noqa: F401  (re-exported)
 from .timeline import Tracks
@@ -183,6 +184,7 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
         f, z = camp.at(t)
         cam = IsoCam(img, f, z * ss, (RW / 2, RH * 0.56))
         scene.draw(img, cam, tr, t, i, t - starts[i])
+        flush_labels(cam)          # callout labels always on top of every object
         if draw_overlays:
             draw_overlays(img, tr, t, RW, RH)
         return img.reduce(ss) if ss > 1 else img, (f, z)

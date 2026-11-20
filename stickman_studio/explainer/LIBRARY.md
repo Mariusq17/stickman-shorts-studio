@@ -20,7 +20,7 @@ explainer/
     widgets.py    keywords, progress tracker and all pop-ups (see below)
     parts.py      2.5D parts: bolt, panel_seams, led, button_panel, digital_display, gear, pipe, fan,
                   screen, crate, light_panel, phone, server_rack, bank_building
-    kit.py        scene helpers: gradient_bg, peg (mascot + contact shadow), label (billboard plate),
+    kit.py        scene helpers: gradient_bg, peg (mascot + contact shadow), label (billboard callout, always drawn on top of the scene),
                   path_point/sub_path, packet (glowing data dot on a path), cable, glow_dot, rings,
                   plate / plane_text (rectangles + perspective-correct text printed on a plane, auto-fit with max_w/max_h), strip, sheet (banknote/ticket
                   moving along a path, can be doubled or crumpled)

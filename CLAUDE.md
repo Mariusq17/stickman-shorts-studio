@@ -29,6 +29,8 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
 - Text ON objects (screens, cards, signs, labels on boxes) must be printed in the surface's perspective
   (`kit.plane_text`, warped onto the plane) and must fit inside the object (`max_w`/`max_h`); never
   screen-aligned text floating on a slanted surface. Check it in previews at close zoom.
+- Callout labels/remarks (names of parts, "SHOP'S BANK", "CASSETTE"...) must always be drawn ON TOP of
+  every object (`kit.label` is queued and flushed after the scene) - never hidden behind geometry.
 - Keywords only (no full subtitles), appearing exactly when spoken, readable ~1-1.5 s, smooth.
 - Loves: side pop-ups, arrows, progress bars/meters, graphs, counters, the FIXES tracker, smooth
   camera transitions. Dislikes: static screens while talking, objects showing through walls,
