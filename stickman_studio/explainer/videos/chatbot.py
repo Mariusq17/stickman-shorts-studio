@@ -314,7 +314,7 @@ class ChatScene:
         y0, d = BY0 + 0.05, (BY1 - BY0 - 0.1)
         cam.box(x, y0, z, w * k, d, h, color, top_color=shade(color, 0.05) if color != BLOCK else (246, 246, 252))
         if k > 0.6:
-            kit.plane_text(cam, "y", y0 + d + 0.002, x + w * k / 2, z + h * 0.5, word, 0.19 * k, txt)
+            kit.plane_text(cam, "y", y0 + d + 0.002, x + w * k / 2, z + h * 0.5, word, 0.15 * k, txt, max_w=bw(word) * k - 0.08)
         if ids is not None:
             kit.label(cam, (x + w / 2, y0 + d, z - 0.22), ids, 0.13, (255, 255, 255), BLUE)
 
@@ -549,7 +549,7 @@ class ChatScene:
         for i, (txt, col) in enumerate(lines):
             z = 1.6 - i * 0.3
             kit.plate(cam, "y", sy + 0.002, x0 + 0.34 + 0.25 * i, z - 0.12, x0 + 1.66 - 0.25 * (1 - i), z + 0.12, col)
-            kit.plane_text(cam, "y", sy + 0.003, x0 + 1.0 + 0.0 * i, z, txt, 0.1, INK)
+            kit.plane_text(cam, "y", sy + 0.003, x0 + 1.0 + 0.0 * i, z, txt, 0.075, INK, max_w=1.2)
         expr = tr.peg_expr(t)
         since = tr.since_step(t)
         react = max(0.0, 1.0 - since / 0.5) if expr == "shocked" else 0.0

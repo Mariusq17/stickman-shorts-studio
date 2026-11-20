@@ -151,11 +151,59 @@ def plate(cam, plane, c, u0, v0, u1, v1, color, outline=None, width=0.008):
     cam.poly([P(u0, v0), P(u1, v0), P(u1, v1), P(u0, v1)], color, outline, width if outline else 0)
 
 
-def plane_text(cam, plane, c, u, v, text, size, color):
-    """Text centred on a wall point (screen-aligned, sized in world units)."""
-    xyz = (u, c, v) if plane == "y" else ((c, u, v) if plane == "x" else (u, v, c))
-    x, y = cam.p(*xyz)
-    cam.d.text((x, y), text, font=font(int(size * cam.s)), fill=color, anchor="mm")
+def _plane_pt(plane, c, u, v):
+    return (u, c, v) if plane == "y" else ((c, u, v) if plane == "x" else (u, v, c))
+
+
+def plane_text(cam, plane, c, u, v, text, size, color, max_w=None, max_h=None):
+    """Text printed ON a surface: centred at plane point (u, v), cap height `size` in world units,
+    warped with the surface's perspective (follows the iso skew like a real label/screen).
+    max_w / max_h (world units) shrink the text so it always fits inside its object.
+    Planes: 'y' (wall facing +y, u = x), 'x' (wall facing +x, u = y), 'z' (floor/top, u = x, v = y).
+    On 'x' walls text runs towards -y so it reads left-to-right on screen."""
+    if not text or size <= 0:
+        return
+    px_per_unit = cam.s
+    fs = max(8, int(size * px_per_unit * 1.35))
+    f = font(fs)
+    bbox = f.getbbox(text)
+    tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    if tw <= 0 or th <= 0:
+        return
+    s = size / max(1, th)                       # world units per text pixel
+    if max_w is not None and tw * s > max_w:
+        s = max_w / tw
+    if max_h is not None and th * s > max_h:
+        s = max_h / th
+    pad = 2
+    layer = Image.new("L", (tw + 2 * pad, th + 2 * pad), 0)
+    ImageDraw.Draw(layer).text((pad - bbox[0], pad - bbox[1]), text, font=f, fill=255)
+    W_, H_ = layer.size
+    du = -1.0 if plane == "x" else 1.0           # reading direction along u
+    o = cam.p(*_plane_pt(plane, c, u, v))
+    pu = cam.p(*_plane_pt(plane, c, u + du, v))
+    pv = cam.p(*_plane_pt(plane, c, u, v + (1.0 if plane != "z" else -1.0)))
+    eu = (pu[0] - o[0], pu[1] - o[1])
+    ev = (pv[0] - o[0], pv[1] - o[1])
+    # forward: screen = o + (i - W/2)*s*eu - (j - H/2)*s*ev
+    a, b = eu[0] * s, -ev[0] * s
+    cc, d = eu[1] * s, -ev[1] * s
+    corners = []
+    for i, j in ((0, 0), (W_, 0), (W_, H_), (0, H_)):
+        corners.append((o[0] + a * (i - W_ / 2) + b * (j - H_ / 2), o[1] + cc * (i - W_ / 2) + d * (j - H_ / 2)))
+    x0, y0 = int(min(p[0] for p in corners)) - 1, int(min(p[1] for p in corners)) - 1
+    x1, y1 = int(max(p[0] for p in corners)) + 2, int(max(p[1] for p in corners)) + 2
+    if x1 - x0 < 2 or y1 - y0 < 2 or x1 < 0 or y1 < 0 or x0 > cam.img.width or y0 > cam.img.height:
+        return
+    det = a * d - b * cc
+    if abs(det) < 1e-9:
+        return
+    ia, ib, ic, id_ = d / det, -b / det, -cc / det, a / det
+    # inverse: (i, j) = inv * (screen - o) + (W/2, H/2), with screen = (x0 + X, y0 + Y)
+    ox, oy = x0 - o[0], y0 - o[1]
+    coeffs = (ia, ib, ia * ox + ib * oy + W_ / 2, ic, id_, ic * ox + id_ * oy + H_ / 2)
+    mask = layer.transform((x1 - x0, y1 - y0), Image.AFFINE, coeffs, resample=Image.BILINEAR)
+    cam.img.paste(tuple(color), (x0, y0, x1, y1), mask)
 
 
 def sheet(cam, pts, s, length, width, color, double=0.0, outline=None, crumple=0.0):

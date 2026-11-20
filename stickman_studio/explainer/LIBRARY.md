@@ -22,7 +22,7 @@ explainer/
                   screen, crate, light_panel, phone, server_rack, bank_building
     kit.py        scene helpers: gradient_bg, peg (mascot + contact shadow), label (billboard plate),
                   path_point/sub_path, packet (glowing data dot on a path), cable, glow_dot, rings,
-                  plate / plane_text (rectangles + text on wall planes), strip, sheet (banknote/ticket
+                  plate / plane_text (rectangles + perspective-correct text printed on a plane, auto-fit with max_w/max_h), strip, sheet (banknote/ticket
                   moving along a path, can be doubled or crumpled)
 ```
 

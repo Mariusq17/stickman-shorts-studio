@@ -69,8 +69,9 @@ def digital_display(cam, plane, c, u, v, text, w=0.36, h=0.18, color=(255, 120, 
     pts = [_on_plane(plane, c, u, v), _on_plane(plane, c, u + w, v), _on_plane(plane, c, u + w, v + h),
            _on_plane(plane, c, u, v + h)]
     cam.poly(pts, (24, 26, 34), (60, 64, 76), 0.01)
-    x, y = cam.p(*_on_plane(plane, c, u + w / 2, v + h / 2))
-    cam.d.text((x, y), text, font=font(int(h * 0.75 * cam.s)), fill=color, anchor="mm")
+    from .kit import plane_text
+    plane_text(cam, plane, c + (0.002 if plane != "z" else 0.0), u + w / 2, v + h / 2, text, h * 0.55, color,
+               max_w=w * 0.88, max_h=h * 0.7)
 
 
 def gear(cam, center, r, teeth=12, axis="y", angle=0.0, color=(150, 156, 168)):
@@ -144,7 +145,8 @@ def phone(cam, plane, c, u, v, w, h, t=0.0, screen_color=(40, 60, 110), lines=No
     plate(cam, plane, c, u + m, v + m * 1.6, u + w - m, v + h - m * 1.6, mix(body, screen_color, lit))
     plate(cam, plane, c, u + w * 0.38, v + h - m * 1.1, u + w * 0.62, v + h - m * 0.55, (10, 10, 14))
     for k, (text, color) in enumerate(lines or []):
-        plane_text(cam, plane, c, u + w / 2, v + h * (0.68 - 0.17 * k), text, w * (0.17 if k == 0 else 0.13), color)
+        plane_text(cam, plane, c, u + w / 2, v + h * (0.68 - 0.17 * k), text, w * (0.17 if k == 0 else 0.11), color,
+                   max_w=w * 0.82)
 
 
 def server_rack(cam, x, y, z, w=0.6, d=0.6, h=1.6, t=0.0, color=(52, 56, 70), busy=0.5, seed=0):

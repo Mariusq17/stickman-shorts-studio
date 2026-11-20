@@ -26,6 +26,9 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   every ~10 s, exaggerated comparisons, everyday "aha" payoff, "Congratulations, you just built a..."
   + joke + CTA "Follow for more".
 - Voice: Piper, **1.2x** (1.4 was too fast, 1.3 still a bit fast).
+- Text ON objects (screens, cards, signs, labels on boxes) must be printed in the surface's perspective
+  (`kit.plane_text`, warped onto the plane) and must fit inside the object (`max_w`/`max_h`); never
+  screen-aligned text floating on a slanted surface. Check it in previews at close zoom.
 - Keywords only (no full subtitles), appearing exactly when spoken, readable ~1-1.5 s, smooth.
 - Loves: side pop-ups, arrows, progress bars/meters, graphs, counters, the FIXES tracker, smooth
   camera transitions. Dislikes: static screens while talking, objects showing through walls,
@@ -41,6 +44,7 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
 - Feedback history: elevator v1 6.5/10 (static hook, keywords timing, empty background, ugly CTA)
   -> v2 8.5-9 (narration-synced visuals, pop-ups) -> v3 (fixed see-through objects, 1.3x)
   -> v4 9.5/10 (spring camera, motion blur, shadows, mascots v2, tracker, graphs).
+  card_tap (2026-11-20): liked it; text on objects was not in perspective / not fitting -> fixed in engine.
 
 ## Commands
 ```bash

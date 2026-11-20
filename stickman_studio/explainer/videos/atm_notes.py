@@ -295,7 +295,7 @@ class AtmScene:
             col = {2: (60, 170, 110), 3: (220, 120, 40), 4: (60, 170, 110)}.get(scr, (60, 120, 210))
             kit.plate(cam, "x", 1.604, 0.31, 2.0, 1.29, 2.45, col)
             kit.plane_text(cam, "x", 1.606, 0.8, 2.22, {0: "HELLO", 1: "60", 2: "TAKE CASH", 3: "RETRACTED", 4: "TAKE CARD"}.get(scr, ""),
-                           0.12 if scr != 1 else 0.2, (255, 255, 255))
+                           0.12 if scr != 1 else 0.2, (255, 255, 255), max_w=0.85)
             cam.box(1.6, 0.35, 1.7, 0.25, 0.75, 0.08, (60, 64, 78))
             for r in range(3):
                 for c in range(3):
@@ -385,7 +385,7 @@ class AtmScene:
                 cam.poly([(0.2, 1.0, z), (0.7, 1.0, z), (0.7, 1.45, z), (0.2, 1.45, z)], c, shade(c, -0.4), 0.005)
             cam.poly([(0.15, 1.5, 0.72), (0.75, 1.5, 0.72), (0.75, 1.5, 0.9), (0.15, 1.5, 0.9)], (200, 70, 70),
                      (120, 40, 40), 0.008)
-            kit.plane_text(cam, "y", 1.501, 0.45, 0.81, "REJECT", 0.075 * k, (255, 255, 255))
+            kit.plane_text(cam, "y", 1.501, 0.45, 0.81, "REJECT", 0.075 * k, (255, 255, 255), max_w=0.5)
             # flap at the junction
             ang = -0.9 if self._divert_now(tr, t) else 0.6
             fx, fz = 1.12, 1.12

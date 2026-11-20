@@ -65,6 +65,8 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
   English by default.
 - Cutaway machines: internals must sit near the open (+y) face or they hide behind the front panel; check
   the first preview specifically for "is the mechanism visible?".
+- Text on any surface: `kit.plane_text(cam, plane, c, u, v, text, size, color, max_w=..)` - it is warped
+  into the plane's perspective and shrunk to fit. Never `cam.d.text` on a 3D surface (only billboards/labels).
 - Use `lib/kit.py` helpers (peg, label, packet, sheet, plate/plane_text) instead of re-writing them.
 - Start rendering each video as soon as its previews pass (background `render <slug>`, max 2 at once)
   while writing the next scene - a 3-video batch then takes ~1.5 h of wall time instead of 2+.

@@ -304,7 +304,7 @@ class CardScene:
         kit.plate(cam, "y", TY + 0.003, TX0 + 0.09, z1 - 0.39, TX1 - 0.09, z1 - 0.11, scr)
         text = {1: "4.50", 2: "...", 3: "APPROVED", 4: "DECLINED", 5: "ONE CARD"}.get(disp, "")
         if text:
-            kit.plane_text(cam, "y", TY + 0.004, (TX0 + TX1) / 2, z1 - 0.25, text, 0.085 if len(text) > 5 else 0.13,
+            kit.plane_text(cam, "y", TY + 0.004, (TX0 + TX1) / 2, z1 - 0.25, text, 0.1 if len(text) > 5 else 0.14, max_w=TX1 - TX0 - 0.22, color=
                            (255, 255, 255))
         # contactless symbol
         cx, cz = (TX0 + TX1) / 2, z0 + 0.45
@@ -344,7 +344,7 @@ class CardScene:
             kit.plate(cam, "y", y + 0.001, cx - bw / 2 + 0.02, z1 - 0.12, cx + bw / 2 - 0.02, z1 - 0.08,
                       shade(color, 0.25))
             if body > 0.9:
-                kit.plane_text(cam, "y", y + 0.002, x0 + w * 0.3, z0 + h * 0.16, ".... 4821", 0.07 * k,
+                kit.plane_text(cam, "y", y + 0.002, x0 + w * 0.3, z0 + h * 0.16, ".... 4821", 0.055 * k, max_w=w * 0.45, color=
                                (230, 236, 255))
                 for r in (0.035, 0.06, 0.085):      # contactless mark
                     pts = [(x1 - 0.12 * k + math.cos(a) * r * k, y + 0.002, z1 - 0.2 * k + math.sin(a) * r * k)
