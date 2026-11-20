@@ -182,3 +182,56 @@ def bank_building(cam, x, y, w, d, h, color=(225, 228, 238), roof=(120, 128, 150
              _shade(roof, -0.4), 0.01)
     cam.poly([(x + w, y, top), (x + w, y + d, top), (x + w / 2, y + d, top + 0.45), (x + w / 2, y, top + 0.45)],
              _shade(roof, -0.15), _shade(roof, -0.4), 0.01)
+
+
+def car(cam, x, y, z=0.0, axis="x", color=(220, 70, 70), length=1.3, width=0.62, lights=False, t=0.0):
+    """Simple stylised car centred at (x, y), driving along +axis ('x' or 'y')."""
+    L, Wd = length, width
+    if axis == "x":
+        x0, y0, w, d = x - L / 2, y - Wd / 2, L, Wd
+    else:
+        x0, y0, w, d = x - Wd / 2, y - L / 2, Wd, L
+    for (wx, wy) in ((0.22, 0.0), (0.78, 0.0), (0.22, 1.0), (0.78, 1.0)):
+        cx = x0 + (wx * w if axis == "x" else wy * w)
+        cy = y0 + (wy * d if axis == "x" else wx * d)
+        cam.poly(cam.disc_pts((cx, cy, 0.11), 0.11, "y" if axis == "x" else "x", 12), (30, 30, 36))
+    cam.box(x0, y0, 0.08 + z, w, d, 0.24, color)
+    glass = (170, 205, 235)
+    if axis == "x":
+        cam.box(x0 + w * 0.25, y0 + 0.06, 0.32 + z, w * 0.45, d - 0.12, 0.2, mix(color, (255, 255, 255), 0.15))
+        cam.poly([(x0 + w * 0.3, y0 + d - 0.059, 0.36 + z), (x0 + w * 0.65, y0 + d - 0.059, 0.36 + z),
+                  (x0 + w * 0.65, y0 + d - 0.059, 0.49 + z), (x0 + w * 0.3, y0 + d - 0.059, 0.49 + z)], glass)
+        cam.poly([(x0 + w * 0.7 - 0.001, y0 + 0.1, 0.35 + z), (x0 + w * 0.7 - 0.001, y0 + d - 0.1, 0.35 + z),
+                  (x0 + w * 0.7 - 0.001, y0 + d - 0.1, 0.5 + z), (x0 + w * 0.7 - 0.001, y0 + 0.1, 0.5 + z)], glass)
+        if lights:
+            led(cam, (x0 + w, y0 + 0.12, 0.22 + z), (255, 240, 180), True, 0.04)
+            led(cam, (x0 + w, y0 + d - 0.12, 0.22 + z), (255, 240, 180), True, 0.04)
+    else:
+        cam.box(x0 + 0.06, y0 + d * 0.25, 0.32 + z, w - 0.12, d * 0.45, 0.2, mix(color, (255, 255, 255), 0.15))
+        cam.poly([(x0 + w - 0.059, y0 + d * 0.3, 0.36 + z), (x0 + w - 0.059, y0 + d * 0.65, 0.36 + z),
+                  (x0 + w - 0.059, y0 + d * 0.65, 0.49 + z), (x0 + w - 0.059, y0 + d * 0.3, 0.49 + z)], glass)
+        cam.poly([(x0 + 0.1, y0 + d * 0.7 - 0.001, 0.35 + z), (x0 + w - 0.1, y0 + d * 0.7 - 0.001, 0.35 + z),
+                  (x0 + w - 0.1, y0 + d * 0.7 - 0.001, 0.5 + z), (x0 + 0.1, y0 + d * 0.7 - 0.001, 0.5 + z)], glass)
+
+
+def signal_head(cam, x, y, z, face="y", states=(1, 0, 1), lamps=3, size=0.22, t=0.0):
+    """Traffic signal head (box) with lamps on its +y or +x face. states: brightness of (red, yellow, green);
+    lamps=2 hides the yellow lamp (early 'simplest' version)."""
+    n = 3
+    w, h, d = size * 1.4, size * n * 1.25 + 0.08, size * 1.1
+    if face == "y":
+        cam.box(x - w / 2, y - d, z, w, d, h, (40, 42, 50))
+    else:
+        cam.box(x - d, y - w / 2, z, d, w, h, (40, 42, 50))
+    cols = [(240, 50, 50), (255, 190, 40), (60, 220, 110)]
+    for i in range(n):
+        if lamps == 2 and i == 1:
+            continue
+        zz = z + h - 0.06 - size * 0.62 - i * size * 1.25
+        on = states[i]
+        c = mix((60, 62, 70), cols[i], 0.25 + 0.75 * on)
+        center = (x, y + 0.002, zz) if face == "y" else (x + 0.002, y, zz)
+        if on > 0.5:
+            r = size * 0.68
+            cam.poly(cam.disc_pts(center, r, face, 20), mix((255, 255, 255), cols[i], 0.45))
+        cam.poly(cam.disc_pts(center, size * 0.5, face, 20), c, _shade(c, -0.4), 0.008)
