@@ -77,6 +77,31 @@ def test_render_frames_every_action(fmt, theme):
         assert near_ink > 0.002       # the stickman (ink colored) is visible
 
 
+@pytest.mark.parametrize("fmt", ["vertical", "horizontal"])
+def test_feet_never_in_subtitle_band(fmt):
+    """With any camera move, the floor/feet must stay above the subtitle area."""
+    sc = _script()
+    st = RenderSettings(format=fmt, scale=0.25, antialias=False)
+    tl = uniform_timeline(sc)
+    r = SceneRenderer(sc, tl, st)
+    from stickman_studio.camera import camera_state
+    for sh, tm in zip(sc.shots, tl):
+        for f in (0.1, 0.5, 0.95):
+            lt = tm.duration * f
+            focus, zoom, _ = camera_state(sh.camera, lt, tm.duration, r.W, r.H, (r.x_side, r.floor - 0.6 * r.U),
+                                          1.0, center=r.stage_c, zoom_scale=r.zoom_scale)
+            floor_scr = (r.floor - focus[1]) * zoom + r.stage_c[1]
+            floor_scr = min(floor_scr, r.max_floor_screen)
+            assert floor_scr < r.subs.cy - r.subs.size * 0.5
+
+
+def test_antialias_output_size():
+    sc = _script()
+    st = RenderSettings(format="vertical", scale=0.2, antialias=True)
+    r = SceneRenderer(sc, uniform_timeline(sc), st)
+    assert r.render(0.5).size == st.size
+
+
 def test_full_resolution_sizes():
     assert RenderSettings(format="vertical").size == (1080, 1920)
     assert RenderSettings(format="horizontal").size == (1920, 1080)

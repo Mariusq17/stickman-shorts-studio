@@ -79,24 +79,69 @@ with st.sidebar:
     visual = st.selectbox("Temă vizuală", list(THEMES), format_func=lambda k: THEMES[k].label)
     voice_rate = st.slider("Viteză voce", 0.6, 1.6, 1.0, 0.05)
 
-    with st.expander("🔊 Voce & audio"):
-        tts_engine = st.selectbox("Motor TTS", ["auto", "pyttsx3", "procedural"],
-                                  format_func=lambda k: {"auto": "Auto (SAPI5/pyttsx3 → fallback procedural)",
-                                                         "pyttsx3": "pyttsx3 / Windows SAPI5",
-                                                         "procedural": "Voce procedurală (cartoon, mereu offline)"}[k])
+    with st.expander("🔊 Voce & audio", expanded=True):
+        from stickman_studio.tts import ENGINE_LABELS, available_engines
+        from stickman_studio.voices import CATALOG, DEFAULT_VOICE, local_voices, piper_installed
+        engines = available_engines(lang)
+        opts = ["auto", "piper", "sapi", "espeak", "procedural"]
+
+        def _eng_label(k):
+            if k == "auto":
+                return "Auto (cea mai bună voce disponibilă)"
+            ok, why = engines[k]
+            return f"{'✅' if ok else '⛔'} {ENGINE_LABELS[k]}"
+
+        tts_engine = st.selectbox("Motor voce (TTS)", opts, format_func=_eng_label)
+        best = next((k for k in opts[1:] if engines[k][0]), "procedural")
+        if tts_engine == "auto":
+            st.caption(f"Se va folosi: **{ENGINE_LABELS[best]}**")
+        if not engines["piper"][0]:
+            st.warning("Vocea naturală **Piper** nu e pregătită pentru limba aleasă "
+                       f"({engines['piper'][1]}). Descarc-o o singură dată (~60 MB), apoi merge offline.")
+            if piper_installed() and st.button("⬇️ Descarcă vocea Piper pentru " + lang.upper()):
+                from stickman_studio.voices import ensure_language
+                with st.spinner("Descarc modelul de voce..."):
+                    try:
+                        ensure_language(lang, log=lambda m: None)
+                        st.success("Vocea a fost descărcată. Gata de folosit offline!")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Descărcarea a eșuat: {e}")
+        piper_voice = None
+        pv = [v for v in local_voices() if v[1] == lang]
+        if pv and tts_engine in ("auto", "piper"):
+            names = [v[0] for v in pv]
+            default = names.index(DEFAULT_VOICE[lang]) if DEFAULT_VOICE.get(lang) in names else 0
+            piper_voice = st.selectbox("Voce Piper", names, index=default,
+                                       format_func=lambda k: CATALOG.get(k, (None, k))[1])
         voice_id = None
-        if tts_engine != "procedural":
+        if tts_engine == "sapi":
             voices = cached_voices()
             if voices:
                 labels = ["(automat după limbă)"] + [v["name"] for v in voices]
-                pick = st.selectbox("Voce", labels)
+                pick = st.selectbox("Voce de sistem", labels)
                 if pick != labels[0]:
                     voice_id = voices[labels.index(pick) - 1]["id"]
-            else:
-                st.caption("pyttsx3 nu a găsit voci — se va folosi vocea procedurală.")
-        voice_pitch = st.slider("Ton voce procedurală", 0.7, 1.5, 1.0, 0.05)
-        music = st.checkbox("Muzică de fundal", True)
-        music_volume = st.slider("Volum muzică", 0.0, 0.4, 0.12, 0.01)
+        voice_pitch = 1.0
+        if tts_engine in ("espeak", "procedural"):
+            voice_pitch = st.slider("Ton voce", 0.7, 1.5, 1.0, 0.05)
+        st.divider()
+        from stickman_studio.audio import MUSIC_STYLES
+        music_opts = ["auto", *MUSIC_STYLES, "file", "none"]
+        music_style = st.selectbox("Muzică de fundal", music_opts, format_func=lambda k: {
+            "auto": "Auto (după nivelul de energie)", "file": "🎵 Fișierul meu (mp3/wav)",
+            "none": "Fără muzică"}.get(k, MUSIC_STYLES.get(k, k)))
+        music_file = None
+        if music_style == "file":
+            up_m = st.file_uploader("Încarcă muzica (o folosești doar dacă ai drepturi asupra ei)",
+                                    type=["mp3", "wav", "ogg", "m4a", "flac"])
+            if up_m is not None:
+                os.makedirs(os.path.join(OUT_DIR, "music"), exist_ok=True)
+                music_file = os.path.join(OUT_DIR, "music", up_m.name)
+                with open(music_file, "wb") as f:
+                    f.write(up_m.getbuffer())
+        music = music_style != "none"
+        music_volume = st.slider("Volum muzică", 0.0, 0.4, 0.12, 0.01, disabled=not music)
         sfx = st.checkbox("Efecte sonore (SFX)", True)
         fit = st.checkbox("Potrivește automat durata la țintă", True)
 
@@ -106,6 +151,8 @@ with st.sidebar:
         quality = st.selectbox("Rezoluție", [1.0, 0.75, 0.5],
                                format_func=lambda x: {1.0: "100% (Full HD)", 0.75: "75%", 0.5: "50% (draft rapid)"}[x])
         crf = st.slider("Calitate H.264 (CRF, mai mic = mai bun)", 16, 30, 21)
+        antialias = st.checkbox("Linii netede (antialiasing 2x)", True,
+                                help="Calitate vizuală mult mai bună; randarea durează ~2x mai mult.")
 
     with st.expander("🤖 AI opțional (Ollama local / API Key)"):
         provider = st.selectbox("Furnizor", ["none", "ollama", "openai"],
@@ -124,7 +171,8 @@ def current_settings() -> RenderSettings:
                           voice_pitch=float(voice_pitch), target_duration=float(duration),
                           fit_to_target=fit, energy=int(energy), music=music,
                           music_volume=float(music_volume), sfx=sfx, subtitles=subtitles,
-                          progress_bar=progress_bar, crf=int(crf))
+                          progress_bar=progress_bar, crf=int(crf), antialias=antialias,
+                          music_style=music_style, music_file=music_file, piper_voice=piper_voice)
 
 
 # ----------------------------------------------------------------- main
@@ -264,6 +312,9 @@ if st.button("🎥 Generează Video Complet (MP4)", type="primary"):
         ss["last_info"] = (f"✅ Gata în {time.time() - t0:.0f}s — {res.duration:.1f}s video, "
                            f"{res.size[0]}x{res.size[1]} @ {res.fps}fps, {len(res.shot_durations)} shot-uri, "
                            f"voce: {res.tts_engine}")
+        if res.tts_engine == "procedural":
+            st.warning("Video-ul a folosit vocea procedurală (doar sunete, fără cuvinte). "
+                       "Descarcă vocea Piper din „Voce & audio” pentru o voce naturală.")
         try:
             from stickman_studio.pipeline import verify_video
             v = verify_video(res.path)

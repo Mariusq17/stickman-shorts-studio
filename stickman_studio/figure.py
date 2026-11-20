@@ -175,12 +175,30 @@ def draw_stickman(p: Painter, sk, ink, face_fill, expression, mouth_open, t, fx=
     U = sk.unit
     lw = lw or U * 0.028
     pts = sk.pts
-    # legs
-    for side in ("l", "r"):
-        p.line([pts["hip"], pts[side + "_knee"], pts[side + "_foot"]], ink, lw)
-    p.line([pts["hip"], pts["neck"]], ink, lw)
-    # head
     hc, hr = sk.head_c, sk.head_r
+    pose = sk.pose
+    prof = clamp(pose.get("profile", 0.0))
+    facing = 1 if pose.get("facing", 1) >= 0 else -1
+
+    def foot_tip(side):
+        fx_, fy_ = pts[side + "_foot"]
+        out = (-1 if side == "l" else 1) * (1 - prof) + facing * prof
+        return (fx_ + out * U * 0.055, fy_ + U * 0.004)
+
+    def skeleton(color, w, head_w):
+        for side in ("l", "r"):
+            p.line([pts["hip"], pts[side + "_knee"], pts[side + "_foot"], foot_tip(side)], color, w)
+        p.line([pts["hip"], pts["neck"]], color, w)
+        if head_w:
+            p.circle(hc, hr + head_w / 2, fill=color)
+
+    halo = getattr(theme, "bg", None)
+    if halo is not None:      # thin background-colored outline: reads well over any decor
+        skeleton(halo, lw * 1.9, lw * 1.0)
+        for side in ("l", "r"):
+            p.line([pts["neck"], pts[side + "_elbow"], pts[side + "_hand"]], halo, lw * 1.9)
+    skeleton(ink, lw, 0)
+    # head
     p.circle(hc, hr, fill=face_fill, outline=ink, width=lw * 0.85)
     expr = expression
     if fx.get("stars"):

@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw
 
 from .camera import camera_state
 from .config import RenderSettings
-from .easing import clamp, ease_out_back, ease_out_cubic, lerp
+from .easing import clamp, ease_in_out_cubic, ease_out_back, ease_out_cubic, lerp
 from .figure import draw_stickman, draw_mic
 from .painter import Painter, font
 from .props import PROPS
@@ -22,7 +22,8 @@ from .script_model import Script
 from .subtitles import SubtitleRenderer, chunk_words
 
 SIDE_SLOTS = ("side", "side_floor", "cta")
-BLEND_T = 0.22
+BLEND_T = 0.28
+SLIDE_T = 0.45
 
 
 @dataclass
@@ -67,7 +68,9 @@ class SceneRenderer:
         self.script = script
         self.tl = timeline
         self.st = settings
-        self.W, self.H = settings.size
+        self.out_size = settings.size
+        self.ss = 2 if getattr(settings, "antialias", False) else 1
+        self.W, self.H = self.out_size[0] * self.ss, self.out_size[1] * self.ss
         self.th = settings.theme_obj
         self.fmt = settings.format
         self.energy = 0.6 + 0.2 * (clamp(settings.energy, 1, 5) - 1)   # 0.6 .. 1.4
@@ -79,19 +82,26 @@ class SceneRenderer:
             self.floor = 0.62 * H
             self.stage_c = (0.5 * W, 0.40 * H)
             self.zoom_scale = 0.8
+            self.max_floor_screen = 0.665 * H
+            self.prop_boost = 1.25
             self.x_solo, self.x_side, self.side_x = 0.5 * W, 0.33 * W, 0.76 * W
             self.cta_pos = (0.61 * W, self.floor - 0.98 * self.U)
             self.above_side = (0.68 * W, self.floor - 1.12 * self.U)
         else:
-            self.U = 0.54 * H
-            self.floor = 0.77 * H
-            self.stage_c = (0.5 * W, 0.45 * H)
-            self.zoom_scale = 0.8
-            self.x_solo, self.x_side, self.side_x = 0.5 * W, 0.36 * W, 0.66 * W
-            self.cta_pos = (0.66 * W, self.floor - 0.86 * self.U)
-            self.above_side = (0.78 * W, self.floor - 0.98 * self.U)
-        self.lw = self.U * 0.028
+            # landscape: compact full-body stage on the left, big props on the right,
+            # subtitles in their own band on the floor
+            self.U = 0.50 * H
+            self.floor = 0.745 * H
+            self.stage_c = (0.5 * W, 0.42 * H)
+            self.zoom_scale = 0.55
+            self.max_floor_screen = 0.79 * H
+            self.prop_boost = 1.6
+            self.x_solo, self.x_side, self.side_x = 0.45 * W, 0.33 * W, 0.64 * W
+            self.cta_pos = (0.64 * W, self.floor - 0.62 * self.U)
+            self.above_side = (0.70 * W, self.floor - 0.95 * self.U)
+        self.lw = self.U * 0.030
         self.margin = int(0.05 * max(W, H))
+        self.floor_col = mix(self.th.bg2, self.th.ink, 0.07) if not self.th.grid else mix(self.th.bg2, (0, 0, 0), 0.15)
         self.bg = self._make_background()
         self.subs = SubtitleRenderer(W, H, self.fmt, self.th)
         self._chunks = [chunk_words(s.words, s.word_times) if s.words else [] for s in timeline]
@@ -101,33 +111,132 @@ class SceneRenderer:
 
     # ------------------------------------------------------------------ setup
     def _make_background(self) -> Image.Image:
+        """Pre-rendered 'room' backdrop (wall + window + picture + shelf). The floor and the
+        floor-standing set pieces are drawn in world space so they follow the camera."""
         m = self.margin
         W, H = self.W + 2 * m, self.H + 2 * m
         th = self.th
-        img = Image.new("RGB", (W, H), th.bg)
-        arr = np.asarray(img).astype(np.float32)
-        yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-        cx, cy = W * 0.5, H * 0.45
-        dist = np.sqrt(((xx - cx) / W) ** 2 + ((yy - cy) / H) ** 2)
-        k = np.clip(dist * 1.6, 0, 1)[..., None]
-        bg2 = np.array(th.bg2, dtype=np.float32)
-        arr = arr * (1 - k * 0.85) + bg2 * (k * 0.85)
+        top = np.array(th.bg, dtype=np.float32)
+        bot = np.array(th.bg2, dtype=np.float32)
+        yy = np.linspace(0, 1, H, dtype=np.float32)[:, None, None]
+        arr = top * (1 - yy * 0.7) + bot * (yy * 0.7)
+        arr = np.broadcast_to(arr, (H, W, 3)).copy()
+        # soft spotlight behind the stage
+        xx = np.linspace(-1, 1, W, dtype=np.float32)[None, :]
+        yv = np.linspace(-1, 1, H, dtype=np.float32)[:, None]
+        spot = np.clip(1 - np.sqrt((xx * 0.9) ** 2 + ((yv + 0.15) * 1.1) ** 2), 0, 1)[..., None]
+        light = np.array([255, 255, 255], dtype=np.float32) if th.key == "light" else \
+            np.array(th.accent2, dtype=np.float32)
+        arr = arr * (1 - spot * 0.10) + light * (spot * 0.10)
         img = Image.fromarray(arr.clip(0, 255).astype(np.uint8))
         d = ImageDraw.Draw(img)
+        S = min(W, H)
+        lw = max(2, int(S * 0.006))
+        line = mix(th.bg, th.ink, 0.22)
+        fill = mix(th.bg, th.ink, 0.05)
         if th.grid:
-            step = int(min(W, H) / 14)
+            step = int(S / 14)
             for x in range(0, W, step):
                 d.line([(x, 0), (x, H)], fill=th.grid, width=1 if (x // step) % 4 else 2)
             for y in range(0, H, step):
                 d.line([(0, y), (W, y)], fill=th.grid, width=1 if (y // step) % 4 else 2)
+            fill = None
+            line = mix(th.bg, th.ink, 0.45)
+        vertical = self.fmt == "vertical"
+        fy = self.floor + m
+        # ---- window
+        if vertical:
+            wx0, wy0, wx1, wy1 = 0.06 * W, 0.20 * H, 0.36 * W, 0.40 * H
         else:
-            rnd = random.Random(11)
-            dot = tuple(int(lerp(a, b, 0.5)) for a, b in zip(th.bg, th.bg2))
-            for _ in range(70):
-                x, y = rnd.uniform(0, W), rnd.uniform(0, H * 0.6)
-                r = rnd.uniform(2, 6) * W / 1200
-                d.ellipse((x - r, y - r, x + r, y + r), fill=dot)
+            wx0, wy0, wx1, wy1 = 0.05 * W, 0.12 * H, 0.21 * W, 0.50 * H
+        sky_top = mix(th.accent2, (255, 255, 255), 0.45) if th.key == "light" else \
+            mix(th.bg, (20, 30, 80), 0.6) if th.key == "dark" else None
+        sky_bot = mix(th.accent2, (255, 255, 255), 0.75) if th.key == "light" else \
+            mix(th.bg, (60, 50, 120), 0.5) if th.key == "dark" else None
+        if sky_top:
+            for k in range(int(wy1 - wy0)):
+                c = mix(sky_top, sky_bot, k / max(1, wy1 - wy0))
+                d.line([(wx0, wy0 + k), (wx1, wy0 + k)], fill=c)
+            if th.key == "dark":
+                d.ellipse((wx1 - 0.10 * S, wy0 + 0.04 * S, wx1 - 0.04 * S, wy0 + 0.10 * S), fill=(245, 240, 210))
+                rnd = random.Random(2)
+                for _ in range(14):
+                    sx, sy = rnd.uniform(wx0, wx1), rnd.uniform(wy0, wy1)
+                    d.ellipse((sx - 2, sy - 2, sx + 2, sy + 2), fill=(230, 230, 255))
+            else:
+                for cx, cy, r in ((0.35, 0.3, 0.05), (0.62, 0.55, 0.04)):
+                    x = wx0 + (wx1 - wx0) * cx
+                    y = wy0 + (wy1 - wy0) * cy
+                    for dx, rr in ((-1.0, 0.8), (0, 1.0), (1.0, 0.75)):
+                        d.ellipse((x + dx * r * S - rr * r * S, y - rr * r * S * 0.7,
+                                   x + dx * r * S + rr * r * S, y + rr * r * S * 0.7), fill=(255, 255, 255))
+                # distant hills
+                d.polygon([(wx0, wy1), (wx0, wy1 - 0.25 * (wy1 - wy0)), (wx0 + 0.4 * (wx1 - wx0), wy1 - 0.4 * (wy1 - wy0)),
+                           (wx1, wy1 - 0.2 * (wy1 - wy0)), (wx1, wy1)], fill=mix(th.good, (255, 255, 255), 0.45))
+        d.rectangle((wx0, wy0, wx1, wy1), outline=line, width=lw * 2)
+        d.line([((wx0 + wx1) / 2, wy0), ((wx0 + wx1) / 2, wy1)], fill=line, width=lw)
+        d.line([(wx0, (wy0 + wy1) / 2), (wx1, (wy0 + wy1) / 2)], fill=line, width=lw)
+        d.rectangle((wx0 - 0.015 * S, wy1, wx1 + 0.015 * S, wy1 + 0.018 * S), fill=fill or th.bg, outline=line, width=lw)
+        # ---- framed picture
+        if vertical:
+            px0, py0, px1, py1 = 0.68 * W, 0.22 * H, 0.92 * W, 0.34 * H
+        else:
+            px0, py0, px1, py1 = 0.80 * W, 0.14 * H, 0.94 * W, 0.36 * H
+        d.rectangle((px0, py0, px1, py1), fill=fill or th.bg, outline=line, width=lw * 2)
+        ix0, iy0, ix1, iy1 = px0 + 0.02 * S, py0 + 0.02 * S, px1 - 0.02 * S, py1 - 0.02 * S
+        d.polygon([(ix0, iy1), (ix0 + (ix1 - ix0) * 0.35, iy0 + (iy1 - iy0) * 0.3),
+                   (ix0 + (ix1 - ix0) * 0.6, iy0 + (iy1 - iy0) * 0.65), (ix0 + (ix1 - ix0) * 0.78, iy0 + (iy1 - iy0) * 0.45),
+                   (ix1, iy1)], fill=mix(th.bg, th.accent2, 0.35), outline=line)
+        r = 0.018 * S
+        d.ellipse((ix1 - 3 * r, iy0 + r, ix1 - r, iy0 + 3 * r), fill=mix(th.bg, th.accent, 0.6))
+        # ---- shelf with books
+        if vertical:
+            sx0, sx1, sy = 0.62 * W, 0.96 * W, 0.42 * H
+        else:
+            sx0, sx1, sy = 0.76 * W, 0.98 * W, 0.47 * H
+        d.rectangle((sx0, sy, sx1, sy + 0.012 * S), fill=line)
+        rnd = random.Random(4)
+        x = sx0 + 0.02 * S
+        cols = [th.bad, th.accent, th.accent2, th.good]
+        while x < sx1 - 0.06 * S:
+            bw = rnd.uniform(0.018, 0.03) * S
+            bh = rnd.uniform(0.06, 0.09) * S
+            c = mix(th.bg, cols[rnd.randrange(4)], 0.45)
+            d.rectangle((x, sy - bh, x + bw, sy), fill=c, outline=line, width=max(1, lw // 2))
+            x += bw + 0.004 * S
+        d.ellipse((sx1 - 0.07 * S, sy - 0.05 * S, sx1 - 0.02 * S, sy), fill=mix(th.bg, th.good, 0.5), outline=line,
+                  width=max(1, lw // 2))
+        # baseboard hint (the world floor covers below it)
+        d.rectangle((0, fy - 0.01 * S, W, H), fill=self.floor_col)
         return img
+
+    def _draw_set(self, p):
+        """Floor + floor-standing set pieces in world space (they follow the camera)."""
+        th, W, H, U = self.th, self.W, self.H, self.U
+        f = self.floor
+        p.rect(-W, f, 2 * W, 3 * H, fill=self.floor_col)
+        p.line([(-W, f), (2 * W, f)], mix(th.floor, th.bg, 0.2), self.lw * 0.55, caps=False)
+        # perspective planks
+        plank = mix(self.floor_col, th.ink, 0.10)
+        for k in range(1, 6):
+            y = f + (k ** 1.6) * U * 0.035
+            p.line([(-W, y), (2 * W, y)], plank, max(1.0, self.lw * 0.18), caps=False)
+        # plant (left) and floor lamp (right)
+        vertical = self.fmt == "vertical"
+        px = (0.08 if vertical else 0.08) * W
+        pot_w = U * 0.12
+        leaf = mix(th.good, th.bg, 0.25)
+        for k, ang in enumerate((-35, -12, 10, 32, -55, 52)):
+            a = math.radians(ang)
+            L = U * (0.32 - 0.03 * (k % 3))
+            tip = (px + math.sin(a) * L, f - U * 0.14 - math.cos(a) * L)
+            p.polygon([(px, f - U * 0.14), (tip[0] - U * 0.04, (tip[1] + f - U * 0.14) / 2), tip,
+                       (tip[0] + U * 0.04, (tip[1] + f - U * 0.14) / 2)], fill=leaf, outline=mix(leaf, th.ink, 0.3),
+                      width=self.lw * 0.25)
+        p.polygon([(px - pot_w / 2, f - U * 0.15), (px + pot_w / 2, f - U * 0.15), (px + pot_w * 0.38, f),
+                   (px - pot_w * 0.38, f)], fill=mix(th.bad, th.bg, 0.35), outline=mix(th.bg, th.ink, 0.5),
+                  width=self.lw * 0.35)
+
 
     # --------------------------------------------------------------- helpers
     def shot_index(self, t: float) -> int:
@@ -174,10 +283,13 @@ class SceneRenderer:
         slots, char_x = self._layout(shot)
 
         pose, fx = action_pose(shot.action, lt, d, self.energy)
-        if i > 0 and lt < BLEND_T:
+        body_x = char_x
+        if i > 0 and lt < SLIDE_T:
             _, prev_x = self._layout(self.script.shots[i - 1])
-            if abs(prev_x - char_x) < 1:
+            if lt < BLEND_T:
                 pose = lerp_pose(self._end_pose_of(i - 1), pose, ease_out_cubic(lt / BLEND_T))
+            if abs(prev_x - char_x) > 1:   # glide to the new mark instead of teleporting
+                body_x = lerp(prev_x, char_x, ease_in_out_cubic(lt / SLIDE_T))
         amp = tm.amp(lt)
         speaking = lt <= tm.speech_end + 0.05
         mouth = clamp(amp * 1.4) if speaking else 0.0
@@ -185,7 +297,7 @@ class SceneRenderer:
         pose["head"] += 3.0 * amp * math.sin(lt * 7.0)
         pose["y"] += 0.004 * amp
 
-        rig = StickmanRig(U, char_x, self.floor)
+        rig = StickmanRig(U, body_x, self.floor)
         sk = rig.solve(pose)
         fxp = char_x
         if shot.guest:
@@ -198,6 +310,10 @@ class SceneRenderer:
         zs = self.zoom_scale * (0.45 if any(s_ == "cta" for _, s_ in slots) else 1.0)
         focus, zoom, shake = camera_state(shot.camera, lt, d, W, H, focus_pt, self.energy,
                                           center=self.stage_c, zoom_scale=zs)
+        # never let the camera push the feet into the subtitle band
+        floor_scr = (self.floor - focus[1]) * zoom + self.stage_c[1]
+        if floor_scr > self.max_floor_screen:
+            focus = (focus[0], focus[1] + (floor_scr - self.max_floor_screen) / zoom)
 
         # background with parallax + shake (screen space)
         m = self.margin
@@ -207,21 +323,20 @@ class SceneRenderer:
         img = self.bg.crop((ox, oy, ox + W, oy + H))
         p = Painter(img, focus=focus, zoom=zoom, anchor=sc, shake=shake)
 
-        # floor + shadow
-        p.line([(-W, self.floor), (2 * W, self.floor)], th.floor, self.lw * 0.6, caps=False)
+        # floor, set pieces + shadow
+        self._draw_set(p)
         hip = sk.pts["hip"]
         lift = clamp(1 - (self.floor - max(sk.pts["l_foot"][1], sk.pts["r_foot"][1])) / (0.5 * U))
-        p.ellipse((hip[0], self.floor + U * 0.012), U * 0.16 * (0.5 + 0.5 * lift), U * 0.022,
-                  fill=th.bg2)
+        p.ellipse((hip[0], self.floor + U * 0.012), U * 0.17 * (0.5 + 0.5 * lift), U * 0.026,
+                  fill=mix(self.floor_col, th.ink, 0.18))
 
-        header_on = bool((self.script.hook_text or self.script.title or "").strip()) and \
-            (self.fmt == "vertical" or i == 0)
+        header_on = bool((self.script.hook_text or self.script.title or "").strip())
         if not header_on:
             min_screen_y = 0.05 * H
         elif self.fmt == "vertical":
             min_screen_y = (0.215 if i == 0 else 0.15) * H
         else:
-            min_screen_y = 0.20 * H
+            min_screen_y = (0.18 if i == 0 else 0.11) * H
 
         def below_header(x, y, half_h):
             ymin = (min_screen_y + half_h * U * zoom - p.ay) / zoom + p.fy
@@ -273,9 +388,9 @@ class SceneRenderer:
                 kw = {"label": self.labels["monday"]}
             if slot == "rain":
                 kw["area"] = (-0.1 * W, -0.15 * H, 1.1 * W, self.floor + 0.05 * H)
-            boost = 1.25 if slot in ("side", "cta", "side_floor", "above_side") else 1.0
-            if slot == "cta" and self.fmt == "vertical":
-                boost = 1.15
+            boost = self.prop_boost if slot in ("side", "cta", "side_floor", "above_side") else 1.0
+            if slot == "cta":
+                boost = 1.15 if self.fmt == "vertical" else 1.75
             s = U * max(0.05, k) * boost
             fn(p, x, y, s, age, th, self.lw * max(0.3, min(k, 1.0)), **kw)
 
@@ -334,6 +449,8 @@ class SceneRenderer:
             dr.rectangle((0, 0, int(W * clamp(t / self.total)), bh), fill=th.accent)
         if self.st.subtitles and tm.words:
             self.subs.draw(dr, tm.words, tm.word_times, lt, self._chunks[i])
+        if self.ss > 1:
+            img = img.reduce(self.ss)
         return img
 
     # ------------------------------------------------------------- overlays
@@ -342,8 +459,6 @@ class SceneRenderer:
         if not title:
             return
         W, H, th = self.W, self.H, self.th
-        if self.fmt == "horizontal" and i > 0:
-            return
         big = i == 0
         k = ease_out_back(lt / 0.4) if big else 1.0
         size = int((W * 0.068 if self.fmt == "vertical" else H * 0.06) * (1.0 if big else 0.6) * max(0.2, k))
@@ -361,7 +476,7 @@ class SceneRenderer:
             lines.append(cur)
         lines = lines[:3]
         lh = size * 1.18
-        cy = H * ((0.135 if big else 0.105) if self.fmt == "vertical" else 0.10)
+        cy = H * ((0.135 if big else 0.105) if self.fmt == "vertical" else (0.10 if big else 0.065))
         bw = max(dr.textlength(l, font=f) for l in lines) + size * 0.9
         bh = lh * len(lines) + size * 0.5
         box = (W / 2 - bw / 2, cy - bh / 2, W / 2 + bw / 2, cy + bh / 2)
@@ -419,6 +534,10 @@ class SceneRenderer:
 def mic_drop_hit_time(d: float) -> float:
     from .rig import MIC_RELEASE
     return min(MIC_RELEASE, 0.45 * d) + 0.32
+
+
+def mix(a, b, t):
+    return tuple(int(round(x + (y - x) * t)) for x, y in zip(a, b))
 
 
 def _labels(lang: str) -> dict:

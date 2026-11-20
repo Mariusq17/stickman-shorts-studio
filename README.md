@@ -13,7 +13,7 @@ Generator **100% offline** de videoclipuri animate 2D cu stickmeni: scripturi am
 1. Instalează **Python 3.10 – 3.13** de pe [python.org](https://www.python.org/downloads/) și bifează **„Add python.exe to PATH”** la instalare.
 2. Descarcă / clonează acest folder.
 3. Dă **dublu-click pe `START_STUDIO.bat`**.
-   - Prima dată creează automat un mediu virtual (`venv`) și instalează `requirements.txt` (câteva minute).
+   - Prima dată creează automat un mediu virtual (`venv`), instalează `requirements.txt` și **descarcă o singură dată vocile naturale Piper** (engleză + română, ~60–120 MB fiecare) în `models/piper`.
    - La pornirile următoare deschide direct aplicația.
 4. Se deschide browserul la **http://localhost:8501**. Ca să oprești aplicația, închide fereastra neagră.
 
@@ -53,8 +53,8 @@ streamlit run app.py
 | FPS | 24 / 30 |
 | Temă vizuală | Light clasic · Dark Mode · Blueprint |
 | Viteză voce | 0.6× – 1.6× |
-| Voce & audio | motor TTS, voce SAPI5, ton, muzică, volum, SFX, potrivire automată a duratei |
-| Avansat | subtitrări, bară de progres, rezoluție (100% / 75% / 50% draft), calitate CRF |
+| Voce & audio | motor voce (Piper / SAPI5 / eSpeak-NG / procedural) cu starea fiecăruia, alegerea vocii, buton „Descarcă vocea Piper”, stil muzică (Lo-fi / Chill-pop / Upbeat / fișierul tău mp3-wav / fără), volum, SFX, potrivire automată a duratei |
+| Avansat | subtitrări, bară de progres, rezoluție (100% / 75% / 50% draft), calitate CRF, linii netede (antialiasing 2x) |
 | AI opțional | Ollama local sau orice API compatibil OpenAI (cu API key) — complet opțional |
 
 **Zona principală:**
@@ -92,11 +92,20 @@ Opțiuni utile: `--topic "subiect propriu"`, `--visual dark|light|blueprint`, `-
 - Calibrare automată: ~2.45 cuvinte/secundă → **~147 cuvinte / 11 shot-uri la 60s**, **~440–460 cuvinte / ~33 shot-uri la 180s**. Shot-urile lungi sunt tăiate pe propoziții (jump-cut pe punchline).
 - CTA integrat în poveste + animație dedicată (`cta_point` spre butonul Subscribe/Like/Comment/Save).
 
-### Voce, sincronizare și subtitrări (`tts.py`, `audio.py`, `subtitles.py`, `pipeline.py`)
-- **TTS offline** prin `pyttsx3` (Windows SAPI5; rulează într-un subproces izolat ca să nu blocheze aplicația). Dacă nu există voci (ex. Linux headless fără placă de sunet), se trece **automat** pe un **sintetizator vocal procedural** (formanți, NumPy pur), cu timpi exacți pe cuvânt.
-- Durata fiecărui shot = durata exactă a vocii lui (+ un mic „beat” de reacție); viteza vocii se ajustează automat ca videoclipul să se apropie de durata țintă.
-- Muzică de fundal procedurală cu **ducking** sub voce + efecte sonore sintetizate (pop, boing, thud, whoosh, sting, ding, cash...).
-- **Subtitrări mari**, câte 1–3 cuvinte, cu **cuvântul activ evidențiat** și efect „pop”, poziționate în zona sigură (deasupra UI-ului TikTok/Reels, departe de butoanele din dreapta).
+### Voce, sincronizare și subtitrări (`tts.py`, `voices.py`, `audio.py`, `subtitles.py`, `pipeline.py`)
+- **Lanț automat de motoare TTS, toate offline:**
+  1. **Piper** — voce neurală naturală (EN: Ryan / Lessac, RO: Mihai). Modelul se descarcă **o singură dată**, apoi rulează local, fără internet.
+  2. **Windows SAPI5** (prin `pyttsx3`, într-un subproces izolat) — vocile instalate în Windows.
+  3. **eSpeak-NG** — robotic, dar clar; suportă și româna.
+  4. **Voce procedurală** — doar ca ultimă soluție (sunete, nu cuvinte); aplicația te avertizează dacă ajunge să o folosească.
+- Inteligibilitatea vocii este verificată automat în teste cu un recunoscător vocal offline (pocketsphinx): Piper este transcris corect în proporție de peste 80%, chiar și cu muzica pe fundal.
+- Durata fiecărui shot = durata exactă a vocii lui (+ un mic „beat” de reacție); viteza vocii se ajustează automat ca videoclipul să se apropie de durata țintă (maxim 180s).
+- **Muzică de fundal** generată din cod, care se repetă fără întrerupere: acorduri reale (vi–IV–I–V), pian electric, pad, bas, tobe discrete și reverb, în 3 stiluri, cu **ducking** sub voce. Poți folosi și **propria muzică** (mp3/wav/ogg).
+- Efecte sonore discrete (max. unul pe shot) și normalizarea volumului vocii.
+- **Subtitrări mari**, câte 1–3 cuvinte, cu **cuvântul activ evidențiat** și efect „pop”, poziționate în zona sigură; camera nu împinge niciodată personajul peste subtitrări.
+
+### Scenă
+- Decor de cameră pentru fiecare temă vizuală (fereastră cu cer/lună, tablou, raft cu cărți, plantă, podea cu perspectivă), layout dedicat pentru 9:16 și 16:9, antialiasing 2x, contur fin în jurul personajului, tranziții line între poziții.
 
 ---
 
@@ -112,6 +121,10 @@ Testele verifică: scripturile de 60s și 180s (cuvinte, shot-uri, pattern inter
 
 ## 🔧 Depanare
 
-- **Nu se aude voce reală pe Windows** → în „Voce & audio” alege `pyttsx3 / Windows SAPI5` și o voce din listă. Pentru voce în română, instalează pachetul de limbă română din *Setări Windows → Timp și limbă → Vorbire*.
-- **Randare lentă** → alege rezoluția 50% pentru draft-uri sau 24 FPS. Un clip de 60s Full HD durează de obicei 1–2 minute pe un laptop obișnuit.
+- **Vocea sună ca niște sunete, nu ca vorbire** → s-a folosit vocea procedurală pentru că modelul Piper nu e descărcat. În „Voce & audio” apasă **„⬇️ Descarcă vocea Piper”** (o singură dată, e nevoie de internet doar atunci) sau rulează:
+  ```bash
+  python -m stickman_studio.voices --download en ro
+  ```
+  Poți pune manual orice model Piper (`.onnx` + `.onnx.json`) în `models/piper/`.
+- **Randare lentă** → debifează „Linii netede (antialiasing 2x)”, alege rezoluția 50% pentru draft-uri sau 24 FPS. Cu antialiasing, un clip de 60s Full HD durează aproximativ 2 minute.
 - **Ollama** → pornește `ollama serve` și descarcă un model (`ollama pull llama3.1`). Dacă AI-ul nu răspunde, aplicația folosește automat generatorul offline.

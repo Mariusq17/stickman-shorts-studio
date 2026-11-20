@@ -40,6 +40,10 @@ if "%NEED_INSTALL%"=="1" (
     echo [2/3] Dependintele sunt deja instalate.
 )
 
+rem --- vocile naturale Piper: descarcate o singura data, apoi totul e offline ---
+echo       Verific vocile naturale Piper (EN + RO) ...
+python -m stickman_studio.voices --download en ro
+
 rem --- 3. porneste aplicatia ---
 echo [3/3] Pornesc Stickman Video Studio in browser: http://localhost:8501
 echo        Inchide aceasta fereastra pentru a opri aplicatia.

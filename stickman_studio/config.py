@@ -85,7 +85,7 @@ class RenderSettings:
     language: str = "en"
     voice_rate: float = 1.0       # 0.6 .. 1.6
     voice_id: str | None = None
-    tts_engine: str = "auto"      # auto | pyttsx3 | procedural
+    tts_engine: str = "auto"      # auto | piper | sapi | espeak | procedural
     voice_pitch: float = 1.0      # procedural voice pitch multiplier
     target_duration: float = 60.0
     fit_to_target: bool = True
@@ -95,6 +95,10 @@ class RenderSettings:
     sfx: bool = True
     subtitles: bool = True
     progress_bar: bool = True
+    antialias: bool = True        # 2x supersampling for smooth lines
+    music_style: str = "auto"     # auto | lofi | pop | upbeat | file | none
+    music_file: str | None = None
+    piper_voice: str | None = None
     crf: int = 21
     preset: str = "veryfast"
     extra: dict = field(default_factory=dict)

@@ -1,9 +1,10 @@
-"""Offline text-to-speech.
+"""Offline text-to-speech with an automatic engine chain:
 
-* Pyttsx3Engine  - real voices via pyttsx3 (Windows SAPI5 / macOS NSSS / Linux eSpeak),
-                   run in an isolated subprocess.
-* ProceduralVoice - pure-NumPy formant "cartoon voice" synthesizer. Always available
-                   (headless Linux, CI, no sound card), returns exact word timings.
+1. Piper        - neural, natural-sounding voices (EN + RO), runs locally via onnxruntime.
+                  The voice model is downloaded once (models/piper), then fully offline.
+2. SAPI5        - Windows / macOS system voices through pyttsx3 (isolated subprocess).
+3. eSpeak-NG    - classic offline synthesizer (robotic but intelligible, supports Romanian).
+4. Procedural   - last-resort pure-NumPy "cartoon babble" so rendering never fails.
 """
 from __future__ import annotations
 
@@ -11,6 +12,7 @@ import json
 import math
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -147,6 +149,125 @@ class ProceduralVoice:
         return SpeechClip(y, times, words, "procedural", envelope(y, SR))
 
 
+# ------------------------------------------------------------------ helpers
+def split_sentences(text: str) -> list:
+    parts = re.split(r"(?<=[.!?…])\s+", text.strip())
+    return [p for p in parts if p.strip()] or [text]
+
+
+def normalize_voice(x: np.ndarray, target_rms: float = 0.12, peak: float = 0.92) -> np.ndarray:
+    """Consistent loudness between shots/engines + soft limiting."""
+    if len(x) == 0:
+        return x
+    rms = float(np.sqrt(np.mean(x ** 2))) or 1e-6
+    y = x * (target_rms / rms)
+    y = np.tanh(y / peak) * peak          # soft clip instead of harsh distortion
+    return y.astype(np.float32)
+
+
+def _clip_from_sentences(pieces, words_per_piece, engine, gap=0.16):
+    """pieces: list of float32 arrays @SR (one per sentence)."""
+    out, times, t = [], [], 0.0
+    for k, (x, words) in enumerate(zip(pieces, words_per_piece)):
+        dur = len(x) / SR
+        times += estimate_word_times(words, dur, offset=t) if words else []
+        out.append(x)
+        t += dur
+        if k < len(pieces) - 1:
+            out.append(np.zeros(int(gap * SR), dtype=np.float32))
+            t += gap
+    y = normalize_voice(np.concatenate(out) if out else np.zeros(SR // 4, dtype=np.float32))
+    words = [w for ws in words_per_piece for w in ws]
+    return SpeechClip(y, times, words, engine, envelope(y, SR))
+
+
+# -------------------------------------------------------------------- Piper
+_PIPER_CACHE = {}
+
+
+class PiperEngine:
+    name = "piper"
+
+    def __init__(self, language="en", voice_id=None, rate=1.0):
+        from .voices import find_voice
+        self.path = find_voice(language, voice_id)
+        if not self.path:
+            raise RuntimeError(f"Nu există model Piper local pentru limba '{language}'")
+        self.rate = max(0.5, min(2.0, rate))
+        if self.path not in _PIPER_CACHE:
+            from piper import PiperVoice
+            _PIPER_CACHE[self.path] = PiperVoice.load(self.path)
+        self.voice = _PIPER_CACHE[self.path]
+
+    def _sentence(self, text):
+        from piper import SynthesisConfig
+        cfg = SynthesisConfig(length_scale=1.0 / self.rate, noise_scale=0.6, noise_w_scale=0.75)
+        arrs, sr = [], 22050
+        for ch in self.voice.synthesize(text, cfg):
+            arrs.append(np.asarray(ch.audio_float_array, dtype=np.float32))
+            sr = ch.sample_rate
+        x = np.concatenate(arrs) if arrs else np.zeros(1000, dtype=np.float32)
+        x, _ = trim_silence(x, sr, 0.015)
+        return resample(x, sr, SR)
+
+    def synth(self, text, idx=0):
+        sents = split_sentences(text)
+        return _clip_from_sentences([self._sentence(s) for s in sents], [tokenize(s) for s in sents],
+                                    "piper")
+
+
+def piper_ready(language: str, voice_id=None) -> bool:
+    from .voices import find_voice, piper_installed
+    return piper_installed() and find_voice(language, voice_id) is not None
+
+
+# ------------------------------------------------------------------- eSpeak
+@lru_cache(maxsize=1)
+def espeak_exe():
+    for name in ("espeak-ng", "espeak"):
+        p = shutil.which(name)
+        if p:
+            return p
+    for p in (r"C:\Program Files\eSpeak NG\espeak-ng.exe", r"C:\Program Files (x86)\eSpeak NG\espeak-ng.exe",
+              r"C:\Program Files (x86)\eSpeak\command_line\espeak.exe"):
+        if os.path.exists(p):
+            return p
+    return None
+
+
+class EspeakEngine:
+    name = "espeak"
+
+    def __init__(self, language="en", rate=1.0, pitch=1.0):
+        self.exe = espeak_exe()
+        if not self.exe:
+            raise RuntimeError("espeak-ng nu este instalat")
+        self.voice = {"ro": "ro", "en": "en-us"}.get(language, language)
+        self.wpm = int(165 * rate)
+        self.pitch = int(max(0, min(99, 50 * pitch)))
+
+    def _sentence(self, text):
+        fd, path = tempfile.mkstemp(suffix=".wav")
+        os.close(fd)
+        try:
+            subprocess.run([self.exe, "-v", self.voice, "-s", str(self.wpm), "-p", str(self.pitch),
+                            "-w", path, text], check=True, capture_output=True, timeout=60,
+                           creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            x, sr = read_wav(path)
+        finally:
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+        x, _ = trim_silence(x, sr)
+        return resample(x, sr, SR)
+
+    def synth(self, text, idx=0):
+        sents = split_sentences(text)
+        return _clip_from_sentences([self._sentence(s) for s in sents], [tokenize(s) for s in sents],
+                                    "espeak")
+
+
 # ------------------------------------------------------------------ pyttsx3
 def _worker_cmd(*args):
     return [sys.executable, "-m", "stickman_studio.tts_worker", *args]
@@ -165,6 +286,9 @@ def _run(cmd, timeout):
 
 @lru_cache(maxsize=1)
 def list_voices() -> list:
+    """System (SAPI5/NSSS) voices via pyttsx3. Empty on Linux to prefer espeak-ng directly."""
+    if not (sys.platform.startswith("win") or sys.platform == "darwin"):
+        return []
     try:
         r = _run(_worker_cmd("--list-voices"), timeout=25)
         if r.returncode == 0 and r.stdout.strip():
@@ -174,18 +298,10 @@ def list_voices() -> list:
     return []
 
 
-@lru_cache(maxsize=1)
-def pyttsx3_available() -> bool:
-    try:
-        import pyttsx3  # noqa: F401
-    except Exception:
-        return False
-    return len(list_voices()) > 0
-
-
 def pick_voice_for_language(lang: str):
     lang = (lang or "en").lower()
-    keys = {"ro": ["ro", "roman", "andrei"], "en": ["en", "english", "zira", "david", "mark"]}.get(lang, [lang])
+    keys = {"ro": ["romanian", "română", "andrei", "ro-ro", "ro_ro"],
+            "en": ["english", "en-us", "en_us", "en-gb", "zira", "david", "mark", "hazel"]}.get(lang, [lang])
     for v in list_voices():
         hay = (v.get("name", "") + " " + v.get("id", "") + " " + " ".join(v.get("languages", []))).lower()
         if any(k in hay for k in keys):
@@ -193,57 +309,97 @@ def pick_voice_for_language(lang: str):
     return None
 
 
-class Pyttsx3Engine:
-    name = "pyttsx3"
+class SapiEngine:
+    name = "sapi"
 
-    def __init__(self, rate: float = 1.0, voice_id: str | None = None, language: str = "en"):
+    def __init__(self, rate=1.0, voice_id=None, language="en"):
         self.rate = rate
         self.voice_id = voice_id or pick_voice_for_language(language)
+        if not self.voice_id:
+            raise RuntimeError(f"Nicio voce de sistem pentru limba '{language}'")
 
-    def synth_many(self, texts: list, workdir: str) -> list:
+    def synth_many(self, texts, workdir):
         items = [{"text": t, "path": os.path.join(workdir, f"tts_{i:03d}.wav")} for i, t in enumerate(texts)]
         job = os.path.join(workdir, "tts_job.json")
         with open(job, "w", encoding="utf-8") as f:
-            json.dump({"items": items, "rate": self.rate, "voice_id": self.voice_id}, f)
+            json.dump({"items": items, "rate": self.rate * 0.9, "voice_id": self.voice_id}, f)
         r = _run(_worker_cmd(job), timeout=60 + 6 * len(texts))
         if r.returncode != 0:
-            raise RuntimeError("pyttsx3 worker failed: " + (r.stderr or "")[-400:])
+            raise RuntimeError("SAPI worker failed: " + (r.stderr or "")[-400:])
         clips = []
         for it in items:
-            if not os.path.exists(it["path"]) or os.path.getsize(it["path"]) < 1000:
-                clips.append(None)
-                continue
             try:
                 x, sr = read_wav(it["path"])
                 x, _ = trim_silence(x, sr)
-                y = resample(x, sr, SR)
-                peak = np.abs(y).max() or 1.0
-                y = y / peak * 0.85
+                y = normalize_voice(resample(x, sr, SR))
                 words = tokenize(it["text"])
-                wt = estimate_word_times(words, len(y) / SR)
-                clips.append(SpeechClip(y.astype(np.float32), wt, words, "pyttsx3", envelope(y, SR)))
+                clips.append(SpeechClip(y, estimate_word_times(words, len(y) / SR), words, "sapi",
+                                        envelope(y, SR)))
             except Exception:
                 clips.append(None)
         return clips
 
 
+# --------------------------------------------------------------- dispatcher
+ENGINE_LABELS = {
+    "piper": "Piper (voce neurală naturală)",
+    "sapi": "Windows SAPI5 / voce de sistem",
+    "espeak": "eSpeak-NG (robotic, dar clar)",
+    "procedural": "Voce procedurală (doar sunete, fără cuvinte reale)",
+}
+
+
+def available_engines(language: str = "en") -> dict:
+    """{engine: (available, reason)}"""
+    from .voices import piper_installed, find_voice
+    res = {}
+    if not piper_installed():
+        res["piper"] = (False, "pachetul piper-tts nu e instalat")
+    elif not find_voice(language):
+        res["piper"] = (False, "modelul de voce nu e descărcat încă")
+    else:
+        res["piper"] = (True, os.path.basename(find_voice(language)))
+    res["sapi"] = (pick_voice_for_language(language) is not None,
+                   "voce de sistem găsită" if pick_voice_for_language(language) else "nicio voce de sistem pentru limbă")
+    res["espeak"] = (espeak_exe() is not None, espeak_exe() or "espeak-ng nu e instalat")
+    res["procedural"] = (True, "mereu disponibilă")
+    return res
+
+
 def synthesize_all(texts: list, engine: str = "auto", rate: float = 1.0, voice_id=None,
-                   language: str = "en", pitch: float = 1.0, workdir: str | None = None, seed: int = 0):
-    """Synthesize every shot. Returns (clips, engine_used). Never raises because of TTS:
-    any failure transparently falls back to the procedural voice."""
-    proc = ProceduralVoice(rate=rate, pitch=pitch, seed=seed)
-    used = "procedural"
-    clips = [None] * len(texts)
-    if engine in ("auto", "pyttsx3") and pyttsx3_available():
-        tmp = workdir or tempfile.mkdtemp(prefix="stickman_tts_")
+                   language: str = "en", pitch: float = 1.0, workdir: str | None = None, seed: int = 0,
+                   piper_voice=None, log=None):
+    """Synthesize every shot. Returns (clips, engine_used). Never raises: each engine
+    failure falls through to the next one in the chain."""
+    say = log or (lambda m: None)
+    order = ["piper", "sapi", "espeak", "procedural"] if engine in ("auto", None, "") else \
+        [engine] + [e for e in ("piper", "sapi", "espeak", "procedural") if e != engine]
+    if engine == "pyttsx3":
+        order = ["sapi", "piper", "espeak", "procedural"]
+    for name in order:
         try:
-            clips = Pyttsx3Engine(rate, voice_id, language).synth_many(texts, tmp)
-            used = "pyttsx3"
-        except Exception:
-            clips = [None] * len(texts)
-    for i, c in enumerate(clips):
-        if c is None:
-            clips[i] = proc.synth(texts[i], i)
-    if used == "pyttsx3" and any(c.engine == "procedural" for c in clips):
-        used = "mixed"
-    return clips, used
+            if name == "piper":
+                if not piper_ready(language, piper_voice):
+                    continue
+                eng = PiperEngine(language, piper_voice, rate)
+                return [eng.synth(t, i) for i, t in enumerate(texts)], "piper"
+            if name == "sapi":
+                if not list_voices():
+                    continue
+                eng = SapiEngine(rate, voice_id, language)
+                clips = eng.synth_many(texts, workdir or tempfile.mkdtemp(prefix="stickman_tts_"))
+                if any(c is None for c in clips):
+                    raise RuntimeError("SAPI a ratat unele fraze")
+                return clips, "sapi"
+            if name == "espeak":
+                if not espeak_exe():
+                    continue
+                eng = EspeakEngine(language, rate, pitch)
+                return [eng.synth(t, i) for i, t in enumerate(texts)], "espeak"
+            if name == "procedural":
+                proc = ProceduralVoice(rate=rate, pitch=pitch, seed=seed)
+                return [proc.synth(t, i) for i, t in enumerate(texts)], "procedural"
+        except Exception as e:
+            say(f"Motorul TTS '{name}' a eșuat ({e}); încerc următorul.")
+    proc = ProceduralVoice(rate=rate, pitch=pitch, seed=seed)
+    return [proc.synth(t, i) for i, t in enumerate(texts)], "procedural"

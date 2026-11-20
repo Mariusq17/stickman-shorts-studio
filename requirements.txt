@@ -7,4 +7,5 @@ imageio>=2.31
 imageio-ffmpeg>=0.4.9
 pandas>=2.0
 pyttsx3>=2.90
+piper-tts>=1.2
 pytest>=7.4

@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from .audio import SR, PROP_SFX, CAMERA_SFX, mix_tracks, music_bed, write_wav
+from .audio import SR, PROP_SFX, CAMERA_SFX, load_music_file, mix_tracks, music_bed, write_wav
 from .config import RenderSettings, MAX_DURATION
 from .renderer import SceneRenderer, ShotTiming, uniform_timeline, mic_drop_hit_time
 from .rig import ACTION_SFX
@@ -66,8 +66,9 @@ def _trim_slack(durs, clips, excess):
 def synthesize_timeline(script: Script, st: RenderSettings, log=None):
     texts = [s.text for s in script.shots]
     rate = st.voice_rate
-    clips, engine = synthesize_all(texts, st.tts_engine, rate, st.voice_id, st.language,
-                                   st.voice_pitch, seed=script.seed)
+    synth = lambda r: synthesize_all(texts, st.tts_engine, r, st.voice_id, st.language, st.voice_pitch,
+                                     seed=script.seed, piper_voice=st.piper_voice, log=log)
+    clips, engine = synth(rate)
     target = min(float(st.target_duration or script.target_duration), MAX_DURATION - 0.1)
     if st.fit_to_target:
         total = _speech_total(clips)
@@ -80,8 +81,7 @@ def synthesize_timeline(script: Script, st: RenderSettings, log=None):
             if log:
                 log(f"Ajustez viteza vocii {rate:.2f} -> {new_rate:.2f} pentru durata țintă")
             rate = new_rate
-            clips, engine = synthesize_all(texts, st.tts_engine, new_rate, st.voice_id, st.language,
-                                           st.voice_pitch, seed=script.seed)
+            clips, engine = synth(new_rate)
     durs = _shot_durations(script, clips)
     for _ in range(2):  # hard cap: never exceed MAX_DURATION
         if sum(durs) <= MAX_DURATION:
@@ -91,8 +91,7 @@ def synthesize_timeline(script: Script, st: RenderSettings, log=None):
             rate = rate * (sum(durs) / MAX_DURATION) * 1.03
             if log:
                 log(f"Accelerez vocea la {rate:.2f} pentru a rămâne sub {MAX_DURATION}s")
-            clips, engine = synthesize_all(texts, st.tts_engine, rate, st.voice_id, st.language,
-                                           st.voice_pitch, seed=script.seed)
+            clips, engine = synth(rate)
             durs = _shot_durations(script, clips)
     total = sum(durs)
     if st.fit_to_target and total < target:
@@ -122,22 +121,32 @@ def build_audio(script: Script, timeline, clips, st: RenderSettings, path: str):
                     off = mic_drop_hit_time(tm.duration)
                 elif sh.action == "fall_down_dramatic":
                     off = 0.8
-                sfx.append((tm.start + off, name, 0.8))
+                sfx.append((tm.start + off, name, 0.7))
                 n += 1
             cam = CAMERA_SFX.get(sh.camera)
-            if cam and n < 2:
-                sfx.append((tm.start, cam, 0.6))
+            if cam and n < 1:
+                sfx.append((tm.start, cam, 0.5))
                 n += 1
             for j, p in enumerate(sh.props):
-                if n >= 2:
+                if n >= 1:
                     break
                 if p in PROP_SFX:
-                    sfx.append((tm.start + 0.12 * j + 0.05, PROP_SFX[p], 0.6))
+                    sfx.append((tm.start + 0.12 * j + 0.05, PROP_SFX[p], 0.5))
                     n += 1
             if "subscribe" in sh.props:
-                sfx.append((tm.start + 1.1, "pop", 0.9))
-                sfx.append((tm.start + 1.25, "ding", 0.7))
-    music = music_bed(total, st.energy, seed=script.seed) if st.music else None
+                sfx.append((tm.start + 1.1, "pop", 0.8))
+                sfx.append((tm.start + 1.25, "ding", 0.6))
+    music = None
+    style = getattr(st, "music_style", "auto")
+    if st.music and style != "none":
+        if style == "file" and st.music_file and os.path.exists(st.music_file):
+            try:
+                music = load_music_file(st.music_file, total)
+            except Exception:
+                music = None
+        if music is None:
+            music = music_bed(total, st.energy, seed=script.seed,
+                              style=None if style in ("auto", "file") else style)
     mix = mix_tracks(total, voice, sfx, music, st.music_volume)
     stereo = np.stack([mix, mix], axis=1)
     write_wav(path, stereo, SR)

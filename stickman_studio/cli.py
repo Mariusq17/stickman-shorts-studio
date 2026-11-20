@@ -27,7 +27,11 @@ def main(argv=None):
     ap.add_argument("--cta-text", default="")
     ap.add_argument("--energy", type=int, default=3)
     ap.add_argument("--voice-rate", type=float, default=1.0)
-    ap.add_argument("--tts", choices=["auto", "pyttsx3", "procedural"], default="auto")
+    ap.add_argument("--tts", choices=["auto", "piper", "sapi", "espeak", "procedural"], default="auto")
+    ap.add_argument("--piper-voice", default=None, help="Piper voice id (see python -m stickman_studio.voices)")
+    ap.add_argument("--music", choices=["auto", "lofi", "pop", "upbeat", "none"], default="auto")
+    ap.add_argument("--music-file", default=None, help="your own background track (mp3/wav)")
+    ap.add_argument("--no-aa", action="store_true", help="disable 2x antialiasing (faster)")
     ap.add_argument("--scale", type=float, default=1.0, help="resolution multiplier (0.5 = fast draft)")
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--script", default=None, help="load script JSON instead of generating")
@@ -50,7 +54,9 @@ def main(argv=None):
             json.dump(script.to_dict(), f, ensure_ascii=False, indent=2)
     st = RenderSettings(format=a.format, fps=a.fps, theme=a.visual, scale=a.scale, language=a.lang,
                         voice_rate=a.voice_rate, tts_engine=a.tts, target_duration=a.duration,
-                        energy=a.energy)
+                        energy=a.energy, piper_voice=a.piper_voice, antialias=not a.no_aa,
+                        music_style="file" if a.music_file else a.music, music_file=a.music_file,
+                        music=a.music != "none")
 
     def progress(f, msg):
         sys.stdout.write(f"\r[{int(f * 100):3d}%] {msg[:70]:70s}")

@@ -202,62 +202,158 @@ CAMERA_SFX = {"punch_in": "whoosh", "dramatic_camera_shake": "sting", "zoom_in":
 
 
 # ---------------------------------------------------------------- music bed
-_CHORDS = [
-    (0, 4, 7), (7, 11, 14), (9, 12, 16), (5, 9, 12),   # I V vi IV
+MUSIC_STYLES = {
+    "lofi": "Lo-fi chill (calm, cald)",
+    "pop": "Chill-pop (vesel, discret)",
+    "upbeat": "Upbeat (energic)",
+}
+# progression vi - IV - I - V (A minor / C major), 4-note voicings (semitones from C4)
+_PROGRESSION = [
+    (-3, [0, 4, 7, 11]),     # Am7   : A  C  E  G   (root A2)
+    (-7, [-3, 0, 4, 7]),     # Fmaj7 : F  A  C  E   (root F2)
+    (0, [-1, 4, 7, 12]),     # Cmaj7 : B  E  G  C   (root C3)
+    (-5, [-1, 2, 7, 11]),    # G6    : B  D  G  B   (root G2)
 ]
+_MSR = 22050  # music is synthesized at a lower rate, then upsampled
 
 
-def music_bed(duration: float, energy: int = 3, seed: int = 0) -> np.ndarray:
-    """Upbeat, unobtrusive procedural loop (bass + plucks + hats + kick)."""
-    bpm = 92 + 8 * max(1, min(5, energy))
-    beat = 60.0 / bpm
-    n = int((duration + 0.5) * SR)
-    out = np.zeros(n, dtype=np.float32)
+def _note(semi: float) -> float:
+    return 261.63 * 2 ** (semi / 12.0)
+
+
+def _ep(freq, dur, sr=_MSR):
+    """Soft electric-piano tone."""
+    t = np.arange(int(dur * sr)) / sr
+    env = np.exp(-t * 2.2) * np.minimum(1, t / 0.006)
+    trem = 1 + 0.08 * np.sin(2 * np.pi * 4.5 * t)
+    x = (np.sin(2 * np.pi * freq * t) + 0.35 * np.sin(2 * np.pi * 2 * freq * t) * np.exp(-t * 4)
+         + 0.12 * np.sin(2 * np.pi * 3 * freq * t) * np.exp(-t * 7))
+    return (x * env * trem).astype(np.float32)
+
+
+def _pad(freqs, dur, sr=_MSR):
+    t = np.arange(int(dur * sr)) / sr
+    env = np.minimum(1, t / 0.8) * np.minimum(1, (dur - t) / 0.6)
+    x = np.zeros_like(t)
+    for f in freqs:
+        for det in (-0.004, 0.004):
+            for k in range(1, 7):
+                x += np.sin(2 * np.pi * f * (1 + det) * k * t + k) / k ** 1.6
+    return (x * env / (len(freqs) * 4)).astype(np.float32)
+
+
+def _place(buf, x, start):
+    i = int(start)
+    if i >= len(buf):
+        return
+    seg = x[: len(buf) - i]
+    buf[i:i + len(seg)] += seg
+
+
+def _fft_lowpass(x, cutoff, sr=_MSR):
+    X = np.fft.rfft(x)
+    f = np.fft.rfftfreq(len(x), 1 / sr)
+    X *= 1 / (1 + (f / cutoff) ** 4)
+    return np.fft.irfft(X, n=len(x)).astype(np.float32)
+
+
+def _reverb_circular(x, seconds=1.8, mix=0.28, sr=_MSR, seed=3):
+    """Seamless (circular) reverb for a loop via FFT convolution."""
+    n = len(x)
+    m = int(seconds * sr)
     rng = np.random.default_rng(seed)
-    root = 261.63 * 2 ** (rng.integers(-3, 3) / 12)
-    n_beats = int(duration / beat) + 2
-    pluck_t = _t(beat * 0.9)
-    pluck_env = np.exp(-pluck_t * 7).astype(np.float32)
-    hat_n = int(0.04 * SR)
-    hat = _noise(hat_n, 2) * np.exp(-np.arange(hat_n) / SR * 120)
-    hat = (hat - np.concatenate([[0], hat[:-1]])) * 0.5            # crude high-pass
-    kick_t = _t(0.22)
-    kick = np.sin(2 * np.pi * np.cumsum(120 * np.exp(-kick_t * 25) + 45) / SR) * np.exp(-kick_t * 14)
-    pattern = [0, 2, 1, 2, 0, 1, 2, 1]
-    for b in range(n_beats):
-        st = int(b * beat * SR)
-        if st >= n:
-            break
-        chord = _CHORDS[(b // 4) % 4]
-        # bass on every beat
-        f_b = root / 2 * 2 ** (chord[0] / 12)
-        seg = min(len(pluck_t), n - st)
-        bass = np.sin(2 * np.pi * f_b * pluck_t[:seg]) * np.exp(-pluck_t[:seg] * 3) * 0.35
-        out[st:st + seg] += bass.astype(np.float32)
-        # arpeggiated pluck (triangle-ish)
-        for half in (0, 1):
-            s2 = st + int(half * beat / 2 * SR)
-            if s2 >= n:
-                continue
-            note = chord[pattern[(2 * b + half) % 8]]
-            f = root * 2 ** (note / 12)
-            seg2 = min(int(len(pluck_t) / 2), n - s2)
-            ph = 2 * np.pi * f * pluck_t[:seg2]
-            tri = (2 / np.pi) * np.arcsin(np.sin(ph))
-            out[s2:s2 + seg2] += (tri * pluck_env[:seg2] * 0.16).astype(np.float32)
-        # hats on off-beats
-        s3 = st + int(beat / 2 * SR)
-        if s3 + hat_n < n:
-            out[s3:s3 + hat_n] += hat.astype(np.float32) * 0.6
-        if energy >= 2 and b % 2 == 0 and st + len(kick) < n:
-            out[st:st + len(kick)] += (kick * 0.5).astype(np.float32)
-    # fade in/out
-    fi, fo = int(0.5 * SR), int(1.2 * SR)
-    out[:fi] *= np.linspace(0, 1, fi)
-    if fo < n:
-        out[-fo:] *= np.linspace(1, 0, fo)
-    peak = np.abs(out).max() or 1.0
-    return (out / peak)[: int(duration * SR)]
+    ir = np.zeros(n, dtype=np.float32)
+    tt = np.arange(min(m, n)) / sr
+    ir[: len(tt)] = rng.standard_normal(len(tt)) * np.exp(-tt * 3.8 / seconds)
+    ir = _fft_lowpass(ir, 3500, sr)
+    wet = np.fft.irfft(np.fft.rfft(x) * np.fft.rfft(ir), n=n)
+    wet = wet / (np.abs(wet).max() or 1) * (np.abs(x).max() or 1)
+    return ((1 - mix) * x + mix * wet).astype(np.float32)
+
+
+def _music_loop(style: str, seed: int = 0) -> np.ndarray:
+    bpm = {"lofi": 82, "pop": 100, "upbeat": 116}.get(style, 100)
+    beat = 60.0 / bpm
+    bars = 8
+    n = int(bars * 4 * beat * _MSR)
+    sr = _MSR
+    rng = np.random.default_rng(seed)
+    transpose = int(rng.integers(-2, 3))
+    keys = np.zeros(n, dtype=np.float32)
+    pad = np.zeros(n, dtype=np.float32)
+    bass = np.zeros(n, dtype=np.float32)
+    drums = np.zeros(n, dtype=np.float32)
+    swing = 0.08 if style == "lofi" else 0.0
+    for bar in range(bars):
+        root, chord = _PROGRESSION[bar % 4]
+        b0 = bar * 4 * beat * sr
+        freqs = [_note(c + transpose) for c in chord]
+        pad_x = _pad([f / 2 for f in freqs[:3]], 4 * beat)
+        _place(pad, pad_x, b0)
+        # electric piano rhythm
+        hits = [0, 1.5, 2.5] if style != "upbeat" else [0, 1, 1.5, 2.5, 3]
+        for h in hits:
+            for j, f in enumerate(freqs):
+                strum = j * 0.012 * sr
+                _place(keys, _ep(f, 2.2) * (0.9 if h == 0 else 0.55), b0 + h * beat * sr + strum)
+        # bass
+        fb = _note(root + transpose - 12)
+        for h, ln in ((0, 1.5), (2, 1.0), (3, 0.5)) if style != "lofi" else ((0, 2.0), (2.5, 1.0)):
+            t = np.arange(int(ln * beat * sr)) / sr
+            env = np.minimum(1, t / 0.01) * np.exp(-t * 1.5) * np.minimum(1, (ln * beat - t) / 0.05)
+            x = (np.sin(2 * np.pi * fb * t) + 0.25 * np.sin(4 * np.pi * fb * t)) * env
+            _place(bass, x.astype(np.float32), b0 + h * beat * sr)
+        # drums
+        for q in range(8):
+            pos = b0 + (q * 0.5 + (swing if q % 2 else 0)) * beat * sr
+            if q in (0, 4) or (style == "upbeat" and q in (3, 6)):
+                t = np.arange(int(0.25 * sr)) / sr
+                k = np.sin(2 * np.pi * np.cumsum(110 * np.exp(-t * 30) + 42) / sr) * np.exp(-t * 11)
+                _place(drums, (k * 0.9).astype(np.float32), pos)
+            if q in (2, 6):
+                t = np.arange(int(0.18 * sr)) / sr
+                sn = rng.standard_normal(len(t)) * np.exp(-t * 22) * 0.35 + np.sin(2 * np.pi * 190 * t) * np.exp(-t * 30) * 0.3
+                _place(drums, sn.astype(np.float32) * (0.6 if style == "lofi" else 0.8), pos)
+            t = np.arange(int(0.05 * sr)) / sr
+            hh = rng.standard_normal(len(t)) * np.exp(-t * 90)
+            hh = np.diff(np.concatenate([[0], hh]))
+            _place(drums, (hh * (0.10 if q % 2 else 0.16)).astype(np.float32), pos)
+    keys = _fft_lowpass(keys, 2600 if style == "lofi" else 4200)
+    mix = keys * 0.42 + pad * 0.55 + bass * 0.55 + drums * (0.45 if style == "lofi" else 0.6)
+    mix = _reverb_circular(mix, 1.6, 0.25 if style != "upbeat" else 0.18, seed=seed)
+    if style == "lofi":
+        mix = _fft_lowpass(mix, 3800)
+        mix += rng.standard_normal(n).astype(np.float32) * 0.004   # vinyl air
+    return mix / (np.abs(mix).max() or 1.0)
+
+
+def music_bed(duration: float, energy: int = 3, seed: int = 0, style: str | None = None) -> np.ndarray:
+    """Pleasant procedural background loop (seamless), matched to the energy level."""
+    if style not in MUSIC_STYLES:
+        style = "lofi" if energy <= 2 else "pop" if energy <= 3 else "upbeat"
+    loop = _music_loop(style, seed)
+    reps = int(np.ceil((duration + 1) * _MSR / len(loop)))
+    x = np.tile(loop, reps)[: int((duration + 0.5) * _MSR)]
+    y = resample(x, _MSR, SR)
+    fi, fo = int(1.0 * SR), int(1.5 * SR)
+    y[:fi] *= np.linspace(0, 1, fi)
+    if fo < len(y):
+        y[-fo:] *= np.linspace(1, 0, fo)
+    return y[: int(duration * SR)].astype(np.float32)
+
+
+def load_music_file(path: str, duration: float) -> np.ndarray:
+    """User-supplied background track (mp3/wav/ogg/m4a...) decoded with ffmpeg, looped."""
+    x, sr = _read_with_ffmpeg(path, SR)
+    if len(x) == 0:
+        return np.zeros(int(duration * SR), dtype=np.float32)
+    reps = int(np.ceil(duration * SR / len(x)))
+    y = np.tile(x, max(1, reps))[: int(duration * SR)].copy()
+    y = y / (np.abs(y).max() or 1.0)
+    fo = int(1.5 * SR)
+    if fo < len(y):
+        y[-fo:] *= np.linspace(1, 0, fo)
+    return y.astype(np.float32)
 
 
 def mix_tracks(total: float, voice_events, sfx_events, music: np.ndarray | None,
@@ -282,7 +378,7 @@ def mix_tracks(total: float, voice_events, sfx_events, music: np.ndarray | None,
             continue
         seg = x[: n - i]
         fx[i:i + len(seg)] += seg * gain
-    out = voice * 0.95 + fx * 0.55
+    out = voice + fx * 0.35
     if music is not None and len(music):
         m = np.zeros(n, dtype=np.float32)
         m[: min(n, len(music))] = music[:n]
@@ -293,10 +389,13 @@ def mix_tracks(total: float, voice_events, sfx_events, music: np.ndarray | None,
         pad[:n] = np.abs(voice)
         lev = pad.reshape(nn, hop).max(axis=1)
         lev = np.convolve(lev, np.ones(10) / 10, mode="same")
-        duck = 1.0 - 0.55 * np.clip(lev / (lev.max() or 1) * 3, 0, 1)
+        duck = 1.0 - 0.6 * np.clip(lev / (lev.max() or 1) * 3, 0, 1)
         duck = np.repeat(duck, hop)[:n]
         out += m * music_volume * duck
-    peak = np.abs(out).max()
-    if peak > 0.98:
-        out = out / peak * 0.98
-    return out
+    # loudness: speech around -16 dBFS RMS, soft limiter on peaks
+    active = np.abs(voice) > 0.01
+    rms = float(np.sqrt(np.mean(out[active] ** 2))) if active.any() else float(np.sqrt(np.mean(out ** 2)))
+    if rms > 0:
+        out = out * (0.16 / rms)
+    out = np.tanh(out / 0.95) * 0.95
+    return out.astype(np.float32)

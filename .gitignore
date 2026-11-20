@@ -7,3 +7,4 @@ output/
 *.mp4
 *.wav
 .streamlit/secrets.toml
+models/
