@@ -156,3 +156,27 @@ def plane_text(cam, plane, c, u, v, text, size, color):
     xyz = (u, c, v) if plane == "y" else ((c, u, v) if plane == "x" else (u, v, c))
     x, y = cam.p(*xyz)
     cam.d.text((x, y), text, font=font(int(size * cam.s)), fill=color, anchor="mm")
+
+
+def sheet(cam, pts, s, length, width, color, double=0.0, outline=None, crumple=0.0):
+    """A flat sheet (banknote, ticket) lying along a polyline path at fraction s, `width` across the y axis.
+    double > 0 draws a second sheet stuck under it (offset along the path normal); crumple bends it."""
+    p, tan = path_point(pts, s)
+    nx, nz = -tan[2], tan[0]                  # normal in the x-z plane
+    hl = length / 2
+    oc = outline or _shade(color, -0.45)
+    layers = [(double, _shade(color, -0.12))] if double > 0 else []
+    layers.append((0.0, color))
+    for off, col in layers:
+        c = (p[0] + nx * off, p[1], p[2] + nz * off)
+        a = (c[0] - tan[0] * hl, c[1], c[2] - tan[2] * hl)
+        b = (c[0] + tan[0] * hl, c[1], c[2] + tan[2] * hl)
+        k = crumple * hl * 0.8
+        quad = [(a[0], a[1] - width / 2, a[2] + k), (b[0], b[1] - width / 2, b[2]),
+                (b[0], b[1] + width / 2, b[2] - k * 0.5), (a[0], a[1] + width / 2, a[2])]
+        cam.poly(quad, col, oc, 0.006)
+        m = (c[0], c[1] + width / 2 - 0.001, c[2])
+        x, y = cam.p(*c)
+        r = width * 0.18 * cam.s
+        cam.d.ellipse((x - r, y - r * 0.5, x + r, y + r * 0.5), outline=_shade(col, -0.3),
+                      width=max(1, int(0.006 * cam.s)))
