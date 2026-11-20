@@ -37,6 +37,12 @@ COVERS = {
                      lines=[("THIS CARD HAS", (255, 255, 255)), ("NO BATTERY", YELLOW), ("SO HOW DOES IT PAY?", (255, 255, 255))]),
     "chatbot": dict(t=55.5, cam=((-2.6, 0.9, 1.0), 165),
                     lines=[("HOW AI WRITES", (255, 255, 255)), ("ONE WORD", YELLOW), ("AT A TIME", YELLOW)]),
+    "traffic_light": dict(t=20.0, cam=((-2.4, 0.4, 0.5), 200),
+                          lines=[("HOW THE LIGHT", (255, 255, 255)), ("KNOWS YOU'RE", YELLOW), ("WAITING", YELLOW)]),
+    "microwave": dict(t=74.0, cam=((0.85, 0.35, 1.45), 380),
+                      lines=[("WHY FORKS", (255, 255, 255)), ("SPARK", YELLOW), ("IN MICROWAVES", (255, 255, 255))]),
+    "self_checkout": dict(t=38.5, cam=((1.9, 0.5, 1.15), 280),
+                          lines=[("WHO'S JUDGING YOU", (255, 255, 255)), ("AT SELF-CHECKOUT?", YELLOW)]),
     "atm_notes": dict(t=44.5, cam=((0.75, 1.3, 0.95), 360),
                       lines=[("HOW AN ATM KNOWS", (255, 255, 255)), ("2 NOTES ARE STUCK", YELLOW)]),
 }
