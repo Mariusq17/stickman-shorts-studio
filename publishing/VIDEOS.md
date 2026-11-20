@@ -30,3 +30,5 @@ Descriptions, captions and covers: `publishing/<slug>/post.md` and `cover.png` (
 | 7 | VID-007-v1 | self_checkout | Who Is Judging You at Self-Checkout? | 1:32 | 9 | `9ab4ad0` [VID-007-v1] | 2026-11-20 | delivered; idea #3 |
 | 8 | VID-008-v1 | undersea_cable | How Your Message Crosses the Ocean | 1:31 | 7 | `876fb6a` [VID-008-v1] | 2026-11-20 | delivered; idea #6 |
 | 9 | VID-009-v1 | streaming | Why Movies Start Instantly Even Though the File Is Huge | 1:23 | 6 | `e5c300d` [VID-009-v1] | 2026-11-20 | delivered; idea #10 (shortest, could get 2-3 more steps) |
+| 5 | VID-005-v2 | traffic_light | How the Traffic Light Knows You're Waiting | 1:42 | 8 | `bcf4216` [VID-005-v2] | 2026-11-20 | delivered; cars exit after their step, no drive-through (fixes v1) |
+| 8 | VID-008-v2 | undersea_cable | How Your Message Crosses the Ocean | 1:31 | 7 | `7322c98` [VID-008-v2] | 2026-11-20 | delivered; cable ends connect into the stations (fixes v1) |
