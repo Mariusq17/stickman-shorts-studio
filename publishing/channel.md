@@ -10,27 +10,27 @@ Instagram grid crop).
 
 ## Instagram bio (max 150 characters)
 ```
-Everyday machines, built step by step 🛠️
-Elevators, ATMs, AI, card payments... explained in 2 minutes.
+How the things around you actually work 🛠️
+Built from scratch, one piece at a time, in 2 minutes.
 New build every week 👇
 ```
 Category: Education. Account type: Creator.
 
 ## TikTok bio (max 80 characters)
 ```
-Everyday machines, built step by step 🛠️ 2-minute explainers
+How things actually work, built step by step 🛠️
 ```
 
 ## YouTube channel description
 ```
-How does an elevator not fall? How does a card pay with no battery? How does an AI write word by word?
+Ever wondered how something you use every day actually works?
 
-On How It's Built we build everyday machines from scratch, one piece at a time. Every part shows up
-exactly when it is needed: something breaks, we fix it, and you learn the real name of the fix.
-Two minutes later you know how the thing actually works.
+On How It's Built we take one thing - a machine, a technology, a system you never think about - and
+build it from scratch, one piece at a time. Every part shows up exactly when it is needed: something
+breaks, we fix it, and you learn the real name of the fix. Two minutes later you understand how the
+whole thing works.
 
-Short animated explainers about the tech you use every day: elevators, ATMs, payments, AI,
-the internet, cars and more. New build every week.
+Short animated explainers about the hidden engineering behind everyday life. New build every week.
 ```
 Keywords (channel settings): how things work, engineering explained, technology explained, animated
-explainer, how it works, everyday technology, science shorts
+explainer, how it works, everyday technology, science explained, step by step

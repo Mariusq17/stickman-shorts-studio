@@ -56,5 +56,7 @@ Send the cover PNG(s) with SendUserFile, paste title + captions in the reply (re
 `publishing/` + `branding.py`. Mark the video in `ideas/IDEAS.md` as `posted` only when the owner says so.
 
 ## Rules learned
+- Channel texts (bios, channel description, banner) must stay topic-agnostic: never name specific videos or
+  topics there - the channel will cover many more subjects. Topic details belong only in per-video posts.
 - Hashtags matter less and less: 2 max, relevant only. Descriptive, concrete text works better.
 - Text inside the cover must fit and be readable; same rule as text in videos (see CLAUDE.md).
