@@ -45,6 +45,13 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
 
 - Narration drives everything: use cues `"w:word"` so visuals appear exactly when spoken. Every cue
   word must exist in that step's text (the planner raises KeyError otherwise).
+- PHYSICS FIRST (owner 2026-11-21): liquids/gases move only inside the pipes/channels that carry them
+  (`kit.flow_line` inside the channel path), falling liquid follows a parabola, connected vessels share one level,
+  every part is attached to what holds it (flapper hinged on the overflow tube, tank sitting on the bowl), nothing
+  floats or crosses through solids. Cut-away sections: draw the whole object as one prism (outline extruded) with
+  cavities on the cut face (see `videos/toilet.py` v3). Check this on the contact sheet BEFORE rendering.
+- Illustrate examples with specific `emoji` pops (crossed out for "no X"), never generic warn chips for everything.
+- Checkpoints: steps that build a new part get `pause=0.7` and a `stamp` with the part name + "ding".
 - Hook headline: every video opens with a `hook` pop (big paradox text, highlighted words) from t=0 to ~2.5 s
   and motion in the very first frames (start a `do` at 0.0, e.g. a bag exploding, a pipe growing, a finger tapping).
 - Callouts that only matter in one step: gate them with `tr.step_at(t) in (...)` so the late wide shots don't

@@ -30,7 +30,8 @@ explainer/
                   path_point/sub_path, packet (glowing data dot on a path), cable, glow_dot, rings,
                   plate / plane_text (rectangles + perspective-correct text printed on a plane, auto-fit with max_w/max_h), strip, sheet (banknote/ticket
                   moving along a path, can be doubled or crumpled), path_prefix (polyline that grows
-                  along its route keeping corners - pipes/cables being laid), heat_wisps (wavy lines leaving a surface)
+                  along its route keeping corners - pipes/cables being laid), heat_wisps (wavy lines leaving a surface),
+                  flow_line (liquid/gas moving inside a pipe: core + travelling dashes)
 ```
 
 ## Writing a new video
@@ -52,6 +53,8 @@ explainer/
    `tr.get("track", t)`. Use `ShadowLayer` right after drawing static walls/floors.
 5. Preview cheaply with `preview_times=[...]` (see `elevator.py --preview`), render with `--ss 2`.
 
+Step keys: `pause` (s) = silent beat after the narration (checkpoint after a new part).
+
 ## Widgets (pops)
 
 | kind | fields | use for |
@@ -65,6 +68,7 @@ explainer/
 | `graph` | `title, track, window, color` | live line graph of an animation track (speed, load) |
 | `arrow` | `xyz, text, color, off` | label pointing at a 3D part |
 | `card` | `title, sub, tap` | follow CTA with tap animation |
+| `emoji` | `emoji, text, no, xy/pos, size` | illustrate what is said (🔋 crossed = "no battery", 🐠 = fish tank) |
 | `hook` | `text, hi, color, size, y` | opening paradox headline (first ~2.5 s), words in `hi` on a marker bar |
 
 Positions: `tl tr ml mr bl br bc c`. Timing: `at` + `dur` or `until` (cues).

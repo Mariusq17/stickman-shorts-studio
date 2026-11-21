@@ -79,6 +79,11 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   entertaining, human tone; (4) voice needs intonation, short natural pauses between ideas, and an excited,
   emphasised delivery on every newly built part (reward moment: "...so you add A TANK!") - also emphasised in pops.
   Rule now: approve a VOICE SAMPLE + script with the owner before any full render.
+  toilet v2 (2026-11-21): script a bit better but not enough; generic warning chips everywhere = boring -> illustrate
+  every example with a SPECIFIC emoji/icon (`emoji` pop: no motor ⚙️ crossed, fish tank 🐠...); animation was worse:
+  objects and fluids must obey physics (water only flows inside pipes/channels, falls in arcs, levels match like
+  communicating vessels, parts attached to what holds them, things fit) - simplified, not realistic; add a short
+  PAUSE after every checkpoint/new part (`pause` per step, ~0.7 s) so the video has milestones, not a constant rush.
   batch 2 (2026-11-20): quality drops towards the end of videos - traffic_light: the red car stays all video
   and other cars/ambulance drive through it; undersea_cable (better): cable ends not connected to the stations.
 
