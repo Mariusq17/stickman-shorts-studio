@@ -30,6 +30,11 @@ Use only well-established facts; if a number is not certain, drop it. 8-12 fixes
   (3) "Congratulations, you just built a X." - each + one-line joke + "Follow for more."
   Batch 2026-11-21: fridge a/1, toilet c/2, gps b/3, touchscreen a/1, airbag a/2 -> next video: b or c / 3.
 - **Length 1:20-1:40** (~260-300 words, 11-13 steps, 7-9 fixes).
+- **Tone (owner 2026-11-21, toilet v2 is the model)**: talk like a funny friend, not a manual. Short punchy
+  lines, playful asides ("It works! It's also disgusting."), "Problem one: ...", "And here's the magic trick.",
+  everyday comparisons ("like a cork", "same trick as emptying a fish tank with a hose"). Every new part ends with
+  a reward line ("We just built the trap!", "We just added a tank!", "Rim holes!") + `stamp` pop with the part's
+  name + "ding". Avoid stand-alone 1-3 word sentences (Piper garbles them; the engine glues them to a neighbour).
 - Loop: "But/Until <problem>." -> "So you <fix>." -> "That's the <term>." (term AFTER the need)
 - Every ~10 s something new breaks; escalate stakes. Short sentences, conversational, dry humour.
 - 1-2 **exaggerated, concrete comparisons** ("like a seesaw where your friend already sits on the

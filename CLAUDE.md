@@ -29,7 +29,10 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
 - Script formula from the reference channel: hook = first build step, problem -> fix -> term loop
   every ~10 s, exaggerated comparisons, everyday "aha" payoff, "Congratulations, you just built a..."
   + joke + CTA "Follow for more".
-- Voice: Piper, **1.2x** (1.4 was too fast, 1.3 still a bit fast).
+- Voice: Piper, **1.2x** (1.4 was too fast, 1.3 still a bit fast). Kokoro voices were tried (2026-11-21) and
+  rejected: too slow ("puts me to sleep") and the pitch-shifted "excited" lines sounded like another voice. Keep ONE
+  unchanged voice; emphasise the reward word visually (big `stamp` pop "A TANK!" + ding) and in the wording
+  ("We just added a tank!"), never by changing the voice.
 - Text ON objects (screens, cards, signs, labels on boxes) must be printed in the surface's perspective
   (`kit.plane_text`, warped onto the plane) and must fit inside the object (`max_w`/`max_h`); never
   screen-aligned text floating on a slanted surface. Check it in previews at close zoom.
