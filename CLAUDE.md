@@ -57,6 +57,10 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   "Congratulations..."), never the same one twice in a row in posting order.
 - Channel launched 2026-11-20: card_tap posted on YouTube + Instagram; owner waits 1-2 days for reach, then
   wants to discuss stats (views, average % watched, traffic sources) to tune the next batch.
+- Stats card_tap after 17 h (2026-11-21): 1.2K views, 825 engaged, 65.7% stayed / 34.3% swiped away,
+  avg view 1:08 of 1:54 (~60%), 29 likes, +1 sub, 90% Shorts feed, 80% mobile. Pushed once (~1K test pool)
+  then plateaued -> priority: stronger first 1-2 s (cut swipe-away below ~25%), length ~1:20-1:40, check the
+  retention graph (ready ~2 days after posting) for drop points before each batch.
 - Prefers working in fresh sessions per batch (cheaper/faster than one huge chat); expects the
   `studio` skill + this file to carry all context between sessions.
 - Cares about token/credit usage: keep previews targeted (contact sheets at ss=1), avoid re-reading
