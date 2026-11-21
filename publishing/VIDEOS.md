@@ -38,3 +38,4 @@ Descriptions, captions and covers: `publishing/<slug>/post.md` and `cover.png` (
 | 13 | VID-013-v1 | touchscreen | Your Screen Can't Feel You Press | 1:14 | 7 | `eaed305` [VID-013-v1] | 2026-11-21 | delivered; idea #15 |
 | 14 | VID-014-v1 | airbag | Your Airbag Is a Tiny Explosion | 1:10 | 7 | `5c35ffc` [VID-014-v1] | 2026-11-21 | delivered; idea #16 |
 | 11 | VID-011-v2 | toilet | A Toilet Has No Pump. So How Does It Flush? | 1:45 | 8 | `a50a0ea` [VID-011-v2] | 2026-11-21 | delivered; rewritten human script + reward stamps (v1 judged bad: robotic script, garbled "let's fix it") |
+| 11 | VID-011-v3 | toilet | A Toilet Has No Pump. So How Does It Flush? | 1:55 | 8 | `ddc2b58` [VID-011-v3] | 2026-11-21 | delivered; true cut-through section, physics-correct water, emoji illustrations, checkpoint pauses (v2: animation judged worse) |
