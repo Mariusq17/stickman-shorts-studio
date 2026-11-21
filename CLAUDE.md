@@ -68,6 +68,24 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   batch 2 (2026-11-20): quality drops towards the end of videos - traffic_light: the red car stays all video
   and other cars/ambulance drive through it; undersea_cable (better): cable ends not connected to the stations.
 
+## Where we left off (updated at every wrap-up - read this first)
+Last session: 2026-11-20/21 (branch `claude/serene-maxwell-jzugub`, merged into `main`).
+- **Channel live**: "How It's Built" @HowItsBuiltShorts_Official on YouTube + Instagram (TikTok not created yet).
+  Posted: card_tap (VID-002-v2) on 2026-11-20. Queue for the next posts (1 every 1-2 days, evening RO time):
+  `publishing/UPLOAD_LIST.txt` = elevator, chatbot, atm_notes, traffic_light (use v2), microwave,
+  self_checkout, undersea_cable (use v2), streaming. MP4s are NOT in git - re-render with `video-archive` if
+  the owner lost them (latest versions in `publishing/VIDEOS.md`).
+- **Videos made**: 9 (VID-001..009), all delivered. Library grew: kit.py (labels on top, perspective text,
+  sheet, packet...), parts car/signal_head/phone/server_rack/bank_building, branding.py (avatar, banner, covers).
+- **Next session, in this order**:
+  1. Ask the owner for stats of the first post(s): views, average % viewed, swipe-away rate, traffic source.
+     Use them to tune hooks/length (videos are ~1:25-2:10; streaming is the shortest, 6 fixes).
+  2. Ask whether to apply the varied opening/closing formula (see "Open idea" above) - then write it into
+     the `explainer-from-idea` skill as a rotation menu.
+  3. Next batch from `ideas/IDEAS.md` #11-#20 (recommended: #11 fridge, #12 escalator, #13 toilet).
+     Apply all scene-hygiene rules + full-timeline contact sheet before rendering; `--jobs 4`.
+  4. Optional: streaming v2 with 2-3 extra steps; TikTok account + same handle.
+
 ## Commands
 ```bash
 python -m stickman_studio.explainer.render --list

@@ -8,7 +8,10 @@ description: Session start and wrap-up for the Stickman/Explainer video studio. 
 Read `CLAUDE.md` first (project map + owner preferences). Answer the owner in Romanian.
 
 ## Mode: start (default)
-1. `git status`, `git log --oneline -15`, current branch; pull latest of the working branch.
+0. Read the section **"Where we left off"** in `CLAUDE.md` - it is the hand-over from the last session
+   (what was posted, what is queued, the ordered to-do list). Follow its "Next session" list.
+1. `git status`, `git log --oneline -15`, current branch; pull latest of the working branch (and `main`,
+   which holds the last merged session).
 2. Environment check (install only what is missing):
    `pip install -r requirements.txt`; `which espeak-ng || apt-get install -y espeak-ng`;
    Piper EN voice present? (`python -m stickman_studio.voices`) - else
@@ -23,5 +26,7 @@ Read `CLAUDE.md` first (project map + owner preferences). Answer the owner in Ro
 2. Put every new owner preference/feedback into `CLAUDE.md` -> "Owner preferences".
 3. New reusable visuals -> confirm they are in `explainer/lib/` and listed in `LIBRARY.md`.
 4. Lessons that would have saved time -> add to the relevant skill's "rules" section.
-5. Commit + push. Tell the owner what was delivered and what the next session will pick up
+5. Rewrite the **"Where we left off"** section in `CLAUDE.md` (date, branch, what was posted/delivered, the
+   posting queue, the ordered "Next session" list). Keep it short - it replaces the previous version.
+6. Commit + push (and push to `main` when the owner asks). Tell the owner what was delivered and what the next session will pick up
    (videos not yet delivered must be re-rendered next time: MP4s are not stored in git).
