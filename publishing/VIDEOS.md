@@ -35,5 +35,5 @@ Descriptions, captions and covers: `publishing/<slug>/post.md` and `cover.png` (
 | 10 | VID-010-v1 | fridge | Your Fridge Can't Make Cold. Here's What It Does Instead | 1:21 | 8 | `2c8cb16` [VID-010-v1] | 2026-11-21 | delivered; idea #11; first video with the hook headline + rotated formula |
 | 11 | VID-011-v1 | toilet | A Toilet Has No Pump. So How Does It Flush? | 1:19 | 8 | `22ae637` [VID-011-v1] | 2026-11-21 | delivered; idea #13 |
 | 12 | VID-012-v1 | gps | Your Phone Never Talks to GPS Satellites | 1:21 | 7 | `ce0cef2` [VID-012-v1] | 2026-11-21 | delivered; idea #14 |
-| 13 | VID-013-v1 | touchscreen | Your Screen Can't Feel You Press | 1:14 | 7 | `eaed305` [VID-013-v1] | 2026-11-21 | idea #15 |
-| 14 | VID-014-v1 | airbag | Your Airbag Is a Tiny Explosion | 1:10 | 7 | `5c35ffc` [VID-014-v1] | 2026-11-21 | idea #16 |
+| 13 | VID-013-v1 | touchscreen | Your Screen Can't Feel You Press | 1:14 | 7 | `eaed305` [VID-013-v1] | 2026-11-21 | delivered; idea #15 |
+| 14 | VID-014-v1 | airbag | Your Airbag Is a Tiny Explosion | 1:10 | 7 | `5c35ffc` [VID-014-v1] | 2026-11-21 | delivered; idea #16 |
