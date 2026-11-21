@@ -242,3 +242,43 @@ def sheet(cam, pts, s, length, width, color, double=0.0, outline=None, crumple=0
         r = width * 0.18 * cam.s
         cam.d.ellipse((x - r, y - r * 0.5, x + r, y + r * 0.5), outline=_shade(col, -0.3),
                       width=max(1, int(0.006 * cam.s)))
+
+
+def path_prefix(pts, s):
+    """The first fraction s (0..1, by length) of a polyline, keeping its corners (for pipes/cables that
+    'grow' along their route)."""
+    if s >= 1.0:
+        return list(pts)
+    if s <= 0.0:
+        return [pts[0], pts[0]]
+    seg = [math.dist(a, b) for a, b in zip(pts, pts[1:])]
+    d = s * (sum(seg) or 1.0)
+    out = [pts[0]]
+    for (a, b), L in zip(zip(pts, pts[1:]), seg):
+        if d <= L:
+            k = d / L if L else 0.0
+            out.append(tuple(a[i] + (b[i] - a[i]) * k for i in range(3)))
+            return out
+        out.append(b)
+        d -= L
+    return out
+
+
+def heat_wisps(cam, base, t, color=(255, 120, 60), n=3, h=0.6, spread=0.3, amount=1.0, width=0.02, axis="z"):
+    """Wavy rising lines (heat leaving a surface). axis = direction they travel ('z' up, 'x'/'y' sideways)."""
+    if amount <= 0.01:
+        return
+    for i in range(n):
+        f = (t * 0.7 + i / n) % 1.0
+        pts = []
+        for j in range(8):
+            q = j / 7 * 0.35
+            w = 0.04 * math.sin((f + q) * 14 + i)
+            off = (i - (n - 1) / 2) * spread / max(1, n - 1)
+            if axis == "z":
+                pts.append((base[0] + off + w, base[1] + w, base[2] + (f + q) * h))
+            elif axis == "x":
+                pts.append((base[0] + (f + q) * h, base[1] + off + w, base[2] + w))
+            else:
+                pts.append((base[0] + off + w, base[1] + (f + q) * h, base[2] + w))
+        cam.line(pts, mix(color, (255, 255, 255), f * 0.8), width * amount * (1 - f * 0.6), caps=False)

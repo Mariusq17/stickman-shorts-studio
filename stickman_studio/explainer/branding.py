@@ -49,6 +49,8 @@ COVERS = {
                       lines=[("WHY MOVIES START", (255, 255, 255)), ("INSTANTLY", YELLOW)]),
     "atm_notes": dict(t=44.5, cam=((0.75, 1.3, 0.95), 360),
                       lines=[("HOW AN ATM KNOWS", (255, 255, 255)), ("2 NOTES ARE STUCK", YELLOW)]),
+    "fridge": dict(t=40.5, cam=((0.9, 0.8, 1.7), 215),
+                   lines=[("YOUR FRIDGE", (255, 255, 255)), ("CAN'T MAKE COLD", YELLOW)]),
 }
 
 

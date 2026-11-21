@@ -12,6 +12,8 @@ Pop-up dicts (used in a step's "pops" list; "at"/"until" are narration cues):
   graph   {title, track, ymax, color, pos, window}   live line graph of an animation track
   arrow   {xyz, text, color, off}                    label with a pointer to a 3D point
   card    {title, sub, tap}                          follow card CTA
+  hook    {text, hi, color}                          big opening headline (paradox question) for the first
+                                                     1-3 s; words listed in `hi` get a coloured highlight
 Positions: tl tr ml mr bl br bc c.
 """
 from __future__ import annotations
@@ -315,6 +317,55 @@ def draw_pop(img, cam, p, t, W, H, tr=None):
         paste(img, L, bx - L.width / 2, by - L.height / 2, a)
     elif kind == "card":
         draw_follow_card(img, p, t, W, H, a)
+    elif kind == "hook":
+        draw_hook(img, p, t, W, H, a)
+
+
+def draw_hook(img, p, t, W, H, a):
+    """Opening headline: heavy white text with dark outline, highlighted words on a tilted marker bar,
+    punches in word-group by line (first line at t0, second ~0.25 s later). Sits at ~22% height."""
+    t0 = p["t0"]
+    hi = [w.lower() for w in p.get("hi", [])]
+    col = tuple(p.get("color", (255, 200, 40)))
+    size = int(W * p.get("size", 0.092))
+    f = font(size)
+    tmp = ImageDraw.Draw(img)
+    lines, cur = [], ""
+    for wd in p["text"].split():
+        c = (cur + " " + wd).strip()
+        if tmp.textlength(c, font=f) > W * 0.86 and cur:
+            lines.append(cur)
+            cur = wd
+        else:
+            cur = c
+    lines.append(cur)
+    y0 = H * p.get("y", 0.19)
+    for j, ln in enumerate(lines):
+        k = ease_out_back(clamp((t - t0 - 0.22 * j) / 0.32))
+        if k <= 0:
+            continue
+        lw = int(tmp.textlength(ln, font=f)) + size
+        lh = int(size * 1.45)
+        L = Image.new("RGBA", (lw, lh), (0, 0, 0, 0))
+        d = ImageDraw.Draw(L)
+        x = size * 0.5
+        for wd in ln.split(" "):
+            ww = d.textlength(wd, font=f)
+            if wd.lower().strip(".,?!'\"") in hi:
+                d.rounded_rectangle((x - size * 0.12, lh * 0.16, x + ww + size * 0.12, lh * 0.88),
+                                    radius=size * 0.18, fill=col + (255,))
+            x += ww + d.textlength(" ", font=f)
+        x = size * 0.5
+        for wd in ln.split(" "):
+            ww = d.textlength(wd, font=f)
+            isk = wd.lower().strip(".,?!'\"") in hi
+            d.text((x, lh * 0.52), wd, font=f, fill=(25, 25, 32, 255) if isk else (255, 255, 255, 255), anchor="lm",
+                   stroke_width=0 if isk else max(3, int(size * 0.13)), stroke_fill=(25, 25, 32, 255))
+            x += ww + d.textlength(" ", font=f)
+        L = L.rotate(-2.5 if j % 2 == 0 else 1.5, expand=True, resample=Image.BICUBIC)
+        sc = 0.55 + 0.45 * k
+        L = L.resize((max(1, int(L.width * sc)), max(1, int(L.height * sc))))
+        paste(img, L, W / 2 - L.width / 2, y0 + j * size * 1.3 - L.height / 2 + size * 0.6, a)
 
 
 _AVATAR = {}
