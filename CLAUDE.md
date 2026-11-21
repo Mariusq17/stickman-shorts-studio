@@ -51,10 +51,10 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   (title, commit, date) so any old version can be re-rendered exactly (skill `video-archive`).
 - Handle: `@HowItsBuiltShorts_Official` (name "How It's Built"); same on YouTube, Instagram, TikTok.
 - Wants the process as automatic as possible so they can work on other things meanwhile.
-- Open idea (owner asked, NOT approved yet - ask before applying): vary the opening/closing formula per video
-  (paradox question / "Did you know..." / "simplest X, also terrible, let's fix it" / current "If you put...";
-  endings "And that's how you build a...", "Now you know more about X than 99% of people", current
-  "Congratulations..."), never the same one twice in a row in posting order.
+- Opening/closing formula ROTATION approved 2026-11-21 (menu in skill `explainer-from-idea`): paradox /
+  "Did you know..." / "simplest X, also terrible, let's fix it" / "If you put..."; endings "And that's how you build
+  a...", "Now you know more about X than 99% of people", "Congratulations..."; never the same twice in a row.
+  Every video opens with an on-screen paradox headline (`hook` pop) + motion from frame 0; target length 1:20-1:40.
 - Channel launched 2026-11-20: card_tap posted on YouTube + Instagram; owner waits 1-2 days for reach, then
   wants to discuss stats (views, average % watched, traffic sources) to tune the next batch.
 - Stats card_tap after 17 h (2026-11-21): 1.2K views, 825 engaged, 65.7% stayed / 34.3% swiped away,
@@ -73,22 +73,21 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   and other cars/ambulance drive through it; undersea_cable (better): cable ends not connected to the stations.
 
 ## Where we left off (updated at every wrap-up - read this first)
-Last session: 2026-11-20/21 (branch `claude/serene-maxwell-jzugub`, merged into `main`).
-- **Channel live**: "How It's Built" @HowItsBuiltShorts_Official on YouTube + Instagram (TikTok not created yet).
-  Posted: card_tap (VID-002-v2) on 2026-11-20. Queue for the next posts (1 every 1-2 days, evening RO time):
-  `publishing/UPLOAD_LIST.txt` = elevator, chatbot, atm_notes, traffic_light (use v2), microwave,
-  self_checkout, undersea_cable (use v2), streaming. MP4s are NOT in git - re-render with `video-archive` if
-  the owner lost them (latest versions in `publishing/VIDEOS.md`).
-- **Videos made**: 9 (VID-001..009), all delivered. Library grew: kit.py (labels on top, perspective text,
-  sheet, packet...), parts car/signal_head/phone/server_rack/bank_building, branding.py (avatar, banner, covers).
+Last session: 2026-11-21 (branch `claude/hopeful-bohr-tjnjh1`).
+- **Channel**: "How It's Built" on YouTube + Instagram (TikTok not created yet). Posted: card_tap (VID-002-v2) on
+  2026-11-20 -> 1.2K views in 17 h, 65.7% stayed / 34.3% swiped, avg 1:08 of 1:54 (details in Owner preferences).
+- **Batch 3 delivered (2026-11-21)**: fridge VID-010, toilet VID-011, gps VID-012, touchscreen VID-013,
+  airbag VID-014 (ideas #11, #13-#16; #12 escalator skipped by the owner). All ~1:10-1:21, new hook headline,
+  rotated openings/endings. Texts in `publishing/<slug>/post.md` + `UPLOAD_LIST.txt` (#9-#13). Not rated yet.
+- **Posting queue** (`publishing/UPLOAD_LIST.txt`, 1 every 1-2 days, evening RO time): elevator, chatbot, atm_notes,
+  traffic_light (v2), microwave, self_checkout, undersea_cable (v2), streaming, then fridge, toilet, gps,
+  touchscreen, airbag. MP4s are NOT in git - re-render with `video-archive` if lost.
 - **Next session, in this order**:
-  1. Ask the owner for stats of the first post(s): views, average % viewed, swipe-away rate, traffic source.
-     Use them to tune hooks/length (videos are ~1:25-2:10; streaming is the shortest, 6 fixes).
-  2. Ask whether to apply the varied opening/closing formula (see "Open idea" above) - then write it into
-     the `explainer-from-idea` skill as a rotation menu.
-  3. Next batch from `ideas/IDEAS.md` #11-#20 (recommended: #11 fridge, #12 escalator, #13 toilet).
-     Apply all scene-hygiene rules + full-timeline contact sheet before rendering; `--jobs 4`.
-  4. Optional: streaming v2 with 2-3 extra steps; TikTok account + same handle.
+  1. Ask for the owner's rating of batch 3 + stats of the newest posts (retention graph: where do people drop?).
+     Compare the new-hook videos vs card_tap on "stayed to watch" once they are posted.
+  2. Fix anything the owner flags (v2 renders), register in `VIDEOS.md`.
+  3. Next batch from `ideas/IDEAS.md` (#7 EV battery, #12 escalator, #17-#20) or generate 10 new ideas.
+  4. Optional: TikTok account; streaming v2.
 
 ## Commands
 ```bash

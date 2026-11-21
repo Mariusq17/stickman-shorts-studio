@@ -19,7 +19,17 @@ List the real components in the order they would be *needed*, each with the prob
 Use only well-established facts; if a number is not certain, drop it. 8-12 fixes.
 
 ## 3. Write the script (English, ~3.2 words/s -> ~400-450 words for 2-2.5 min)
-- **Hook = first build step**: "If you put <simplest version>, you've got the world's simplest <thing>."
+- **Hook = first build step**, opened with a paradox line that is ALSO shown on screen from frame 0
+  (`pops=[dict(kind="hook", at=0.0, until="w:<word ~2.5 s in>", text="Your fridge CAN'T make cold",
+  hi=["can't","cold"])]`) and something already moving/exploding in the first 0.3 s (stats 2026-11-21:
+  34% swiped away in the first second on card_tap).
+- **Opening/closing rotation (owner approved 2026-11-21)** - never the same one twice in a row in posting order:
+  openings: (a) paradox "Your X can't/never..." (b) "Did you know..." (c) "The simplest X is ... It's also
+  terrible. Let's fix it." (d) classic "If you put <simplest version>, you've got the world's simplest <thing>."
+  endings: (1) "And that's how you build a X." (2) "Now you know more about X than 99% of people."
+  (3) "Congratulations, you just built a X." - each + one-line joke + "Follow for more."
+  Batch 2026-11-21: fridge a/1, toilet c/2, gps b/3, touchscreen a/1, airbag a/2 -> next video: b or c / 3.
+- **Length 1:20-1:40** (~260-300 words, 11-13 steps, 7-9 fixes).
 - Loop: "But/Until <problem>." -> "So you <fix>." -> "That's the <term>." (term AFTER the need)
 - Every ~10 s something new breaks; escalate stakes. Short sentences, conversational, dry humour.
 - 1-2 **exaggerated, concrete comparisons** ("like a seesaw where your friend already sits on the

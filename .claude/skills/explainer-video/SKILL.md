@@ -45,6 +45,10 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
 
 - Narration drives everything: use cues `"w:word"` so visuals appear exactly when spoken. Every cue
   word must exist in that step's text (the planner raises KeyError otherwise).
+- Hook headline: every video opens with a `hook` pop (big paradox text, highlighted words) from t=0 to ~2.5 s
+  and motion in the very first frames (start a `do` at 0.0, e.g. a bag exploding, a pipe growing, a finger tapping).
+- Callouts that only matter in one step: gate them with `tr.step_at(t) in (...)` so the late wide shots don't
+  drown in old labels (GPS/toilet lesson). Size callouts with a pixel floor: `max(0.1, 0.033 * cam.img.width / cam.s)`.
 - Hook: screen must not be static - build the object piece by piece on the hook's own words, camera
   starts close and pulls out as it grows.
 - Keywords: 1-3 words, RED = problem, INK = term, BLUE = result; consecutive keywords replace

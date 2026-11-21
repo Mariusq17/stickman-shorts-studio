@@ -12,7 +12,10 @@ explainer/
   elevator.py     example video (script + scene)          <- copy this structure for new videos
   videos/         card_tap (shop + bank network), chatbot (word machine + belts), atm_notes (cutaway machine),
                   traffic_light (crossroad + cars), microwave (see-through door + x-ray), self_checkout (store lane),
-                  undersea_cable (diorama with translucent water), streaming (servers -> ISP -> living room TV)
+                  undersea_cable (diorama with translucent water), streaming (servers -> ISP -> living room TV),
+                  fridge (cut-away cabinet + refrigerant loop coloured by temperature), toilet (cut-plane section on a
+                  y wall: S-trap morph, water levels via polygon clipping), gps (map + satellites + circles), touchscreen
+                  (exploded layers, electrode grid heat-map), airbag (cut-away car, bag inflating from the wheel)
   branding.py     channel avatar, banner, per-video covers (COVERS dict); cover = last 0.5 s of each video
   lib/
     palette.py    harmonised colours, mix/warm/cool helpers, PEG_COLORS
@@ -26,7 +29,8 @@ explainer/
     kit.py        scene helpers: gradient_bg, peg (mascot + contact shadow), label (billboard callout, always drawn on top of the scene),
                   path_point/sub_path, packet (glowing data dot on a path), cable, glow_dot, rings,
                   plate / plane_text (rectangles + perspective-correct text printed on a plane, auto-fit with max_w/max_h), strip, sheet (banknote/ticket
-                  moving along a path, can be doubled or crumpled)
+                  moving along a path, can be doubled or crumpled), path_prefix (polyline that grows
+                  along its route keeping corners - pipes/cables being laid), heat_wisps (wavy lines leaving a surface)
 ```
 
 ## Writing a new video
@@ -61,6 +65,7 @@ explainer/
 | `graph` | `title, track, window, color` | live line graph of an animation track (speed, load) |
 | `arrow` | `xyz, text, color, off` | label pointing at a 3D part |
 | `card` | `title, sub, tap` | follow CTA with tap animation |
+| `hook` | `text, hi, color, size, y` | opening paradox headline (first ~2.5 s), words in `hi` on a marker bar |
 
 Positions: `tl tr ml mr bl br bc c`. Timing: `at` + `dur` or `until` (cues).
 

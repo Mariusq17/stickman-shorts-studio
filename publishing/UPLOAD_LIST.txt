@@ -1,4 +1,4 @@
-HOW IT'S BUILT - texte de postare (8 videouri)
+HOW IT'S BUILT - texte de postare (13 videouri)
 ============================================================
 Pe fiecare: titlu YouTube, descriere YouTube, caption Instagram/TikTok, comentariu fixat (pin).
 Coperta: publishing/<video>/cover.png (Instagram) / ultimul cadru din video (YouTube).
@@ -171,3 +171,106 @@ We build a streaming service: codecs, chunks, adaptive quality (that's why it st
 --- COMENTARIU FIXAT ---
 Ever noticed a video starts blurry and then snaps sharp? Now you know why 👀
 
+############################################################
+9. Frigiderul   (fisier video: fridge.mp4, coperta: fridge/cover.png)
+############################################################
+
+--- YOUTUBE TITLU ---
+Your Fridge Can't Make Cold. Here's What It Does Instead
+
+--- YOUTUBE DESCRIERE ---
+A refrigerator built step by step: a liquid that boils at -26°C inside the evaporator, the compressor that squeezes the warm gas until it's hotter than your kitchen, the condenser that dumps the heat into the room, the capillary tube that drops the pressure, the thermostat that switches the compressor on and off, the fan, auto defrost and the magnetic door seal.
+
+#technology #howitworks
+
+--- INSTAGRAM / TIKTOK CAPTION ---
+Your fridge can't make cold. It steals heat from your food and dumps it into your kitchen ❄️
+We build one from a pipe in a box: evaporator, compressor, condenser, capillary tube, thermostat, auto defrost and the magnet in the door seal.
+#technology #howitworks
+
+--- COMENTARIU FIXAT ---
+Ever touched the side of your fridge and felt it warm? Now you know why 🔥❄️
+
+
+############################################################
+10. Toaleta   (fisier video: toilet.mp4, coperta: toilet/cover.png)
+############################################################
+
+--- YOUTUBE TITLU ---
+A Toilet Has No Pump. So How Does It Flush?
+
+--- YOUTUBE DESCRIERE ---
+A gravity flush toilet built step by step: the S-shaped trap that keeps a plug of water against sewer smell, the tank, the flapper lifted by a chain, the siphon that pulls everything down the drain (that's the gurgle), the holes under the rim, the float-operated fill valve, the refill tube that tops up the bowl and the overflow tube that stops the bathroom from flooding.
+
+#engineering #howitworks
+
+--- INSTAGRAM / TIKTOK CAPTION ---
+A toilet has no pump and no electricity. So how does it flush? 🚽
+We build one from a bucket and a bowl: the S-trap, tank, flapper, the siphon behind the gurgle, rim holes, fill valve, refill tube and overflow tube.
+#engineering #howitworks
+
+--- COMENTARIU FIXAT ---
+You'll never hear the flush gurgle the same way again 🚽
+
+
+############################################################
+11. GPS   (fisier video: gps.mp4, coperta: gps/cover.png)
+############################################################
+
+--- YOUTUBE TITLU ---
+Your Phone Never Talks to GPS Satellites
+
+--- YOUTUBE DESCRIERE ---
+GPS built step by step: satellites that broadcast their position and the exact time, the signal delay that gives the distance, circles on the map and trilateration, why a cheap phone clock would put you 300 m off, atomic clocks on the satellites, the fourth satellite that fixes your phone's clock, Einstein's relativity correction (38 microseconds a day) and the ground stations that update the orbits.
+
+#technology #howitworks
+
+--- INSTAGRAM / TIKTOK CAPTION ---
+Your phone never talks to GPS satellites. It only listens 🛰️
+We build GPS from one satellite shouting the time: delay = distance, trilateration, atomic clocks, the 4th satellite and Einstein's 38 microseconds a day.
+#technology #howitworks
+
+--- COMENTARIU FIXAT ---
+Did you know GPS needs Einstein to work? 🛰️
+
+
+############################################################
+12. Touchscreen   (fisier video: touchscreen.mp4, coperta: touchscreen/cover.png)
+############################################################
+
+--- YOUTUBE TITLU ---
+Your Screen Can't Feel You Press
+
+--- YOUTUBE DESCRIERE ---
+A capacitive touchscreen built step by step: a grid of see-through metal-oxide wires over the display, the controller chip that pulses every row, mutual capacitance at every crossing, your finger stealing part of the field, a scan over a hundred times a second, finding the centre of the touch blob, multitouch, palm rejection, why water causes ghost touches and why regular gloves don't work.
+
+#technology #howitworks
+
+--- INSTAGRAM / TIKTOK CAPTION ---
+Your screen can't feel you press. It feels your electricity ⚡📱
+We build a touchscreen from a grid of invisible wires: mutual capacitance, 100+ scans a second, multitouch, palm rejection and why gloves don't work.
+#technology #howitworks
+
+--- COMENTARIU FIXAT ---
+Have you ever tried using your phone with gloves on? Now you know why it ignores you 🧤
+
+
+############################################################
+13. Airbag   (fisier video: airbag.mp4, coperta: airbag/cover.png)
+############################################################
+
+--- YOUTUBE TITLU ---
+Your Airbag Is a Tiny Explosion
+
+--- YOUTUBE DESCRIERE ---
+An airbag system built step by step: a folded nylon bag in the steering wheel, a gas generator, the crash sensor (accelerometer), the airbag computer that tells a pothole from a crash in milliseconds, the igniter and the nitrogen gas, the tear seam, inflation in about 30 milliseconds, vent holes for a soft landing, the powder 'smoke', the seatbelt pretensioner and the passenger seat weight sensor.
+
+#engineering #howitworks
+
+--- INSTAGRAM / TIKTOK CAPTION ---
+Your airbag is a tiny explosion that fills faster than you can blink 💥
+We build one: crash sensor, airbag computer, igniter, nitrogen gas, tear seam, vent holes, seatbelt pretensioner and the seat weight sensor.
+#engineering #howitworks
+
+--- COMENTARIU FIXAT ---
+Did you know the airbag 'smoke' is mostly powder? 💨
