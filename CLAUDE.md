@@ -84,6 +84,10 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   objects and fluids must obey physics (water only flows inside pipes/channels, falls in arcs, levels match like
   communicating vessels, parts attached to what holds them, things fit) - simplified, not realistic; add a short
   PAUSE after every checkpoint/new part (`pause` per step, ~0.7 s) so the video has milestones, not a constant rush.
+  toilet v3 (2026-11-21): better; but the shouted "!" reward lines sound wrong -> say the part name calmly after a
+  short pause ("~And that's the trap." - "~" = pause in the TTS); too many emojis -> prefer graphs, bars, meters,
+  equations, counters, drawn animations; pops spread over the screen and NEVER overlapping (automatic layout when
+  VIDEO dynamic=True); much more camera motion: zoom in/out and transitions every 1-2 s (dynamic camera).
   batch 2 (2026-11-20): quality drops towards the end of videos - traffic_light: the red car stays all video
   and other cars/ambulance drive through it; undersea_cable (better): cable ends not connected to the stations.
 

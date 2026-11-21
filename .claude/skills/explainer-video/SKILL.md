@@ -50,6 +50,11 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
   every part is attached to what holds it (flapper hinged on the overflow tube, tank sitting on the bowl), nothing
   floats or crosses through solids. Cut-away sections: draw the whole object as one prism (outline extruded) with
   cavities on the cut face (see `videos/toilet.py` v3). Check this on the contact sheet BEFORE rendering.
+- New videos set `dynamic=True` in VIDEO: automatic pop layout (3x2 grid, wide widgets take a row, never overlapping)
+  and a dynamic camera (zoom punch on every keyword/pop, push-in / pull-back at each step start, slow breathing).
+  Still add 1-2 `cams` moves inside every step (close-up on the moving part, then back) - something changes every 1-2 s.
+- Reward lines are spoken calmly after a pause: "~And that's the trap." (no "!"), the `stamp` carries the emphasis.
+- Prefer data widgets (graph of a level, bars, meter, equation, count) to emoji; max ~1 emoji per 15-20 s.
 - Illustrate examples with specific `emoji` pops (crossed out for "no X"), never generic warn chips for everything.
 - Checkpoints: steps that build a new part get `pause=0.7` and a `stamp` with the part name + "ding".
 - Hook headline: every video opens with a `hook` pop (big paradox text, highlighted words) from t=0 to ~2.5 s
