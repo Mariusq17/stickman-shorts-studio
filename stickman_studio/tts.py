@@ -249,11 +249,17 @@ class PiperEngine:
             arrs.append(np.asarray(ch.audio_float_array, dtype=np.float32))
             sr = ch.sample_rate
         x = np.concatenate(arrs) if arrs else np.zeros(1000, dtype=np.float32)
-        x, _ = trim_silence(x, sr, 0.015)
+        x, _ = trim_silence(x, sr, 0.008, pre=0.05)
         return resample(x, sr, SR)
 
     def synth(self, text, idx=0):
-        sents = split_sentences(text)
+        # very short sentences ("Let's fix it.") are often garbled by Piper on their own -> glue them to a neighbour
+        sents = []
+        for sn in split_sentences(text):
+            if sents and (len(sn.split()) < 4 or len(sents[-1].split()) < 4):
+                sents[-1] = sents[-1] + " " + sn
+            else:
+                sents.append(sn)
         return _clip_from_sentences([self._sentence(s) for s in sents], [tokenize(s) for s in sents],
                                     "piper")
 

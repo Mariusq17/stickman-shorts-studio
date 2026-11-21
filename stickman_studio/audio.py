@@ -63,7 +63,7 @@ def resample(x: np.ndarray, sr_in: int, sr_out: int = SR) -> np.ndarray:
     return np.interp(xi, np.arange(len(x)), x).astype(np.float32)
 
 
-def trim_silence(x: np.ndarray, sr: int, thr: float = 0.02):
+def trim_silence(x: np.ndarray, sr: int, thr: float = 0.02, pre: float = 0.01):
     """Returns (trimmed, offset_seconds)."""
     if len(x) == 0:
         return x, 0.0
@@ -72,7 +72,7 @@ def trim_silence(x: np.ndarray, sr: int, thr: float = 0.02):
     idx = np.where(a > thr * peak)[0]
     if len(idx) == 0:
         return x, 0.0
-    s = max(0, idx[0] - int(0.01 * sr))
+    s = max(0, idx[0] - int(pre * sr))
     e = min(len(x), idx[-1] + int(0.03 * sr))
     return x[s:e], s / sr
 
