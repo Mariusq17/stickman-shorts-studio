@@ -57,6 +57,8 @@ COVERS = {
                 lines=[("YOUR PHONE NEVER", (255, 255, 255)), ("TALKS TO GPS", YELLOW)]),
     "touchscreen": dict(t=39.0, cam=((1.0, 1.9, 0.7), 260),
                         lines=[("YOUR SCREEN", (255, 255, 255)), ("CAN'T FEEL", YELLOW), ("YOU PRESS", YELLOW)]),
+    "airbag": dict(t=31.0, cam=((1.6, 0.75, 1.0), 250),
+                   lines=[("YOUR AIRBAG IS A", (255, 255, 255)), ("TINY EXPLOSION", YELLOW)]),
 }
 
 
