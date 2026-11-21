@@ -105,7 +105,8 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
     texts = [s["text"] for s in steps]
     clips, engine = synthesize_all(texts, "auto", voice_rate, language="en", log=log)
     log(f"TTS: {engine}")
-    durs = [max(s.get("min", 0.0), LEAD + c.duration + TAIL) for s, c in zip(steps, clips)]
+    # "pause": a short silent beat after the narration (checkpoint after a new part is built) - visuals keep going
+    durs = [max(s.get("min", 0.0), LEAD + c.duration + TAIL + s.get("pause", 0.0)) for s, c in zip(steps, clips)]
     starts = list(np.cumsum([0.0] + durs[:-1]))
     total = float(sum(durs))
     content_total = total

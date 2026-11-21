@@ -12,6 +12,8 @@ Pop-up dicts (used in a step's "pops" list; "at"/"until" are narration cues):
   graph   {title, track, ymax, color, pos, window}   live line graph of an animation track
   arrow   {xyz, text, color, off}                    label with a pointer to a 3D point
   card    {title, sub, tap}                          follow card CTA
+  emoji   {emoji, text, no, xy|pos, size}            big emoji in a bubble with a caption; no=True -> red "NOT" slash
+                                                     (use it to SHOW what is said: no motor / no battery / a fish tank...)
   hook    {text, hi, color}                          big opening headline (paradox question) for the first
                                                      1-3 s; words listed in `hi` get a coloured highlight
 Positions: tl tr ml mr bl br bc c.
@@ -319,6 +321,74 @@ def draw_pop(img, cam, p, t, W, H, tr=None):
         draw_follow_card(img, p, t, W, H, a)
     elif kind == "hook":
         draw_hook(img, p, t, W, H, a)
+    elif kind == "emoji":
+        draw_emoji(img, p, t, W, H, a, k)
+
+
+_EMOJI_FONT = {}
+
+
+def emoji_font(size=109):
+    """Colour emoji font (Noto Color Emoji on Linux, Segoe UI Emoji on Windows). Bitmap fonts only render at 109."""
+    if size in _EMOJI_FONT:
+        return _EMOJI_FONT[size]
+    from PIL import ImageFont
+    import os
+    for path, sz in (("/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf", 109),
+                     ("C:/Windows/Fonts/seguiemj.ttf", size), ("/System/Library/Fonts/Apple Color Emoji.ttc", 160)):
+        if os.path.exists(path):
+            try:
+                _EMOJI_FONT[size] = ImageFont.truetype(path, sz)
+                return _EMOJI_FONT[size]
+            except OSError:
+                continue
+    _EMOJI_FONT[size] = None
+    return None
+
+
+def emoji_image(ch, px):
+    f = emoji_font(109)
+    if f is None:
+        return None
+    L = Image.new("RGBA", (220, 160), (0, 0, 0, 0))
+    ImageDraw.Draw(L).text((10, 10), ch, font=f, embedded_color=True)
+    bb = L.getbbox()
+    if not bb:
+        return None
+    L = L.crop(bb)
+    sc = px / max(L.width, L.height)
+    return L.resize((max(1, int(L.width * sc)), max(1, int(L.height * sc))), Image.LANCZOS)
+
+
+def draw_emoji(img, p, t, W, H, a, k):
+    """Illustration bubble: big emoji + short caption; pops with a bounce, wobbles gently while visible."""
+    px = int(W * p.get("size", 0.16))
+    em = emoji_image(p["emoji"], px)
+    text = p.get("text", "")
+    f = font(int(W * 0.042))
+    tw = ImageDraw.Draw(img).textlength(text, font=f) if text else 0
+    w = max(px * 1.35, tw + W * 0.06)
+    h = px * 1.3 + (W * 0.06 if text else 0)
+    L, pad = card(w, h, W * 0.04)
+    d = ImageDraw.Draw(L)
+    if em is not None:
+        L.paste(em, (int(pad + w / 2 - em.width / 2), int(pad + px * 0.15)), em)
+    if p.get("no"):
+        cx, cy, r = pad + w / 2, pad + px * 0.15 + px / 2, px * 0.62
+        lw = max(4, int(px * 0.09))
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=RED + (235,), width=lw)
+        d.line((cx - r * 0.7, cy + r * 0.7, cx + r * 0.7, cy - r * 0.7), fill=RED + (235,), width=lw)
+    if text:
+        d.text((pad + w / 2, pad + h - W * 0.042), text, font=f, fill=RED if p.get("no") else INK, anchor="mm")
+    sc = 0.4 + 0.6 * k
+    rot = math.sin((t - p["t0"]) * 3.0) * 3.0
+    L = L.rotate(rot, expand=True, resample=Image.BICUBIC)
+    L = L.resize((max(1, int(L.width * sc)), max(1, int(L.height * sc))))
+    if "xy" in p:
+        x, y = p["xy"][0] * W - L.width / 2, p["xy"][1] * H - L.height / 2
+    else:
+        x, y = anchor(p.get("pos", "tr"), L.width, L.height, W, H)
+    paste(img, L, x, y, a)
 
 
 def draw_hook(img, p, t, W, H, a):

@@ -282,3 +282,23 @@ def heat_wisps(cam, base, t, color=(255, 120, 60), n=3, h=0.6, spread=0.3, amoun
             else:
                 pts.append((base[0] + off + w, base[1] + (f + q) * h, base[2] + w))
         cam.line(pts, mix(color, (255, 255, 255), f * 0.8), width * amount * (1 - f * 0.6), caps=False)
+
+
+def flow_line(cam, pts, t, color, width, speed=0.8, dash=0.1, amount=1.0, base=True):
+    """Liquid/gas flowing inside a pipe or channel: a solid core plus light dashes travelling along the path
+    (direction = order of pts). amount scales the width (0 = nothing)."""
+    if amount <= 0.01 or len(pts) < 2:
+        return
+    seg = [math.dist(a, b) for a, b in zip(pts, pts[1:])]
+    L = sum(seg) or 1.0
+    if base:
+        cam.line(pts, color, width * amount, caps=False)
+    hi = mix(color, (255, 255, 255), 0.55)
+    step = 2.5 * dash / L
+    off = ((t * speed) / L) % step
+    s = off - step
+    while s < 1.0:
+        a, b = max(0.0, s), min(1.0, s + dash / L)
+        if b > a:
+            cam.line(sub_path(pts, a, b, 3), hi, width * amount * 0.45, caps=False)
+        s += step
