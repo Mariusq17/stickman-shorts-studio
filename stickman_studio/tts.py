@@ -207,8 +207,8 @@ def normalize_voice(x: np.ndarray, target_rms: float = 0.12, peak: float = 0.92)
     return y.astype(np.float32)
 
 
-def _clip_from_sentences(pieces, words_per_piece, engine, gap=0.16):
-    """pieces: list of float32 arrays @SR (one per sentence)."""
+def _clip_from_sentences(pieces, words_per_piece, engine, gap=0.16, gaps=None):
+    """pieces: list of float32 arrays @SR (one per sentence). gaps[k] = silence after sentence k (optional)."""
     out, times, t = [], [], 0.0
     for k, (x, words) in enumerate(zip(pieces, words_per_piece)):
         dur = len(x) / SR
@@ -216,8 +216,9 @@ def _clip_from_sentences(pieces, words_per_piece, engine, gap=0.16):
         out.append(x)
         t += dur
         if k < len(pieces) - 1:
-            out.append(np.zeros(int(gap * SR), dtype=np.float32))
-            t += gap
+            g = gaps[k] if gaps else gap
+            out.append(np.zeros(int(g * SR), dtype=np.float32))
+            t += g
     y = normalize_voice(np.concatenate(out) if out else np.zeros(SR // 4, dtype=np.float32))
     words = [w for ws in words_per_piece for w in ws]
     return SpeechClip(y, times, words, engine, envelope(y, SR))
@@ -253,15 +254,19 @@ class PiperEngine:
         return resample(x, sr, SR)
 
     def synth(self, text, idx=0):
-        # very short sentences ("Let's fix it.") are often garbled by Piper on their own -> glue them to a neighbour
-        sents = []
+        # very short sentences ("Let's fix it.") are often garbled by Piper on their own -> glue them to a neighbour.
+        # A sentence starting with "~" gets a short natural pause before it (checkpoint beat) and is never glued.
+        sents, gaps = [], []
         for sn in split_sentences(text):
-            if sents and (len(sn.split()) < 4 or len(sents[-1].split()) < 4):
+            beat = sn.startswith("~")
+            sn = sn.lstrip("~ ").strip()
+            if sents and not beat and (len(sn.split()) < 4 or len(sents[-1].split()) < 4) and gaps[-1] < 0.3:
                 sents[-1] = sents[-1] + " " + sn
             else:
                 sents.append(sn)
+                gaps.append(0.45 if beat else 0.16)
         return _clip_from_sentences([self._sentence(s) for s in sents], [tokenize(s) for s in sents],
-                                    "piper")
+                                    "piper", gaps=gaps[1:] + [0.0])
 
 
 def piper_ready(language: str, voice_id=None) -> bool:

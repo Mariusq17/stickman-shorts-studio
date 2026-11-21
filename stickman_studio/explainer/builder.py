@@ -97,12 +97,50 @@ class Timing:
 
 
 # ------------------------------------------------------------------ build
+# ---------------------------------------------------------------- pop layout
+_WIDE = {"meter", "graph", "bars", "equation", "stamp"}
+_ROWS = {"t": 0, "m": 1, "b": 2}
+
+
+def _layout_pops(pops):
+    """Give every pop its own free screen cell for its whole lifetime so pop-ups never cover each other.
+    Grid: 3 rows (top 0.20 H, middle 0.40 H, bottom 0.74 H) x 2 columns; wide widgets take a whole row.
+    A pop's own `pos` is its first choice; `xy`, arrows, hooks and the follow card are left alone."""
+    busy = []                                       # (t0, t1, row, col)
+
+    def free(t0, t1, cells):
+        return all(not (a < t1 and t0 < b and (r, c) in cells) for a, b, r, c in busy)
+    for p in sorted(pops, key=lambda q: q["t0"]):
+        if p["kind"] in ("arrow", "hook", "card") or "xy" in p:
+            continue
+        t0, t1 = p["t0"] - 0.05, p["t1"] + 0.35
+        pos = p.get("pos", "tr")
+        wide = p["kind"] in _WIDE
+        pref_r = _ROWS.get(pos[0], 0)
+        if wide:
+            rows = [pref_r] + [r for r in (2, 0, 1) if r != pref_r]
+            for r in rows:
+                cells = {(r, 0), (r, 1)}
+                if free(t0, t1, cells):
+                    p["pos"] = {0: "tc", 1: "mc", 2: "bc"}[r]
+                    busy += [(t0, t1, r, 0), (t0, t1, r, 1)]
+                    break
+            continue
+        pref_c = 0 if pos.endswith("l") else 1
+        order = [(pref_r, pref_c), (pref_r, 1 - pref_c)] + [(r, c) for r in (0, 2, 1) for c in (1, 0)]
+        for r, c in order:
+            if free(t0, t1, {(r, c)}):
+                p["pos"] = {0: "t", 1: "m", 2: "b"}[r] + ("l" if c == 0 else "r")
+                busy.append((t0, t1, r, c))
+                break
+
+
 def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps=30, size=(1080, 1920),
                     ss=2, voice_rate=1.2, music_volume=0.07, log=print, progress=None, preview_frames=None,
                     preview_times=None, return_plan=False, tracker=None, motion_blur=True, end_cover=None,
-                    cover_dur=0.5):
+                    cover_dur=0.5, dynamic=False, layout=False):
     t0 = time.time()
-    texts = [s["text"] for s in steps]
+    texts = [s["text"] for s in steps]                 # "~" = pause before a sentence (handled by the TTS)
     clips, engine = synthesize_all(texts, "auto", voice_rate, language="en", log=log)
     log(f"TTS: {engine}")
     # "pause": a short silent beat after the narration (checkpoint after a new part is built) - visuals keep going
@@ -164,7 +202,29 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
             replaced = True
         k[1] = max(k[0] + 0.3, end)
         k.append(replaced)
+    if layout:
+        _layout_pops(pops)
     camp = CameraPath(tr, total, fps, width=W)
+    # dynamic camera: a quick zoom punch on every keyword / pop, alternating push-in / pull-back at each step start,
+    # and a slow breathing zoom - the frame changes every 1-2 s
+    beats = sorted({round(k[0], 2) for k in keys} | {round(p["t0"], 2) for p in pops if p["kind"] != "card"})
+
+    def zoom_mod(t):
+        if not dynamic:
+            return 1.0
+        m = 1.0 + 0.025 * math.sin(t * 0.9)
+        for b in beats:
+            d = t - b
+            if -0.05 < d < 1.2:
+                up = clamp((d + 0.05) / 0.22)
+                m += 0.055 * (up - clamp((d - 0.25) / 0.95) ** 1.5 * up)
+        i = tr.step_at(t)
+        d = t - starts[i]
+        if i > 0 and d < 1.6:
+            k = 1 - clamp(d / 1.6)
+            k = k * k * (3 - 2 * k)
+            m *= 1.0 + (0.12 if i % 2 else -0.10) * k
+        return m
     sfx += [(c - 0.12, "whoosh", 0.55) for c in camp.cuts if c > 0.2]
     # ---------------------------------------------------------- audio
     voice = [(s0 + LEAD, c.samples) for s0, c in zip(starts, clips)]
@@ -189,6 +249,7 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
         i = tr.step_at(t)
         img = scene.bg.copy()
         f, z = camp.at(t)
+        z *= zoom_mod(t)
         cam = IsoCam(img, f, z * ss, (RW / 2, RH * 0.56))
         scene.draw(img, cam, tr, t, i, t - starts[i])
         flush_labels(cam)          # callout labels always on top of every object
@@ -206,6 +267,7 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
         else:
             img = frame(t)[0]
         f, z = camp.at(t)
+        z *= zoom_mod(t)
         film = getattr(scene, "film_amount", lambda tr_, t_: 0.0)(tr, t)
         img = post.grade(img)
         if film > 0:

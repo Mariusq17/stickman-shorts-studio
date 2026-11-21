@@ -61,6 +61,8 @@ def render_one(slug, out=None, ss=2, log=print):
     out = out or os.path.join(OUTDIR, f"{slug}.mp4")
     os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
     kw = {}
+    if v.get("dynamic"):
+        kw["dynamic"] = kw["layout"] = True
     if v.get("voice_rate"):
         kw["voice_rate"] = v["voice_rate"]
     cover = os.path.join(ROOT, "publishing", slug, "cover.png")
@@ -77,7 +79,8 @@ def preview(slug, times, out_png, ss=1):
     from ..painter import font
     v = load(slug)
     frames, starts, durs, keys = build_explainer(v["steps"], v["scene"], None, v["initial"], v.get("overlays"), ss=ss,
-                                                 preview_times=times, tracker=v.get("tracker"), log=lambda m: None)
+                                                 preview_times=times, tracker=v.get("tracker"), log=lambda m: None,
+                                                 dynamic=bool(v.get("dynamic")), layout=bool(v.get("dynamic")))
     w, h = frames[0].size
     sc = 0.3
     tw, th = int(w * sc), int(h * sc)
