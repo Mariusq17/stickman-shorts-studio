@@ -69,6 +69,13 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   -> v2 8.5-9 (narration-synced visuals, pop-ups) -> v3 (fixed see-through objects, 1.3x)
   -> v4 9.5/10 (spring camera, motion blur, shadows, mascots v2, tracker, graphs).
   card_tap (2026-11-20): liked it; text on objects was not in perspective / not fitting -> fixed in engine.
+  batch 3 (2026-11-21, fridge/toilet/gps/touchscreen/airbag): owner said "came out bad", stop rendering:
+  (1) TTS says wrong words ("what t's fix it" instead of "let's fix it"), broke on a big number in gps;
+  (2) gps map = a square that looks like the world ends -> ground must be a huge disc/plane whose edges are never
+  in frame (only part of the arc visible), Earth must not look finite; (3) scripts too "silly" -> must be more
+  entertaining, human tone; (4) voice needs intonation, short natural pauses between ideas, and an excited,
+  emphasised delivery on every newly built part (reward moment: "...so you add A TANK!") - also emphasised in pops.
+  Rule now: approve a VOICE SAMPLE + script with the owner before any full render.
   batch 2 (2026-11-20): quality drops towards the end of videos - traffic_light: the red car stays all video
   and other cars/ambulance drive through it; undersea_cable (better): cable ends not connected to the stations.
 
