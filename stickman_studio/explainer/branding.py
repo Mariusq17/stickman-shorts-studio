@@ -53,6 +53,8 @@ COVERS = {
                    lines=[("YOUR FRIDGE", (255, 255, 255)), ("CAN'T MAKE COLD", YELLOW)]),
     "toilet": dict(t=29.5, cam=((1.2, 0.9, 1.0), 270),
                    lines=[("A TOILET HAS", (255, 255, 255)), ("NO PUMP", YELLOW), ("SO HOW DOES IT FLUSH?", (255, 255, 255))]),
+    "gps": dict(t=44.0, cam=((0.3, 0.4, 2.2), 105),
+                lines=[("YOUR PHONE NEVER", (255, 255, 255)), ("TALKS TO GPS", YELLOW)]),
 }
 
 
