@@ -11,6 +11,17 @@ Rules
   median, not against the single best video.
 - Status: planned -> running (posted) -> measured (48h/7d in) -> concluded.
 
+## Baseline (2026-11-22): card_tap, elevator, atm_notes - all O1 hook + E1 ending, 1:49-2:10
+YT stayed-to-watch 55.7-65.7%, avg % viewed ~59-76% (early, different ages), subs/1k 0.75-3.3; card_tap curve:
+cliff in the last ~13 s (payoff + CTA). Details: `STATS.md` table B. The 6 queued videos (also O1/E1) extend this
+baseline if posted as they are.
+
+## Priority after the first numbers (2026-11-22, hypothesis, 1-3 videos)
+1. EXP-003 short ending / loop - the only measured cliff so far (card_tap, last ~13 s).
+2. EXP-002 question hook - 34-44% swipe away at the start on all three.
+3. EXP-001 ~60 s - elevator (2:10) did not do worse on % viewed than card_tap (1:54), so length looks less urgent.
+The owner decides the order; EXP-001 was the owner's first pick.
+
 ## EXP-001 - Length ~60 s (status: planned)
 - **Variable:** duration ~55-65 s (5-6 fixes, ~170-190 words) instead of our usual 1:30-2:10 (7-11 fixes).
 - **Why first:** biggest expected effect on "average % viewed", zero engine work, easy to read in Studio.

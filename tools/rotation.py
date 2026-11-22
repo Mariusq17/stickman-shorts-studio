@@ -50,7 +50,9 @@ def sequence(md: str, proposed: bool = False):
 
 def repeats(seq):
     bad = []
-    for (s0, _, o0, e0), (s1, _, o1, e1) in zip(seq, seq[1:]):
+    for (s0, k0, o0, e0), (s1, k1, o1, e1) in zip(seq, seq[1:]):
+        if k0 == k1 == "posted":           # already published: history, not something we can still fix
+            continue
         if o0 == o1:
             bad.append(f"opening {o1} twice in a row: {s0} -> {s1}")
         if e0 == e1:

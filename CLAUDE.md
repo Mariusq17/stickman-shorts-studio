@@ -99,26 +99,34 @@ Never invent numbers, never present a heuristic as a prediction: say what is **p
 ## Learned rules (from NUMBERS - each with evidence + confidence; updated by the `studio` skill)
 Format: `- [confidence] rule - evidence (videos, numbers)`. Confidence: hypothesis (1-9 videos) / likely /
 confirmed (>= ~10 videos, consistent). Contradicted rules are downgraded or removed, never silently kept.
-- [heuristic, 0 videos] Hooks that state the topic only at the end of a 6-8 s sentence and open no question are
-  a retention risk - evidence: hookscore 9/9 WEAK (38-43); no audience numbers yet. -> test (EXP-002).
-- [heuristic, 0 videos] Long wind-down after the last fix (13-33% of runtime) is where Shorts usually lose viewers
-  - evidence: qa.py DNA numbers; no retention chart yet. -> test (EXP-003).
-- [hypothesis, 0 videos] ~60 s may raise average % viewed vs 1:30-2:10 - EXP-001 (planned).
-(No rule is confirmed yet: first post 2026-11-20, numbers not received.)
+- [hypothesis, 1 video] The ending loses most viewers: card_tap retention slides slowly (~75% at 0:30 -> ~45-50% at
+  ~1:40), then drops to ~10% in the last ~13 s (payoff + "congratulations" + CTA, steps 16-17). Shorten the
+  wind-down / make it loop -> EXP-003. Check elevator + atm_notes curves when Studio has processed them.
+- [hypothesis, 3 videos, same O1 hook] 34-44% swipe away at the start (stayed: card 65.7%, elevator 59.6%,
+  atm 55.7%); hookscore rates the O1 hook WEAK. The first seconds are the biggest leak by volume -> EXP-002.
+- [hypothesis, 2 videos, early] Length is not obviously hurting % viewed: elevator 2:10 ~61-69% vs card_tap
+  1:54 ~59-60%. EXP-001 (~60 s) is still worth running but is no longer the clear first priority.
+- [hypothesis, 3 videos] Subscribers per 1k views: elevator 3.3, atm 3.0, card_tap 0.75 (1-4 subs each - tiny numbers).
+- [hypothesis, 3 videos] Instagram: 0 shares on all three; likes 28-42 per 1k. Shareability is a gap.
+- [fact, 3 videos] YouTube thumbnail impressions are tiny (49 total until 11-21): Shorts traffic comes from the
+  feed, so covers/titles matter far less than the first seconds. Covers = low priority for experiments.
+(No rule is confirmed yet: 3 videos measured at 5-45 h, all with the same O1 hook and E1 ending.)
 
 ## Where we left off (updated at every wrap-up - read this first)
 Last session: 2026-11-22 (branch `claude/upbeat-hypatia-l9zq43`, not merged yet). Strategist upgrade, no renders.
 - **Channel live**: "How It's Built" @HowItsBuiltShorts_Official on YouTube + Instagram (TikTok not created yet).
-  Posted: card_tap (VID-002-v2) on 2026-11-20. Queue (1 every 1-2 days, evening RO time): `UPLOAD_LIST.txt` =
-  elevator, chatbot, atm_notes, traffic_light (v2), microwave, self_checkout, undersea_cable (v2), streaming.
+  Posted (YT + IG, as rendered, O1/E1): card_tap 11-20 20:22, elevator 11-21 ~19:00, atm_notes 11-22 ~12:30.
+  Queue: chatbot (uploaded to Studio, not published), traffic_light (v2), microwave, self_checkout,
+  undersea_cable (v2), streaming.
   MP4s are NOT in git - re-render with `video-archive` if lost (latest versions in `publishing/VIDEOS.md`).
 - **Done this session**: diagnostic (`publishing/STRATEGY.md`); vendored tools `tools/yt/` (MIT) + `tools/rotation.py`
   + `tools/collect_niche.py`; learning loop `STATS.md` / `EXPERIMENTS.md` (EXP-001 = ~60 s, planned) / `WINNERS.md`;
   `explainer/qa.py` (catches traffic_light v1 + undersea_cable v1, passes v2; QA specs only in those 2 videos);
   skills rewritten (studio, explainer-from-idea, explainer-ideas, publish-kit, explainer-video);
   `publishing/QUEUE_PROPOSALS.md` = new hooks/endings/titles/covers for the 8 queued videos.
-- **Waiting for the owner**: (a) card_tap numbers at 48 h (YT + IG) and 7 d (due 2026-11-27) - fields listed in
-  STATS.md; (b) decision A/B/C in QUEUE_PROPOSALS.md (re-render queue with new hooks or not; recommended C =
+- **Numbers received 2026-11-22** (snapshots 5-45 h, `publishing/STATS.md` B) -> Learned rules above.
+- **Waiting for the owner**: (a) 48 h / 7 d numbers + retention curves for elevator/atm, traffic sources, IG
+  per-reel insights (watch time, shares, saves, follows) - fields in STATS.md; (b) decision A/B/C in QUEUE_PROPOSALS.md (re-render queue with new hooks or not; recommended C =
   post as is + new titles/covers); (c) whether to allow www.youtube.com in the cloud environment for
   `collect_niche.py` (blocked here), or run it on the laptop.
 - **Next session, in this order**:

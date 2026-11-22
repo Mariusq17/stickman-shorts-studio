@@ -65,3 +65,15 @@ below is a **hypothesis or heuristic**, ordered by the estimated impact on reten
 2. **Question hook in the first sentence** (paradox / "Did you know") vs. "If you put...".
 3. **Short ending** (payoff + 1-line ending, CTA <= 4 s, last frame = first frame for the loop).
 4. Cover with different words than the title (curiosity gap), only after 1-3 have data.
+
+---
+
+## First numbers 2026-11-22 (3 videos, 5-45 h old - hypotheses only)
+- **Top of the funnel**: 34-44% swipe away on the same O1 hook -> the biggest leak by number of people.
+- **End cliff** (card_tap): from ~45-50% at ~1:40 down to ~10% at 1:53 = steps 16-17 ("So next time you tap..." +
+  "And congratulations... Follow for more"). The diagnostic's wind-down risk shows up in the first real curve.
+- **Middle** is healthy-ish: a slow slide, no single cliff - the problem -> fix loop holds people.
+- **Length**: the longest video (elevator 2:10) is not worse on % viewed - weak evidence, early numbers.
+- **Instagram** outperforms YouTube on views for elevator/atm (1.7K each vs ~1.2K / 329) with 0 shares.
+- **Covers**: 49 thumbnail impressions in total - the feed decides, not the cover.
+Next measurement: elevator + atm curves (do they also cliff at the CTA?), 48 h / 7 d snapshots, traffic sources.

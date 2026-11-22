@@ -1,6 +1,7 @@
 # Proposals for the 8 queued (not yet posted) videos - 2026-11-22
 
-Status: **proposal, waiting for the owner's decision** (nothing re-rendered). All 8 rendered files open with O1
+Status: **proposal, waiting for the owner's decision** (nothing re-rendered). Update 2026-11-22: elevator and
+atm_notes were posted as they are (O1/E1) - their rows below are history; the queue is now chatbot first. All 8 rendered files open with O1
 ("If you put...") and end with E1 ("congratulations") - posted as they are, the rotation rule is broken 8 times
 in a row. Codes and rotation: `.claude/skills/explainer-from-idea/SKILL.md`; check: `python tools/rotation.py --proposed` (passes).
 
@@ -22,7 +23,7 @@ release `[VID-xxx-v(n+1)]`.
 | 1 | elevator | O2 "What stops your elevator from falling if the rope snaps? A trick from 1854." (52) | E2 "And that's how you build an elevator." | Why Elevators Almost Never Fall (keep) | WHAT IF / IT SNAPS? (62 -> 94) |
 | 2 | chatbot | O6 "Your chatbot never knows its next word until it types it. Let's build one." (53) | E3 "Now you know more about AI chatbots than 99% of people." | Why AI Chatbots Type One Word at a Time (keep) | IT'S JUST / GUESSING (62 -> 94) |
 | 3 | atm_notes | O3 "One banknote is a tenth of a millimeter thick, and your ATM measures every single one before it pays you." (51) | E2 "And that's how you build an ATM." | How an ATM Catches Two Stuck Notes (new, fits the 40-char mobile cut) | 0.1 MM / DECIDES (52 -> 98) |
-| 4 | traffic_light | O6 "There's a loop of wire cut into the road under your car, and it's why your light turns green." (40) | E4 loop: "...Follow for more. And remember, it all starts with..." -> replays into the hook | How Traffic Lights Know You're Waiting (new, shorter) | WIRE UNDER / YOUR CAR (48 -> 94) |
+| 4 | traffic_light | O2 "How does a red light know you're waiting at three in the morning? Let's build one." (39) - changed from O6 on 11-22 (atm_notes was posted, chatbot now precedes it) | E4 loop: "...Follow for more. And remember, it all starts with..." -> replays into the hook | How Traffic Lights Know You're Waiting (new, shorter) | WIRE UNDER / YOUR CAR (48 -> 94) |
 | 5 | microwave | O5 "Your microwave doesn't cook from the inside out. And that fork? We'll get to it." (41) - also fixes the title promise (fork) being first shown at ~70% | E3 "Now you know more about microwaves than 99% of people." | Why Forks Spark in the Microwave (keep) | SHARP POINTS / = LIGHTNING (62 -> 94) |
 | 6 | self_checkout | O6 "The self checkout isn't watching you. It's weighing every item you put in your bag." (43) | E1 (keep "congratulations") | Who Is Judging You at Self-Checkout? (keep) | IT'S WEIGHING / YOUR BAG (66 -> 98) |
 | 7 | undersea_cable | O2 "How does your message cross the ocean in a blink? Not by satellite. Along the ocean floor." (43) | E2 "And that's how you build an undersea internet cable." | How Your Message Crosses the Ocean (keep) | NOT / SATELLITES (62 -> 94) |

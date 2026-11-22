@@ -17,14 +17,23 @@ Per-1k numbers are computed here: `likes / views * 1000` (Claude does the maths)
 Codes: opening O1-O7 and ending E1-E5 = rotation menu in `.claude/skills/explainer-from-idea/SKILL.md`.
 | # | Slug | Release | Posted (date, RO time) | Where | Opening | Ending | First frame | Length | Fixes | Category | Experiment |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | card_tap | VID-002-v2 | 2026-11-20 (? h) | YT + IG | O1 | E1 | chip + wire loop appear on a blank card | 1:54 | 8 | payments / everyday tech | - (baseline) |
+| 1 | card_tap | VID-002-v2 | 2026-11-20 20:22 | YT + IG | O1 | E1 | chip + wire loop appear on a blank card | 1:54 | 8 | payments / everyday tech | - (baseline) |
+| 2 | elevator | VID-001-v5 | 2026-11-21 ~19:00 | YT + IG | O1 | E1 | box on a rope in a shaft, motor on top | 2:10 | 11 | transport / safety | - (baseline) |
 
-## B. Numbers (one row per video x checkpoint x platform)
-| # | Slug | Checkpoint | Platform | Views | Viewed vs swiped (% stayed) | Avg % viewed | Avg view duration | Likes/1k | Shares/1k | Saves/1k | Subs (follows)/1k | Steep drops at (s) | Main traffic source | Notes |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | card_tap | 48h | YT | ? | ? | ? | ? | ? | ? | - | ? | ? | ? | waiting for the owner |
-| 1 | card_tap | 48h | IG | ? | - | ? | ? | ? | ? | ? | ? | ? | ? | waiting for the owner |
-| 1 | card_tap | 7d | YT | ? | ? | ? | ? | ? | ? | - | ? | ? | ? | due 2026-11-27 |
+## B. Numbers (one row per video x snapshot x platform)
+Snapshot = hours after posting when the owner read the numbers. YT per-1k = per 1,000 views. "~" = read from a
+chart by eye. Raw Studio export: `stats_raw/2026-11-22_yt_studio_table_until_2026-11-21.csv` (data until 2026-11-21).
+| # | Slug | Snapshot | Platform | Views | Engaged views | Stayed to watch (vs swiped) | Avg % viewed | Avg view duration | Likes/1k | Shares/1k | Comments | Subs (follows)/1k | Retention curve | Traffic source | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | card_tap | ~45 h (11-22 17:16) | YT | 1,333 | ? (855 at ~28 h) | 65.7% | 59% | 1:08 | ? | ? | ? | 0.75 (1 sub) | 75.1% at 0:30; slow slide to ~45-50% at ~1:40; **cliff ~1:40-1:53 to ~10%** (steps 16-17: payoff + "congratulations" CTA) | ? | CSV until 11-21: 59.93% avg viewed, 26 thumbnail impressions |
+| 2 | elevator | ~22 h (11-22 17:18) | YT | ~1,200 | 730 | 59.6% | ~61% (1:19 / 2:10) | 1:19 | ? | ? | ? | 3.3 (4 subs) | not ready (Studio: up to 2 days) | ? | CSV after a few hours: 69.42% avg viewed (347 views) |
+| 3 | atm_notes | ~5 h (11-22 17:19) | YT | 329 | 171 | 55.7% | ~76% (1:23 / 1:49) | 1:23 | ? | ? | ? | 3.0 (1 sub) | not ready | ? | very early |
+| 1 | card_tap | ~2 d (11-22 17:21) | IG | 362 | - | - | ? | ? | 27.6 (10) | 0 (0 sends) | 0 | ? | ? | ? | |
+| 2 | elevator | ~21 h | IG | ~1,700 | - | - | ? | ? | ~42 (71) | 0 | 0 | ? | ? | ? | |
+| 3 | atm_notes | ~5 h | IG | ~1,700 | - | - | ? | ? | ~31 (52) | 0 | 1 | ? | ? | ? | IG caption started "The ATM just pinched every..." |
+| 1 | card_tap | 7 d | YT + IG | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | due 2026-11-27 |
+| 2 | elevator | 48 h / 7 d | YT + IG | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | due 11-23 / 11-28 |
+| 3 | atm_notes | 48 h / 7 d | YT + IG | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | due 11-24 / 11-29 |
 
 ## C. Queue - planned DNA (posting order, next first)
 Opening/ending codes of videos not yet posted. `python tools/rotation.py` checks A + C for repeats.
@@ -32,11 +41,9 @@ Current codes are what the rendered files contain; "proposed" = new hook/ending 
 (needs a re-render; the owner decides).
 | Order | Slug | Release | Opening | Ending | Proposed opening | Proposed ending | Length | Fixes | Category |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | elevator | VID-001-v5 | O1 | E1 | O2 | E2 | 2:09 | 11 | transport / safety |
-| 2 | chatbot | VID-003-v2 | O1 | E1 | O6 | E3 | 2:00 | 8 | AI |
-| 3 | atm_notes | VID-004-v2 | O1 | E1 | O3 | E2 | 1:48 | 9 | money |
-| 4 | traffic_light | VID-005-v2 | O1 | E1 | O6 | E4 | 1:42 | 8 | city / transport |
-| 5 | microwave | VID-006-v1 | O1 | E1 | O5 | E3 | 1:41 | 7 | kitchen |
-| 6 | self_checkout | VID-007-v1 | O1 | E1 | O6 | E1 | 1:32 | 9 | shopping |
-| 7 | undersea_cable | VID-008-v2 | O1 | E1 | O2 | E2 | 1:31 | 7 | internet |
-| 8 | streaming | VID-009-v1 | O1 | E1 | O5 | E4 | 1:23 | 6 | internet / entertainment |
+| 1 | chatbot | VID-003-v2 (already uploaded to Studio, not published) | O1 | E1 | O6 | E3 | 2:00 | 8 | AI |
+| 2 | traffic_light | VID-005-v2 | O1 | E1 | O2 | E4 | 1:42 | 8 | city / transport |
+| 3 | microwave | VID-006-v1 | O1 | E1 | O5 | E3 | 1:41 | 7 | kitchen |
+| 4 | self_checkout | VID-007-v1 | O1 | E1 | O6 | E1 | 1:32 | 9 | shopping |
+| 5 | undersea_cable | VID-008-v2 | O1 | E1 | O2 | E2 | 1:31 | 7 | internet |
+| 6 | streaming | VID-009-v1 | O1 | E1 | O5 | E4 | 1:23 | 6 | internet / entertainment |
