@@ -99,6 +99,10 @@ Never invent numbers, never present a heuristic as a prediction: say what is **p
   card_tap (2026-11-20): liked it; text on objects was not in perspective / not fitting -> fixed in engine.
   batch 2 (2026-11-20): quality drops towards the end of videos - traffic_light: the red car stays all video
   and other cars/ambulance drive through it; undersea_cable (better): cable ends not connected to the stations.
+  2026-11-22: owner wants every script to build anticipation - the main answer as LATE as possible (open loop,
+  climax), see `explainer-from-idea` 3b. chatbot v3 (open loop) had wrong screen texts/animations (step numbers
+  shifted by the inserted hook) and a stamp cut by the frame -> fixed in v4 (engine-level, tested).
+  Posting pace: 2 per day (~12:30 and ~20:30 RO) from 2026-11-22.
 
 ## Learned rules (from NUMBERS - each with evidence + confidence; updated by the `studio` skill)
 Format: `- [confidence] rule - evidence (videos, numbers)`. Confidence: hypothesis (1-9 videos) / likely /

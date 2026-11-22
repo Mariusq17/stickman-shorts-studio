@@ -93,4 +93,9 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
   while writing the next scene - a 3-video batch then takes ~1.5 h of wall time instead of 2+.
 - Full render with motion blur + shadows: ~20 min per 2 min video (4 cores); 2 jobs in parallel
   are fine. Rendering costs no tokens - the token cost is writing scene code and checking previews.
-
+- Scene code that tests step numbers (`if step_i == 2`, `tr.step_at(t) == 10`) keeps working after `open_loop()`
+  only because the builder hands scenes `SceneTracks` + ORIGINAL step numbers (hook steps not counted). Never pass
+  the raw tracks to a scene. Lesson 2026-11-22: chatbot v3 showed the wrong screen texts and skipped the
+  "Banana. Seven. Purple." boxes because the hook shifted every step by 1 -> fixed in v4; covered by a test.
+- After restructuring a script (hook inserted, steps moved), preview the steps with step-specific content
+  (screens, special props), not only the hook - QA cannot see "the right text on the right step".
