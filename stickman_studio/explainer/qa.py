@@ -408,8 +408,8 @@ def run_qa(video, spec=None, timing="auto", dt=0.25, size=(1080, 1920), log=None
             cam = RecCam(small.copy(), f, z, (W / 2, H * 0.56))
             del _SMALL[:]
             ts, si, st_ = builder.scene_time(P, t)
-            scene.draw(cam.img, cam, tr, ts, si, st_)
-            i = si                     # teaser steps show a later step: judge the scene by the step it shows
+            scene.draw(cam.img, cam, P["scene_tracks"], ts, si, st_)
+            i = tr.step_at(ts)         # teaser steps show a later step: judge the scene by the step it shows
             # objects
             pos = {}
             for name, o in objects.items():

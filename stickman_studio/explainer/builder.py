@@ -166,19 +166,44 @@ def plan_timeline(steps, clips, initial, size=(1080, 1920), fps=30, extra_end=0.
         if tz:
             k = tz["step"]
             teasers[i] = starts[k] + durs[k] * tz.get("frac", 0.3)
+    off = hook_offset(steps)
     return dict(durs=durs, starts=starts, total=total, content_total=content_total, tm=tm, tracks=tr,
-                keys=keys, pops=pops, sfx=sfx, fixes=fixes, camp=camp, W=W, H=H, bz=bz, teasers=teasers)
+                keys=keys, pops=pops, sfx=sfx, fixes=fixes, camp=camp, W=W, H=H, bz=bz, teasers=teasers,
+                offset=off, scene_tracks=SceneTracks(tr, off))
+
+
+class SceneTracks:
+    """What the scene sees: same tracks, but step numbers WITHOUT the hook steps inserted in front
+    (open_loop), so scene code written as `if step_i == 2` keeps meaning the original step 2."""
+
+    def __init__(self, tr, offset):
+        self._tr, self.offset = tr, offset
+
+    def step_at(self, t):
+        return max(0, self._tr.step_at(t) - self.offset)
+
+    def __getattr__(self, name):
+        return getattr(self._tr, name)
+
+
+def hook_offset(steps):
+    n = 0
+    while n < len(steps) and steps[n].get("teaser"):
+        n += 1
+    return n
 
 
 def scene_time(P, t):
-    """(time, step, time in step) the scene is drawn at - shifted forward inside a teaser step."""
+    """(time, step, time in step) the scene is drawn at - shifted forward inside a teaser step. The step
+    index is in ORIGINAL numbering (hook steps not counted) - see SceneTracks."""
     tr, starts = P["tracks"], P["starts"]
+    off = P.get("offset", 0)
     i = tr.step_at(t)
     if i in P.get("teasers", {}):
         te = P["teasers"][i] + (t - starts[i])
         j = tr.step_at(te)
-        return te, j, te - starts[j]
-    return t, i, t - starts[i]
+        return te, max(0, j - off), te - starts[j]
+    return t, max(0, i - off), t - starts[i]
 
 
 # ------------------------------------------------------------------ build
@@ -225,10 +250,10 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
         f, z = camp.at(t)
         cam = IsoCam(img, f, z * ss, (RW / 2, RH * 0.56))
         ts, si, st_ = scene_time(P, t)
-        scene.draw(img, cam, tr, ts, si, st_)
+        scene.draw(img, cam, P["scene_tracks"], ts, si, st_)
         flush_labels(cam)          # callout labels always on top of every object
         if draw_overlays:
-            draw_overlays(img, tr, t, RW, RH)
+            draw_overlays(img, P["scene_tracks"], t, RW, RH)
         return img.reduce(ss) if ss > 1 else img, (f, z)
 
     def render(t, blur=False):

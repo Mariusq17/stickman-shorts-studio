@@ -160,3 +160,19 @@ def test_shift_spec_and_open_loop():
     assert len(out) == 4 and out[0]["teaser"]["step"] == 2 and out[1]["cam_dur"] == 0.01
     assert out[1]["text"].endswith("Hold that thought.") and out[2]["text"].startswith("Here's the answer.")
     assert out[-1]["sfx"] == [("w:follow", "pop")] and out[-1]["min"] == 6.0
+
+
+def test_scene_sees_original_step_numbers_after_open_loop():
+    """Regression 2026-11-22: inserting the hook step shifted every `if step_i == N` in scene code."""
+    from stickman_studio.explainer import builder
+    from stickman_studio.explainer.lib.story import open_loop
+    video, _ = _synthetic_video()
+    steps = open_loop(video["steps"], "Why does the blue box do that?", answer_step=1,
+                      ending_text="Follow for more. Because remember,")
+    clips = [qa.EstClip(s["text"]) for s in steps]
+    P = builder.plan_timeline(steps, clips, video["initial"])
+    st = P["starts"]
+    assert builder.scene_time(P, st[2] + 0.5)[1] == 1                 # real step 2 = original step 1
+    assert P["scene_tracks"].step_at(st[3] + 0.1) == 2
+    assert builder.scene_time(P, 0.2)[1] == 1                         # the teaser shows the answer step
+

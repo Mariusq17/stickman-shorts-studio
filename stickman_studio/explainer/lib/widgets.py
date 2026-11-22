@@ -178,6 +178,10 @@ def draw_pop(img, cam, p, t, W, H, tr=None):
         size = int(W * 0.075)
         f = font(size)
         tw = ImageDraw.Draw(img).textlength(text, font=f)
+        if tw + size > W * 0.78:                 # long stamps: shrink so the rotated stamp stays inside the frame
+            size = max(12, int(size * W * 0.78 / (tw + size)))
+            f = font(size)
+            tw = ImageDraw.Draw(img).textlength(text, font=f)
         w, h = int(tw + size * 1.0), int(size * 1.6)
         L = Image.new("RGBA", (w + 20, h + 20), (0, 0, 0, 0))
         d = ImageDraw.Draw(L)
