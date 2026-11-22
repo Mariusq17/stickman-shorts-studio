@@ -159,8 +159,26 @@ def plan_timeline(steps, clips, initial, size=(1080, 1920), fps=30, extra_end=0.
         k.append(replaced)
     camp = CameraPath(tr, total, fps, width=W)
     sfx += [(c - 0.12, "whoosh", 0.55) for c in camp.cuts if c > 0.2]
+    # teaser steps (visual hook): the scene plays a LATER moment of the video while the hook line is spoken
+    teasers = {}
+    for i, st in enumerate(steps):
+        tz = st.get("teaser")
+        if tz:
+            k = tz["step"]
+            teasers[i] = starts[k] + durs[k] * tz.get("frac", 0.3)
     return dict(durs=durs, starts=starts, total=total, content_total=content_total, tm=tm, tracks=tr,
-                keys=keys, pops=pops, sfx=sfx, fixes=fixes, camp=camp, W=W, H=H, bz=bz)
+                keys=keys, pops=pops, sfx=sfx, fixes=fixes, camp=camp, W=W, H=H, bz=bz, teasers=teasers)
+
+
+def scene_time(P, t):
+    """(time, step, time in step) the scene is drawn at - shifted forward inside a teaser step."""
+    tr, starts = P["tracks"], P["starts"]
+    i = tr.step_at(t)
+    if i in P.get("teasers", {}):
+        te = P["teasers"][i] + (t - starts[i])
+        j = tr.step_at(te)
+        return te, j, te - starts[j]
+    return t, i, t - starts[i]
 
 
 # ------------------------------------------------------------------ build
@@ -206,7 +224,8 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
         img = scene.bg.copy()
         f, z = camp.at(t)
         cam = IsoCam(img, f, z * ss, (RW / 2, RH * 0.56))
-        scene.draw(img, cam, tr, t, i, t - starts[i])
+        ts, si, st_ = scene_time(P, t)
+        scene.draw(img, cam, tr, ts, si, st_)
         flush_labels(cam)          # callout labels always on top of every object
         if draw_overlays:
             draw_overlays(img, tr, t, RW, RH)

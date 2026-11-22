@@ -16,7 +16,14 @@ BELT = ((-2.9, 0.9, 1.0), 150)
 MACH = ((1.2, 1.4, 1.2), 190)
 
 STEPS = [
-    dict(text="If you build a machine that reads a sentence and guesses the next word, you've got the world's "
+    # hook (O2 question, open loop): asks what is answered only at the hallucination step (~85% in);
+    # teaser = that very moment (machine stamped CONFIDENTLY WRONG), played early
+    dict(text="Your chatbot can be completely wrong and never sound unsure. Why?",
+         cam=((2.2, 1.2, 1.1), 190), pegs="shocked", teaser=dict(step=17, frac=0.8),
+         keys=[("completely wrong", RED), ("never sound unsure|sounds 100% sure", RED), ("why|why?", INK)],
+         pops=[dict(kind="stamp", at="w:completely", text="CONFIDENTLY WRONG", color=RED, pos="mr", until="end")],
+         sfx=[("w:wrong", "sting")]),
+    dict(cam_dur=0.01, text="If you build a machine that reads a sentence and guesses the next word, you've got the world's "
               "simplest AI chatbot.",
          cam=((1.2, 1.2, 1.1), 250), pegs="neutral",
          cams=[("w:reads", ((-1.4, 0.9, 1.0), 200), 1.0), ("w:guesses", ((2.6, 0.9, 1.0), 210), 0.9),
@@ -76,7 +83,8 @@ STEPS = [
          keys=[("smooth sentences", BLUE), ("what was too big|what was too big?", RED)],
          sfx=[("w:what", "sting")]),
     dict(text="So before guessing, every word gets to look back at every other word and decide which ones matter. "
-              "That's attention. The word it links straight to the trophy.",
+              "That's attention. The word it links straight to the trophy. Smart. But it still can't tell when it's wrong. "
+              "Hold that thought.",
          cam=BELT, pegs="happy",
          do=[("attn", "w:look", 1, 1.0, "out"), ("focus", "w:links", 1, 0.6, "out")],
          keys=[("look back", INK), ("which ones matter", INK), ("attention", INK), ("trophy|it = the trophy", BLUE)],
@@ -130,8 +138,8 @@ STEPS = [
          do=[("raters", 0, 0, 0.3, "in"), ("ctx", "w:limit", 1, 0.5, "out"), ("fall", "w:falls", 1, 1.0, "in")],
          keys=[("look back so far", INK), ("context window", INK), ("falls off|beginning falls off", RED)],
          sfx=[("w:falls", "whoosh")]),
-    dict(text="And because it predicts what sounds right instead of checking facts, it can be wrong with total "
-              "confidence. That's a hallucination.",
+    dict(text="And here's the answer. Because it predicts what sounds right instead of checking facts, it can be "
+              "wrong with total confidence. That's a hallucination.",
          cam=((2.2, 1.2, 1.1), 190), pegs="worried",
          do=[("ctx", 0, 0, 0.3, "in"), ("fall", 0, 0, 0.01, "lin"), ("halluc", "w:wrong", 1, 0.4, "back")],
          keys=[("sounds right", INK), ("total confidence", RED), ("hallucination", RED)],
@@ -143,11 +151,11 @@ STEPS = [
          cam=((1.0, 0.9, 1.9), 128), pegs="happy",
          do=[("halluc", 0, 0, 0.3, "in"), ("gen", "w:types", 4.0, 1.3, "io"), ("gen", "w:fresh", 5.0, 1.3, "io")],
          keys=[("word by word", INK), ("fresh guess", BLUE), ("every word before it", INK)]),
-    dict(text="And congratulations, you just built an AI chatbot. Now you just need it to admit when it doesn't know. "
-              "Follow for more.",
-         cam=WIDE, pegs="happy", min=8.4, pose="cheer",
+    # ending E4 (loop): the last words run straight into the hook line when the Short replays
+    dict(text="Now you know more about AI chatbots than 99% of people. Follow for more. Because remember,",
+         cam=((2.2, 1.2, 1.1), 190), pegs="happy", min=6.0, pose="cheer",
          do=[("gen", 1.0, 6.0, 2.5, "io")],
-         keys=[("built an AI chatbot|you built an AI chatbot!", BLUE), ("doesn't know|\"I don't know\"", INK)],
+         keys=[("99% of people|smarter than 99%", BLUE)],
          pops=[dict(kind="card", at="w:follow-0.6", until="end+1", tap=1.4)],
          sfx=[("w:follow", "pop")]),
 ]
@@ -614,5 +622,5 @@ class ChatScene:
 VIDEO = dict(
     slug="chatbot",
     title="How does an AI chatbot write word by word?",
-    steps=STEPS, scene=ChatScene, initial=INITIAL, overlays=None, tracker=dict(label="FIXES"),
+    steps=STEPS, end_cover=False, scene=ChatScene, initial=INITIAL, overlays=None, tracker=dict(label="FIXES"),
 )

@@ -64,7 +64,7 @@ def render_one(slug, out=None, ss=2, log=print):
     if v.get("voice_rate"):
         kw["voice_rate"] = v["voice_rate"]
     cover = os.path.join(ROOT, "publishing", slug, "cover.png")
-    if os.path.exists(cover):          # last 0.5 s = cover (YouTube Shorts thumbnail frame picker)
+    if os.path.exists(cover) and v.get("end_cover", True):   # last 0.5 s = cover (off for loop endings)
         kw["end_cover"] = cover
     path, total, engine = build_explainer(v["steps"], v["scene"], out, v["initial"], v.get("overlays"), ss=ss,
                                           tracker=v.get("tracker"), log=log, **kw)

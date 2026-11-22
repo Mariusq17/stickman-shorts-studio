@@ -335,8 +335,9 @@ def run_qa(video, spec=None, timing="auto", dt=0.25, size=(1080, 1920), log=None
             return True
         if any(a <= t <= b for a, b in pop_t) or any(a <= t <= b for a, b in fix_t):
             return True
+        ts_ = builder.scene_time(P, t)[0]             # teaser steps show a later moment
         for nm in names:
-            a, b = tr.get(nm, max(0.0, t - step_dt)), tr.get(nm, t)
+            a, b = tr.get(nm, max(0.0, ts_ - step_dt)), tr.get(nm, ts_)
             if isinstance(a, tuple):
                 if math.dist(a, b) > 1e-3:
                     return True
@@ -385,7 +386,9 @@ def run_qa(video, spec=None, timing="auto", dt=0.25, size=(1080, 1920), log=None
             f, z = camp.at(t)
             cam = RecCam(small.copy(), f, z, (W / 2, H * 0.56))
             del _SMALL[:]
-            scene.draw(cam.img, cam, tr, t, i, t - starts[i])
+            ts, si, st_ = builder.scene_time(P, t)
+            scene.draw(cam.img, cam, tr, ts, si, st_)
+            i = si                     # teaser steps show a later step: judge the scene by the step it shows
             # objects
             pos = {}
             for name, o in objects.items():
@@ -401,9 +404,9 @@ def run_qa(video, spec=None, timing="auto", dt=0.25, size=(1080, 1920), log=None
                     continue
                 last_own = max([s for s in own if s < i], default=None)
                 next_own = min([s for s in own if s > i], default=None)
-                if last_own is not None and t - (starts[last_own] + durs[last_own]) <= o.get("grace", 2.5):
+                if last_own is not None and ts - (starts[last_own] + durs[last_own]) <= o.get("grace", 2.5):
                     continue                                  # exit animation
-                if next_own is not None and starts[next_own] - t <= o.get("enter", 1.0):
+                if next_own is not None and starts[next_own] - ts <= o.get("enter", 1.0):
                     continue                                  # entering for its next step
                 lingering.setdefault(name, []).append((t, i))
             # pass-through: overlap while at least one of the two moves
@@ -420,9 +423,9 @@ def run_qa(video, spec=None, timing="auto", dt=0.25, size=(1080, 1920), log=None
             for L in links:
                 if i not in parse_steps(L.get("steps"), n):
                     continue
-                if t - starts[i] < L.get("settle", 1.2):        # let the build animation finish
+                if ts - starts[i] < L.get("settle", 1.2):       # let the build animation finish
                     continue
-                if not all(_cond(tr.get(k, t), op, v) for k, op, v in L.get("when", ())):
+                if not all(_cond(tr.get(k, ts), op, v) for k, op, v in L.get("when", ())):
                     continue
                 wmin = L.get("width_min", 0.03)
                 cols = [tuple(c) for c in L["colors"]] if L.get("colors") else None
