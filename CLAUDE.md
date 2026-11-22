@@ -125,7 +125,7 @@ Last session: 2026-11-22 (branch `claude/upbeat-hypatia-l9zq43`, not merged yet)
   1. `studio` start: collect numbers -> STATS.md -> analysis -> Learned rules (confidence levels).
   2. Apply the owner's A/B/C choice (titles/covers in post.md + UPLOAD_LIST.txt + branding COVERS; re-renders only if A/B).
   3. EXP-001: next new video at ~60 s (recommended idea #13 toilet or #11 fridge) - hooks via hookscore, rotation
-     (next allowed: anything but O1/E1 after card_tap... check `tools/rotation.py`), QA spec + `qa.py` 0 errors.
+     (allowed codes: `python tools/rotation.py`), QA spec + `qa.py` 0 errors.
   4. Optional: add `QA` specs to the other 7 videos (objects + links) when they are touched next.
 
 ## Commands
