@@ -116,3 +116,9 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
 - Hook + ending are never "blank video + voice": `open_loop` adds kinetic word-by-word captions (lower third,
   current word yellow, `hl` words red) and `bursts` (badge with rays: "99%", "?!", "bolt", "eye", "star", "check",
   "cross"). Give every new video 1 burst in the hook and 1 in the ending.
+- External editing references (read for principles only; check the licence before copying anything):
+  `Vincentwei1021/video-shotcraft` (Apache-2.0, Remotion shot recipes, beat sync, sound design),
+  `Vincentwei1021/anything2explainer` (NON-commercial licence - principles only: exits must fade/move to zero before a
+  cut, no empty first frames, readable holds >= 1 s, counters must not flash invented numbers),
+  `OpenMontageInc/OpenMontage` (large agentic production system). Lessons already applied: kinetic captions, bursts,
+  finished exits (`qa.py` vanish), real viewpoint changes.

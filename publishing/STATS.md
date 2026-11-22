@@ -47,3 +47,5 @@ Current codes are what the rendered files contain; "proposed" = new hook/ending 
 | 4 | self_checkout | VID-007-v2 (open loop) | O6 | E1+L | O6 | E1+L | ~1:35 | 9 | shopping |
 | 5 | undersea_cable | VID-008-v3 (open loop) | O2 | E2+L | O2 | E2+L | ~1:39 | 7 | internet |
 | 6 | streaming | VID-009-v2 (open loop) | O5 | E3+L | O5 | E3+L | ~1:25 | 6 | internet / entertainment |
+| 7 | toilet | VID-010-v1 (open loop) | O6 | E2+L | O6 | E2+L | ~1:40 | 7 | home |
+| 8 | fridge | VID-011-v1 (open loop) | O5 | E3+L | O5 | E3+L | ~1:38 | 8 | kitchen |
