@@ -32,3 +32,4 @@ Descriptions, captions and covers: `publishing/<slug>/post.md` and `cover.png` (
 | 9 | VID-009-v1 | streaming | Why Movies Start Instantly Even Though the File Is Huge | 1:23 | 6 | `e5c300d` [VID-009-v1] | 2026-11-20 | delivered; idea #10 (shortest, could get 2-3 more steps) |
 | 5 | VID-005-v2 | traffic_light | How the Traffic Light Knows You're Waiting | 1:42 | 8 | `bcf4216` [VID-005-v2] | 2026-11-20 | delivered; cars exit after their step, no drive-through (fixes v1) |
 | 8 | VID-008-v2 | undersea_cable | How Your Message Crosses the Ocean | 1:31 | 7 | `7322c98` [VID-008-v2] | 2026-11-20 | delivered; cable ends connect into the stations (fixes v1) |
+| 3 | VID-003-v3 | chatbot | Why AI Sounds Sure Even When It's Wrong | 2:06 | 8 | `2cdda5e` [VID-003-v3] | 2026-11-22 | delivered; open loop: question hook + teaser, answer at ~1:45, loop ending, no end cover |
