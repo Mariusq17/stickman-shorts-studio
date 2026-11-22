@@ -18,12 +18,12 @@ MACH = ((1.2, 1.4, 1.2), 190)
 STEPS = [
     # hook (O2 question, open loop): asks what is answered only at the hallucination step (~85% in);
     # teaser = that very moment (machine stamped CONFIDENTLY WRONG), played early
-    dict(text="Your chatbot can be completely wrong and never sound unsure. Why?",
+    dict(text="Your chatbot sounds completely sure of itself, even when it's completely wrong.", pad=0.7,
          cam=((2.2, 1.2, 1.1), 190), pegs="shocked", teaser=dict(step=17, frac=0.8),
-         keys=[("completely wrong", RED), ("never sound unsure|sounds 100% sure", RED), ("why|why?", INK)],
-         pops=[dict(kind="stamp", at="w:completely", text="CONFIDENTLY WRONG", color=RED, pos="mr", until="end")],
+         keys=[("completely sure|100% sure", INK), ("completely wrong", RED)],
+         pops=[dict(kind="stamp", at="w:wrong", text="CONFIDENTLY WRONG", color=RED, pos="mr", until="end")],
          sfx=[("w:wrong", "sting")]),
-    dict(cam_dur=0.01, text="If you build a machine that reads a sentence and guesses the next word, you've got the world's "
+    dict(cam_dur=0.7, text="If you build a machine that reads a sentence and guesses the next word, you've got the world's "
               "simplest AI chatbot.",
          cam=((1.2, 1.2, 1.1), 250), pegs="neutral",
          cams=[("w:reads", ((-1.4, 0.9, 1.0), 200), 1.0), ("w:guesses", ((2.6, 0.9, 1.0), 210), 0.9),
@@ -153,7 +153,7 @@ STEPS = [
          keys=[("word by word", INK), ("fresh guess", BLUE), ("every word before it", INK)]),
     # ending E4 (loop): the last words run straight into the hook line when the Short replays
     dict(text="Now you know more about AI chatbots than 99% of people. Follow for more. Because remember,",
-         cam=((2.2, 1.2, 1.1), 190), pegs="happy", min=6.0, pose="cheer",
+         cam=((2.2, 1.2, 1.1), 190), pegs="happy", min=0.0, pose="cheer",
          do=[("gen", 1.0, 6.0, 2.5, "io")],
          keys=[("99% of people|smarter than 99%", BLUE)],
          pops=[dict(kind="card", at="w:follow-0.6", until="end+1", tap=1.4)],

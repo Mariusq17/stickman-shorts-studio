@@ -134,7 +134,7 @@ STEPS = [
          sfx=[("w:built", "ding"), ("w:follow", "pop")]),
 ]
 
-INITIAL = dict(mag=0, glow=0, box=0, kitchen=0, xray=1, waves=0, food=0, bubble=0, heat=0, guide=0, bounce=0, spots=0,
+INITIAL = dict(ghost=0, mag=0, glow=0, box=0, kitchen=0, xray=1, waves=0, food=0, bubble=0, heat=0, guide=0, bounce=0, spots=0,
                turn=0, even=0, leak=0, mesh=0, door=0, cycle=0, fork=0, arc=0, rack=0, cut=0, depth=0, done=0)
 
 # microwave body: x 0..2.4, y -0.4..1.0 (front face y = 1.0), z ZB..ZB+1.3 (sits on the counter)
@@ -209,7 +209,7 @@ class MicrowaveScene:
         cam.poly([(x0, y0, z0), (x0, y1, z0), (x0, y1, z1), (x0, y0, z1)], shade(wall, -0.2))
         cam.poly([(x0, y0, z0), (x1, y0, z0), (x1, y1, z0), (x0, y1, z0)], shade(wall, -0.05))
         light = g("waves") > 0.5 or heat > 0.5
-        if light:
+        if light and g("ghost") < 0.5:          # lit ceiling (hidden when the top is see-through)
             cam.poly([(x0, y0, z1 - 0.01), (x1, y0, z1 - 0.01), (x1, y1, z1 - 0.01), (x0, y1, z1 - 0.01)],
                      (255, 244, 200))
         # waveguide outlet (top right of the chamber)
@@ -368,8 +368,14 @@ class MicrowaveScene:
         # body shell: top + right side + front frame (the window shows the chamber)
         xr0 = g("xray")
         tx1 = MX1 if xr0 < 0.5 else 1.72          # x-ray: open the top + side over the magnetron bay
-        cam.poly([(MX0, MY0, ZB + h), (tx1, MY0, ZB + h), (tx1, MY1, ZB + h), (MX0, MY1, ZB + h)], shade(BODY, 0.05),
-                 shade(BODY, -0.35), 0.01)
+        top = [(MX0, MY0, ZB + h), (tx1, MY0, ZB + h), (tx1, MY1, ZB + h), (MX0, MY1, ZB + h)]
+        if g("ghost") > 0.5 and xr0 < 0.5:      # see-through top: outline + glass glints, the chamber stays visible
+            cam.poly(top, None, shade(BODY, -0.25), 0.012)
+            for f0, f1 in ((0.18, 0.34), (0.26, 0.38), (0.62, 0.78)):
+                cam.line([(MX0 + (tx1 - MX0) * f0, MY1, ZB + h), (MX0 + (tx1 - MX0) * f1, MY0, ZB + h)],
+                         (250, 252, 255), 0.012, caps=False)
+        else:
+            cam.poly(top, shade(BODY, 0.05), shade(BODY, -0.35), 0.01)
         if xr0 < 0.5:
             cam.poly([(MX1, MY0, ZB), (MX1, MY1, ZB), (MX1, MY1, ZB + h), (MX1, MY0, ZB + h)], shade(BODY, -0.18),
                      shade(BODY, -0.35), 0.01)
@@ -472,12 +478,31 @@ def overlays(img, tr, t, W, H):
     draw_bubble(img, tr, t, W, H)
 
 
+# camera variety + see-through top (owner feedback 2026-11-22: too static, half the frame was the plain top).
+# Indices = original steps (before open_loop inserts the hook).
+CLOSE = ((0.8, 0.42, 1.32), 540)
+ABOVE = ((0.9, 0.35, 2.0), 320)
+SIDE = ((1.05, 0.45, 1.7), 270)
+
+
+def _more(i, cams=(), do=()):
+    STEPS[i] = dict(STEPS[i], cams=list(STEPS[i].get("cams", [])) + list(cams), do=list(STEPS[i].get("do", [])) + list(do))
+
+
+_more(2, cams=[("w:twist", CLOSE, 1.2), ("w:heat", SIDE, 1.2)], do=[("ghost", 0.1, 1, 0.01, "lin")])
+_more(4, cams=[("w:bounce", SIDE, 1.2), ("w:hot", INSIDE, 1.0), ("w:half", CLOSE, 1.0)])
+_more(5, cams=[("w:turntable", CLOSE, 1.0), ("w:ceiling", ABOVE, 1.2)])
+_more(10, cams=[("w:sharp", CLOSE, 0.9), ("w:arcing", INSIDE, 1.0)])
+_more(11, cams=[("w:rack", SIDE, 1.2)])
+_more(12, cams=[("w:couple", CLOSE, 1.2), ("w:spreads", INSIDE, 1.2)])
+_more(13, cams=[("w:next", WIDE, 1.3), ("w:sharp", INSIDE, 1.2)])
+
 # open-loop structure (2026-11-22): question hook + teaser, reminder, late answer, loop ending
 STEPS = open_loop(
-    STEPS, "A fork in your microwave turns into a tiny thunderstorm. Why?", answer_step=10,
+    STEPS, "Why does a fork turn your microwave into a tiny thunderstorm?", answer_step=10,
     teaser_frac=0.85, reminder=(5, "Still no fork. We're getting there."),
-    hook_keys=[("fork", RED), ("tiny thunderstorm", RED), ("why|why?", INK)],
-    ending_text="Now you know more about microwaves than 99% of people. Follow for more. Because remember,",
+    hook_keys=[("fork", RED), ("tiny thunderstorm", RED)],
+    ending_text="Now you know more about microwaves than 99% of people. Follow for more. And next time someone asks you,",
     ending_keys=[("99% of people|smarter than 99%", BLUE)], ending_do=[])  # O2 hook, E3 ending + loop
 
 VIDEO = dict(

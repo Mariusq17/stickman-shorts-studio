@@ -538,10 +538,10 @@ def overlays(img, tr, t, W, H):
 
 # open-loop structure (2026-11-22): question hook + teaser, reminder, late answer, loop ending
 STEPS = open_loop(
-    STEPS, "Somewhere under the ocean, a ship is fishing for the internet. Why?", answer_step=12,
+    STEPS, "Why is there a ship fishing for the internet at the bottom of the ocean?", answer_step=12,
     teaser_frac=0.7, reminder=(7, "And that fishing ship? It's coming."), reveal="Here's where the ship comes in.",
-    hook_keys=[("under the ocean", INK), ("fishing for the internet", RED), ("why|why?", INK)],
-    ending_text="And that's how you build an undersea internet cable. Follow for more. Because remember,",
+    hook_keys=[("fishing for the internet", RED), ("bottom of the ocean", INK)],
+    ending_text="And that's how you build an undersea internet cable. Follow for more. And next time someone asks you,",
     ending_keys=[("undersea internet cable|how you build it", BLUE)], ending_do=[])  # O2 hook, E2 ending + loop
 
 VIDEO = dict(

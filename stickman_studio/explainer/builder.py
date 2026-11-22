@@ -101,7 +101,7 @@ def plan_timeline(steps, clips, initial, size=(1080, 1920), fps=30, extra_end=0.
     """Resolve every cue of the script against the narration clips: step starts/durations, animation
     tracks, camera path, keywords, pop-ups, sfx and FIXES times. Used by build_explainer and by qa.py
     (which checks a video without rendering it)."""
-    durs = [max(s.get("min", 0.0), LEAD + c.duration + TAIL) for s, c in zip(steps, clips)]
+    durs = [max(s.get("min", 0.0), LEAD + c.duration + TAIL + s.get("pad", 0.0)) for s, c in zip(steps, clips)]
     starts = list(np.cumsum([0.0] + durs[:-1]))
     total = float(sum(durs))
     content_total = total

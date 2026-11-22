@@ -425,7 +425,7 @@ class CheckoutScene:
 
 # open-loop structure (2026-11-22): question hook + teaser, reminder, late answer, loop ending
 STEPS = open_loop(
-    STEPS, "The self checkout checks you in more ways than you think. The last one is the sneakiest.",
+    STEPS, "The self checkout checks you in more ways than you think, and the last one is the sneakiest.",
     answer_step=11, teaser_frac=0.85, reminder=(7, "But the sneakiest check is still coming."),
     reveal="Here's the sneakiest one.",
     hook_keys=[("more ways than you think", INK), ("sneakiest", RED)],

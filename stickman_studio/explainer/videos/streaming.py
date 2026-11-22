@@ -368,7 +368,7 @@ def overlays(img, tr, t, W, H):
 
 # open-loop structure (2026-11-22): question hook + teaser, reminder, late answer, loop ending
 STEPS = open_loop(
-    STEPS, "You never actually download the movie you're watching. Not even close.", answer_step=13,
+    STEPS, "You never actually download the movie you're watching, not even close.", answer_step=13,
     teaser_frac=0.5, reminder=(5, "But that's still not the real trick."), reveal="Here's the real trick.",
     hook_keys=[("never actually download", RED), ("not even close", RED)],
     ending_text="Now you know more about streaming than 99% of people. Follow for more. Because remember,",

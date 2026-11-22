@@ -157,9 +157,10 @@ def test_shift_spec_and_open_loop():
                   sfx=[("w:built", "ding"), ("w:follow", "pop")])]
     out = open_loop(steps, "Why is it so?", answer_step=1, ending_text="Follow for more. Because remember,",
                     reminder=(0, "Hold that thought."), reveal="Here's the answer.")
-    assert len(out) == 4 and out[0]["teaser"]["step"] == 2 and out[1]["cam_dur"] == 0.01
+    assert len(out) == 4 and out[0]["teaser"]["step"] == 2 and out[1]["cam_dur"] == 0.7
     assert out[1]["text"].endswith("Hold that thought.") and out[2]["text"].startswith("Here's the answer.")
-    assert out[-1]["sfx"] == [("w:follow", "pop")] and out[-1]["min"] == 6.0
+    assert out[0]["pad"] > 0 and out[1]["cam_dur"] >= 0.5
+    assert out[-1]["sfx"] == [("w:follow", "pop")] and out[-1]["min"] == 0.0
 
 
 def test_scene_sees_original_step_numbers_after_open_loop():

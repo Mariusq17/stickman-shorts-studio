@@ -446,10 +446,10 @@ class TrafficScene:
 
 # open-loop structure (2026-11-22): question hook + teaser, reminder, late answer, loop ending
 STEPS = open_loop(
-    STEPS, "One vehicle can turn every traffic light on your street green. Which one?", answer_step=15,
+    STEPS, "There's one vehicle that can turn every traffic light on your street green.", answer_step=15,
     teaser_frac=0.6, reminder=(8, "Still not the vehicle that turns everything green. Hold on."),
     reveal="Here's the answer.",
-    hook_keys=[("one vehicle", INK), ("every traffic light|every light → green", BLUE), ("which one|which one?", RED)],
+    hook_keys=[("one vehicle", INK), ("every traffic light|every light → green", BLUE)],
     ending_text="And that's how you build a traffic light. Follow for more. Because remember,",
     ending_keys=[("build a traffic light|how you build it", BLUE)])  # O6 hook, E2 ending + loop
 
