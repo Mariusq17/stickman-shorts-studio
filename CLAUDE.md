@@ -123,19 +123,21 @@ confirmed (>= ~10 videos, consistent). Contradicted rules are downgraded or remo
 ## Where we left off (updated at every wrap-up - read this first)
 Last session: 2026-11-22 (branch `claude/upbeat-hypatia-l9zq43`, not merged yet).
 - **Posted** (YT + IG, O1/E1 baseline): card_tap 11-20 20:22, elevator 11-21 ~19:00, atm_notes 11-22 ~12:30.
-- **Queue = 6 open-loop versions, all rendered + delivered 2026-11-22** (MP4s not in git; registry `publishing/VIDEOS.md`):
-  chatbot v4 (planned 11-22 20:30), traffic_light v4, microwave v3, self_checkout v2, undersea_cable v3, streaming v2.
-  Pace: 2 posts/day (~12:30 and ~20:30 RO). Texts: `UPLOAD_LIST.txt` + `publishing/<slug>/post.md` (new titles).
+- **Queue (all rendered + delivered 2026-11-22; MP4s not in git, registry `publishing/VIDEOS.md`)**: chatbot v4 (posted
+  11-22 20:30?), traffic_light v5, microwave v4, self_checkout v3, undersea_cable v4, streaming v3, toilet v1, fridge v1.
+  Pace: 2 posts/day (~12:30 and ~20:30 RO). Texts: `UPLOAD_LIST.txt` + `publishing/<slug>/post.md`.
 - **Done this session**: strategist setup (STRATEGY/STATS/EXPERIMENTS/WINNERS, tools/yt, rotation, qa.py), first
   numbers analysed (Learned rules), owner decisions (keep long format; open loop; 2/day), engine: teaser steps,
-  `lib/story.py open_loop`, SceneTracks (original step numbers), stamp auto-fit, `pad` per step; microwave camera.
+  `lib/story.py open_loop`, SceneTracks (original step numbers), stamp auto-fit, `pad` per step; camera yaw/pitch;
+  kinetic captions + bursts; qa.py depth + vanish checks; new videos toilet + fridge.
 - **Owner feedback still to verify on the next videos**: hooks must sound natural at normal pace; loop must restart
   with no gap; no static camera (vary framing every ~5-8 s); answer as late as possible.
 - **Next session, in this order**:
   1. `studio` start: numbers (48 h / 7 d) for card_tap, elevator, atm_notes + first numbers of chatbot v4 (the first
      open-loop video: compare "stayed to watch" and the end of the retention curve with the O1/E1 baseline).
-  2. New videos: idea #13 toilet, #11 fridge (owner asked) - write them open-loop from the start (`open_loop`,
-     camera variety, QA spec); only after chatbot's first numbers if the queue still has >= 2 videos.
+  2. Owner's open question: premium upgrade without changing engines - an OFL font for all overlay text, a CC0-verified
+     SFX layer + music ducking/beat sync, motion vocabulary (read video-shotcraft's Apache-2.0 sound/motion guides for
+     principles). Test on ONE video first, then compare numbers.
   3. Optional: QA specs for the videos without one; www.youtube.com access for `collect_niche.py`.
 
 ## Commands

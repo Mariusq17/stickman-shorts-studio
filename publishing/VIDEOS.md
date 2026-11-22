@@ -39,3 +39,10 @@ Descriptions, captions and covers: `publishing/<slug>/post.md` and `cover.png` (
 | 7 | VID-007-v2 | self_checkout | Who Is Judging You at Self-Checkout? | ~1:35 | 9 | `440b753` [VID-007-v2] | 2026-11-22 | delivered; open loop: natural hook + teaser of the late answer, reminder, reveal, gapless loop ending, no end cover |
 | 8 | VID-008-v3 | undersea_cable | Why a Ship Goes Fishing for the Internet | 1:34 | 7 | `440b753` [VID-008-v3] | 2026-11-22 | delivered; open loop: natural hook + teaser of the late answer, reminder, reveal, gapless loop ending, no end cover |
 | 9 | VID-009-v2 | streaming | You Never Actually Download the Movie | 1:25 | 6 | `440b753` [VID-009-v2] | 2026-11-22 | delivered; open loop: natural hook + teaser of the late answer, reminder, reveal, gapless loop ending, no end cover |
+| 5 | VID-005-v5 | traffic_light | The One Vehicle That Turns Every Light Green | ~1:47 | 8 | `2aa21cb` [VID-005-v5] | 2026-11-22 | delivered; depth fix (poles in front of cars), side car exits fully, kinetic hook/ending + bursts |
+| 6 | VID-006-v4 | microwave | Why Forks Spark in the Microwave | 1:44 | 7 | `c662c47` [VID-006-v4] | 2026-11-22 | delivered; camera swings to look through the door glass, kinetic hook/ending + bursts |
+| 7 | VID-007-v3 | self_checkout | Who Is Judging You at Self-Checkout? | 1:37 | 9 | `c662c47` [VID-007-v3] | 2026-11-22 | delivered; kinetic hook/ending + bursts |
+| 8 | VID-008-v4 | undersea_cable | Why a Ship Goes Fishing for the Internet | 1:34 | 7 | `c662c47` [VID-008-v4] | 2026-11-22 | delivered; kinetic hook/ending + bursts |
+| 9 | VID-009-v3 | streaming | You Never Actually Download the Movie | 1:26 | 6 | `c662c47` [VID-009-v3] | 2026-11-22 | delivered; kinetic hook/ending + bursts |
+| 10 | VID-010-v1 | toilet | Why Every Toilet Flush Ends With a Gurgle | 1:39 | 7 | `ccbce83` [VID-010-v1] | 2026-11-22 | delivered; new, open loop, dollhouse section |
+| 11 | VID-011-v1 | fridge | Your Fridge Doesn't Make Cold | 1:42 | 8 | `ccbce83` [VID-011-v1] | 2026-11-22 | delivered; new, open loop, door towards camera, camera swing to the back |
