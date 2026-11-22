@@ -22,6 +22,13 @@ Never invent facts or numbers that are not in the script.
   - the everyday moment: "Why AI Chatbots Type One Word at a Time"
 - Must contain the main search keyword (elevator, ATM, contactless card, AI chatbot...).
 
+### Check title + cover as a PAIR (before rendering the cover)
+`python3 -I tools/yt/title.py --title "<title>" --thumb "<cover words>"` (several candidates: one title per line in
+a file + `--thumb`). Aim: the subject survives the ~40-character mobile cut, no vague words, and the cover says
+what the title does NOT (no shared keywords - "duplicate"), max ~3-4 words of cover text. "no-number" is advice,
+not a rule: add a number only if it is a verified fact from the script. title.py is a long-form heuristic: use it
+to compare candidates, never quote its score as a prediction. Paste the chosen pair + score in `post.md`.
+
 ## 3. Descriptions (the algorithm now leans on descriptive text, not hashtags)
 - **YouTube description:** 3-5 plain sentences. Say what we build and list the real component/term names
   in the order they appear (those are the search keywords). No keyword stuffing, no links.
@@ -38,8 +45,9 @@ Never invent facts or numbers that are not in the script.
 - Pick `t` at the most visual moment: the main object fully built and recognisable, mechanism visible,
   a mascot reacting, no keyword/pop-up needed (covers render the clean scene only). Use `--preview` of the
   video to choose; `cam` overrides the video camera to frame the object (zoom ~160-360).
-- Title lines: 2-3 lines, max ~18 characters each, ALL CAPS, the twist word(s) in YELLOW, the rest white
-  (e.g. "THIS CARD HAS" / "NO BATTERY" / "SO HOW DOES IT PAY?"). It is a curiosity gap, not the YT title copied.
+- Title lines: 2-3 lines, max ~18 characters each, ALL CAPS, the twist word(s) in YELLOW, the rest white.
+  It is a curiosity gap that COMPLEMENTS the title (title.py pair check above), not the YT title copied:
+  title "Why Elevators Almost Never Fall" -> cover "WHAT IF" / "THE ROPE SNAPS?" rather than "WHY ELEVATORS NEVER FALL".
 - Check the PNG: title readable at phone-grid size, inside the centre 3:4 area (Instagram crops the grid
   to 1080x1440), object not hidden by the title, no text cut at the edges. Fix `t`/`cam` and re-render.
 - Instagram: upload `cover.png` as the Reel cover. YouTube Shorts: pick the frame in the app, or
