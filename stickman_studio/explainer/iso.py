@@ -22,18 +22,39 @@ def mix(a, b, t):
     return tuple(int(round(x + (y - x) * t)) for x, y in zip(a, b))
 
 
+ISO_YAW, ISO_PITCH = 45.0, math.degrees(math.atan(1 / math.sqrt(2)))     # classic isometric view
+ISO_K = 1.0 / math.cos(math.radians(ISO_PITCH))                          # keeps the historical scale
+
+
 class IsoCam:
-    def __init__(self, img, focus=(0, 0, 0), zoom=100.0, anchor=(0, 0)):
+    """Orthographic camera. Default yaw/pitch = the classic isometric view used by every video (identical
+    output). yaw 45 -> 0 swings the camera round to look straight at the +y face (e.g. through a door);
+    pitch lowers/raises the eye. Scenes draw the top, +y and +x faces, so keep yaw in [0, 90] and
+    pitch in [5, 60] for the painter's order to stay right."""
+
+    def __init__(self, img, focus=(0, 0, 0), zoom=100.0, anchor=(0, 0), yaw=ISO_YAW, pitch=ISO_PITCH):
         self.img = img
         self.d = ImageDraw.Draw(img)
         self.f = focus
         self.s = zoom
         self.a = anchor
+        self.yaw, self.pitch = yaw, pitch
+        if abs(yaw - ISO_YAW) < 1e-6 and abs(pitch - ISO_PITCH) < 1e-6:
+            self._m = None
+        else:
+            ps, pc = math.sin(math.radians(yaw)), math.cos(math.radians(yaw))
+            es, ec = math.sin(math.radians(pitch)), math.cos(math.radians(pitch))
+            k = ISO_K
+            # right = (cos yaw, -sin yaw, 0); up = (-sin(p) sin(yaw), -sin(p) cos(yaw), cos(p))
+            self._m = (pc * k, -ps * k, es * ps * k, es * pc * k, ec * k)
 
     # world -> screen
     def p(self, x, y, z):
         x, y, z = x - self.f[0], y - self.f[1], z - self.f[2]
-        return (self.a[0] + (x - y) * C30 * self.s, self.a[1] + ((x + y) * S30 - z) * self.s)
+        if self._m is None:
+            return (self.a[0] + (x - y) * C30 * self.s, self.a[1] + ((x + y) * S30 - z) * self.s)
+        a, b, c, d, e = self._m
+        return (self.a[0] + (a * x + b * y) * self.s, self.a[1] + (c * x + d * y - e * z) * self.s)
 
     def w(self, width):
         return max(1, int(round(width * self.s)))

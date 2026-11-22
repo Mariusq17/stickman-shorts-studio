@@ -370,7 +370,9 @@ def overlays(img, tr, t, W, H):
 STEPS = open_loop(
     STEPS, "You never actually download the movie you're watching, not even close.", answer_step=13,
     teaser_frac=0.5, reminder=(5, "But that's still not the real trick."), reveal="Here's the real trick.",
-    hook_keys=[("never actually download", RED), ("not even close", RED)],
+    hook_keys=[("never actually download", RED), ("not even close", RED)], hook_hl=["never", "close"],
+    hook_bursts=[dict(at="w:never", glyph="cross", color=(226, 52, 64), xy=(0.78, 0.30))],
+    ending_hl=["99%"], ending_bursts=[dict(at="w:99", glyph="99%", color=(40, 160, 90), xy=(0.78, 0.30))],
     ending_text="Now you know more about streaming than 99% of people. Follow for more. Because remember,",
     ending_keys=[("99% of people|smarter than 99%", BLUE)])  # O5 hook, E3 ending + loop
 

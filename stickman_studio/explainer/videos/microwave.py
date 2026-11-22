@@ -493,6 +493,15 @@ _more(2, cams=[("w:twist", CLOSE, 1.2), ("w:heat", SIDE, 1.2)], do=[("ghost", 0.
 _more(4, cams=[("w:bounce", SIDE, 1.2), ("w:hot", INSIDE, 1.0), ("w:half", CLOSE, 1.0)])
 _more(5, cams=[("w:turntable", CLOSE, 1.0), ("w:ceiling", ABOVE, 1.2)])
 _more(10, cams=[("w:sharp", CLOSE, 0.9), ("w:arcing", INSIDE, 1.0)])
+# real change of viewpoint (owner 2026-11-22): swing the camera round to look straight through the door glass
+# for the mesh + door steps, then back to the usual angle; a low front look at the soup for "inside out".
+ISO_P = 35.264
+FRONT = ((0.9, 1.0, 1.62), 360)
+_more(7, cams=[("w:glass", FRONT, 1.6)], do=[("cam_yaw", "w:glass", 6.0, 1.8, "smooth"),
+                                              ("cam_pitch", "w:glass", 12.0, 1.8, "smooth")])
+_more(9, do=[("cam_yaw", 0.0, 45.0, 1.6, "smooth"), ("cam_pitch", 0.0, ISO_P, 1.6, "smooth")])
+_more(12, do=[("cam_yaw", "w:couple", 18.0, 1.6, "smooth"), ("cam_pitch", "w:couple", 16.0, 1.6, "smooth")])
+_more(13, do=[("cam_yaw", 0.0, 45.0, 1.5, "smooth"), ("cam_pitch", 0.0, ISO_P, 1.5, "smooth")])
 _more(11, cams=[("w:rack", SIDE, 1.2)])
 _more(12, cams=[("w:couple", CLOSE, 1.2), ("w:spreads", INSIDE, 1.2)])
 _more(13, cams=[("w:next", WIDE, 1.3), ("w:sharp", INSIDE, 1.2)])
@@ -501,7 +510,9 @@ _more(13, cams=[("w:next", WIDE, 1.3), ("w:sharp", INSIDE, 1.2)])
 STEPS = open_loop(
     STEPS, "Why does a fork turn your microwave into a tiny thunderstorm?", answer_step=10,
     teaser_frac=0.85, reminder=(5, "Still no fork. We're getting there."),
-    hook_keys=[("fork", RED), ("tiny thunderstorm", RED)],
+    hook_keys=[("fork", RED), ("tiny thunderstorm", RED)], hook_hl=["fork", "thunderstorm"],
+    hook_bursts=[dict(at="w:thunderstorm", glyph="bolt", color=(255, 150, 40), xy=(0.78, 0.30))],
+    ending_hl=["99%"], ending_bursts=[dict(at="w:99", glyph="99%", color=(40, 160, 90), xy=(0.76, 0.30))],
     ending_text="Now you know more about microwaves than 99% of people. Follow for more. And next time someone asks you,",
     ending_keys=[("99% of people|smarter than 99%", BLUE)], ending_do=[])  # O2 hook, E3 ending + loop
 

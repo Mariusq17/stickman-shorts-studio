@@ -150,12 +150,116 @@ def draw_tracker(img, t, events, total, label, t_show, t_hide, W, H, color=GREEN
 
 
 # ------------------------------------------------------------------ pop-ups
+# ------------------------------------------------------------------ dynamic hook / ending layers (2026-11-22)
+def _glyph(d, name, cx, cy, r, color):
+    """Our own vector 'emoji' (no colour-emoji font in the render container): a coloured disc + a white glyph."""
+    d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=color, outline=(255, 255, 255), width=max(3, int(r * 0.12)))
+    w = (255, 255, 255)
+    if name == "bolt":
+        q = r * 0.62
+        d.polygon([(cx + q * 0.15, cy - q), (cx - q * 0.55, cy + q * 0.12), (cx - q * 0.02, cy + q * 0.12),
+                   (cx - q * 0.2, cy + q), (cx + q * 0.55, cy - q * 0.15), (cx + q * 0.02, cy - q * 0.15)], fill=w)
+    elif name == "star":
+        pts = []
+        for k in range(10):
+            ang = -math.pi / 2 + k * math.pi / 5
+            rr = r * (0.62 if k % 2 == 0 else 0.26)
+            pts.append((cx + math.cos(ang) * rr, cy + math.sin(ang) * rr))
+        d.polygon(pts, fill=w)
+    elif name == "eye":
+        d.ellipse((cx - r * 0.62, cy - r * 0.34, cx + r * 0.62, cy + r * 0.34), fill=w)
+        d.ellipse((cx - r * 0.22, cy - r * 0.22, cx + r * 0.22, cy + r * 0.22), fill=INK)
+    elif name == "check":
+        d.line([(cx - r * 0.45, cy), (cx - r * 0.1, cy + r * 0.35), (cx + r * 0.5, cy - r * 0.35)], fill=w,
+               width=max(3, int(r * 0.2)), joint="curve")
+    elif name == "cross":
+        lw = max(3, int(r * 0.2))
+        d.line([(cx - r * 0.4, cy - r * 0.4), (cx + r * 0.4, cy + r * 0.4)], fill=w, width=lw)
+        d.line([(cx + r * 0.4, cy - r * 0.4), (cx - r * 0.4, cy + r * 0.4)], fill=w, width=lw)
+    else:                                   # text glyph: "?", "!", "?!", "99%", "3"...
+        d.text((cx, cy + r * 0.04), name, font=font(int(r * (1.1 if len(name) <= 2 else 0.7))), fill=w, anchor="mm")
+
+
+def _kinetic(img, p, t, W, H, a):
+    """Word-by-word captions synced to the narration: each word pops in when spoken, the current word is
+    highlighted, emphasised words get a colour; whole block sits in the lower third (keywords stay on top)."""
+    words = p["words"]                      # [(word, abs_start), ...] resolved by the builder
+    shown = [(w, ts) for w, ts in words if t >= ts - 0.02]
+    if not shown:
+        return
+    size = int(W * p.get("size", 0.066))
+    f = font(size)
+    hl = {h.lower() for h in p.get("hl", [])}
+    d0 = ImageDraw.Draw(img)
+    lines, cur, wsum = [], [], 0.0
+    space = d0.textlength(" ", font=f)
+    for w, ts in words:                     # layout with ALL words so lines never reflow while they appear
+        lw = d0.textlength(w.upper(), font=f)
+        if cur and wsum + space + lw > W * 0.84:
+            lines.append(cur)
+            cur, wsum = [], 0.0
+        cur.append((w, ts, lw))
+        wsum += (space if len(cur) > 1 else 0) + lw
+    if cur:
+        lines.append(cur)
+    last = shown[-1][1]
+    cur_li = max(li for li, line in enumerate(lines) if any(ts <= last for _, ts, _ in line))
+    lines = lines[max(0, cur_li - 1):cur_li + 1]       # rolling window: the line being spoken + the one before
+    y0 = H * p.get("y", 0.64)
+    for li, line in enumerate(lines):
+        total = sum(lw for _, _, lw in line) + space * (len(line) - 1)
+        x = W / 2 - total / 2
+        y = y0 + li * size * 1.22
+        for w, ts, lw in line:
+            if t >= ts - 0.02:
+                k = ease_out_back(clamp((t - ts) / 0.22))
+                key = w.lower().strip(".,?!")
+                col = (255, 214, 64) if ts == last else ((255, 92, 92) if key in hl else (255, 255, 255))
+                fs = max(8, int(size * (0.6 + 0.4 * k)))
+                L = Image.new("RGBA", (int(lw * 1.4) + size, int(size * 1.6)), (0, 0, 0, 0))
+                ImageDraw.Draw(L).text((L.width / 2, L.height / 2), w.upper(), font=font(fs), fill=col + (255,),
+                                       anchor="mm", stroke_width=max(3, int(fs * 0.13)), stroke_fill=(20, 24, 50, 255))
+                paste(img, L, x + lw / 2 - L.width / 2, y - L.height / 2 + (1 - k) * size * 0.25, a)
+            x += lw + space
+
+
+def _burst(img, p, t, W, H, a):
+    """A badge that slams in with rays: a number/symbol ('99%', '?!') or a vector glyph ('bolt', 'eye'...)."""
+    t0 = p["t0"]
+    r = W * p.get("r", 0.085)
+    k = ease_out_back(clamp((t - t0) / 0.3))
+    if k <= 0.01:
+        return
+    side = int(r * 3.2)
+    L = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    d = ImageDraw.Draw(L)
+    c = side / 2
+    col = tuple(p.get("color", RED))
+    spin = (t - t0) * 0.8
+    for i in range(12):                     # rays
+        ang = spin + i * math.pi / 6
+        r0, r1 = r * 1.12, r * (1.38 + 0.08 * math.sin(t * 9 + i))
+        d.line([(c + math.cos(ang) * r0, c + math.sin(ang) * r0), (c + math.cos(ang) * r1, c + math.sin(ang) * r1)],
+               fill=col + (200,), width=max(3, int(r * 0.09)))
+    _glyph(d, p.get("glyph", "!"), c, c, r, col)
+    sc = max(0.05, k)
+    L = L.resize((max(1, int(side * sc)), max(1, int(side * sc))), Image.BICUBIC)
+    wob = math.sin((t - t0) * 6.0) * 4 * math.exp(-(t - t0) * 2.0)
+    L = L.rotate(wob, resample=Image.BICUBIC, expand=False)
+    px, py = p.get("xy", (0.78, 0.34))
+    paste(img, L, W * px - L.width / 2, H * py - L.height / 2, a)
+
+
 def draw_pop(img, cam, p, t, W, H, tr=None):
     kind = p["kind"]
     t0, t1 = p["t0"], p["t1"]
     a = fade(t, t0, t1, 0.2, 0.3)
     if a <= 0:
         return
+    if kind == "kinetic":
+        return _kinetic(img, p, t, W, H, a)
+    if kind == "burst":
+        return _burst(img, p, t, W, H, a)
     k = ease_out_back(clamp((t - t0) / 0.35))
     color = tuple(p.get("color", INK))
     if kind in ("note", "warn", "check"):

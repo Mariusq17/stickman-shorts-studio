@@ -540,7 +540,9 @@ def overlays(img, tr, t, W, H):
 STEPS = open_loop(
     STEPS, "Why is there a ship fishing for the internet at the bottom of the ocean?", answer_step=12,
     teaser_frac=0.7, reminder=(7, "And that fishing ship? It's coming."), reveal="Here's where the ship comes in.",
-    hook_keys=[("fishing for the internet", RED), ("bottom of the ocean", INK)],
+    hook_keys=[("fishing for the internet", RED), ("bottom of the ocean", INK)], hook_hl=["fishing", "internet"],
+    hook_bursts=[dict(at="w:fishing", glyph="?!", color=(40, 110, 235), xy=(0.78, 0.30))],
+    ending_bursts=[dict(at="w:build", glyph="star", color=(240, 170, 40), xy=(0.78, 0.30))],
     ending_text="And that's how you build an undersea internet cable. Follow for more. And next time someone asks you,",
     ending_keys=[("undersea internet cable|how you build it", BLUE)], ending_do=[])  # O2 hook, E2 ending + loop
 

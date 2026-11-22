@@ -13,6 +13,7 @@ instead of being painted. On that record we check:
 
   linger      an object from QA["objects"] is on screen during a step it does not belong to
   pass-through two objects overlap while one of them moves (cars through cars...)
+  depth        a spec object is painted over a box that is entirely closer to the camera (wrong draw order)
   link        a cable/pipe (lines thicker than width_min) does not connect its two end objects
   label       a callout label (kit.label) is cut by the frame edge; text on an object shrunk to unreadable
   keyword     keyword on screen < 0.9 s, phrase spoken twice in the step, keyword too long (> 2 lines)
@@ -51,7 +52,7 @@ from PIL import Image
 from ..painter import font
 from ..tts import _pause_after, _syllables, estimate_word_times, tokenize
 from . import builder
-from .iso import IsoCam
+from .iso import ISO_PITCH, ISO_YAW, IsoCam
 from .lib import kit
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -93,8 +94,9 @@ def narration_clips(steps, timing="auto", rate=1.2):
 class RecCam(IsoCam):
     """IsoCam that records primitives in world space instead of painting them."""
 
-    def __init__(self, img, focus, zoom, anchor):
-        super().__init__(img, focus, zoom, anchor)
+    def __init__(self, img, focus, zoom, anchor, yaw=None, pitch=None):
+        from .iso import ISO_PITCH, ISO_YAW
+        super().__init__(img, focus, zoom, anchor, ISO_YAW if yaw is None else yaw, ISO_PITCH if pitch is None else pitch)
         self.rec = []
 
     def poly(self, pts3, fill=None, outline=None, width=0.0):
@@ -199,6 +201,40 @@ def _find_obj(rec, spec):
 
 def _cond(x, op, v):
     return {"<": x < v, ">": x > v, "<=": x <= v, ">=": x >= v}[op]
+
+
+def _in_front(b, a, eps=0.02):
+    """Box b is entirely closer to the iso camera (+x, +y, +z) than box a."""
+    return (b[1] >= a[4] - eps or b[0] >= a[3] - eps) and b[5] > a[2] + eps
+
+
+def _scr_overlap(cam, a, b, W, H, frac=0.08):
+    sa, sb = _screen_box(cam, a), _screen_box(cam, b)
+    ix = max(0.0, min(sa[2], sb[2], W) - max(sa[0], sb[0], 0)) * max(0.0, min(sa[3], sb[3], H) - max(sa[1], sb[1], 0))
+    area = max(1e-6, min((sa[2] - sa[0]) * (sa[3] - sa[1]), (sb[2] - sb[0]) * (sb[3] - sb[1])))
+    return ix / area >= frac
+
+
+def _depth_errors(rec, objects, cam, W, H):
+    """Spec objects drawn AFTER a box that is entirely in front of them (painter's order broken)."""
+    out = []
+    boxes = [(k, r[1], r[2]) for k, r in enumerate(rec) if r[0] == "box"]
+    for name, o in objects.items():
+        cols = {tuple(c) for c in (o.get("colors") or [o["color"]])}
+        mine = [(k, b) for k, b, c in boxes if c in cols]
+        if not mine:
+            continue
+        first = min(k for k, _ in mine)
+        ob = _aabb_union([b for _, b in mine])
+        for k, b, c in boxes:
+            if k >= first or c in cols:
+                continue
+            if (b[3] - b[0]) * (b[4] - b[1]) > 4.0:      # ground slabs / big floors: not occluders
+                continue
+            if _in_front(b, ob) and _scr_overlap(cam, ob, b, W, H):
+                out.append((name, c))
+                break
+    return out
 
 
 def _connected(lines, end_a, end_b, tol=0.08, bridges=()):
@@ -400,12 +436,13 @@ def run_qa(video, spec=None, timing="auto", dt=0.25, size=(1080, 1920), log=None
     kit.plane_text = _plane_text_probe
     lingering, prev_pos, hits, link_bad, cut_labels, tiny, checked = {}, {}, {}, {}, {}, {}, {}
     seen_objects = set()
+    depth_bad = {}
     try:
         t = 0.0
         while t < total:
             i = tr.step_at(t)
             f, z = camp.at(t)
-            cam = RecCam(small.copy(), f, z, (W / 2, H * 0.56))
+            cam = RecCam(small.copy(), f, z, (W / 2, H * 0.56), tr.get("cam_yaw", t, ISO_YAW), tr.get("cam_pitch", t, ISO_PITCH))
             del _SMALL[:]
             ts, si, st_ = builder.scene_time(P, t)
             scene.draw(cam.img, cam, P["scene_tracks"], ts, si, st_)
@@ -430,6 +467,9 @@ def run_qa(video, spec=None, timing="auto", dt=0.25, size=(1080, 1920), log=None
                 if next_own is not None and starts[next_own] - ts <= o.get("enter", 1.0):
                     continue                                  # entering for its next step
                 lingering.setdefault(name, []).append((t, i))
+            # depth order: a moving object must not be painted over something that is in front of it
+            for name, col in _depth_errors(cam.rec, {k: objects[k] for k in pos}, cam, W, H):
+                depth_bad.setdefault(name, []).append((t, i))
             # pass-through: overlap while at least one of the two moves
             solid = [nm for nm in pos if objects[nm].get("solid", True)]
             for a_i, a in enumerate(solid):
@@ -496,6 +536,10 @@ def run_qa(video, spec=None, timing="auto", dt=0.25, size=(1080, 1920), log=None
             if b - a + dt >= 0.5:
                 add("ERROR", "linger", f"'{name}' still on screen in step {i} ({a:.1f}-{b + dt:.1f} s) - not part of "
                                        f"its steps {objects[name].get('steps')}; make it exit", a, i)
+    for name, sm in depth_bad.items():
+        for a, b, i in spans(sm):
+            add("ERROR", "depth", f"'{name}' is drawn over something that is closer to the camera (step {i}, "
+                                  f"{a:.1f}-{b + dt:.1f} s) - draw it before the nearer object", a, i)
     for (a_, b_), sm in hits.items():
         for a, b, i in spans(sm):
             add("ERROR", "pass-through", f"'{a_}' and '{b_}' overlap while moving (step {i}, {a:.1f}-{b + dt:.1f} s) - "

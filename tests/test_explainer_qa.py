@@ -94,7 +94,8 @@ def test_known_bugs_caught_and_fixed_versions_pass(slug, old, fixed, kinds):
     bad = qa.run_qa(qa.load_video(slug, old), spec, timing="est")
     assert kinds <= {i["kind"] for i in _errors(bad)}, bad["issues"]
     good = qa.run_qa(qa.load_video(slug, fixed), spec, timing="est")
-    assert not _errors(good), _errors(good)
+    still = [i for i in _errors(good) if i["kind"] in kinds]     # (v2 still had the later-found depth bug)
+    assert not still, still
 
 
 def test_every_current_video_has_no_qa_errors():
@@ -177,3 +178,14 @@ def test_scene_sees_original_step_numbers_after_open_loop():
     assert P["scene_tracks"].step_at(st[3] + 0.1) == 2
     assert builder.scene_time(P, 0.2)[1] == 1                         # the teaser shows the answer step
 
+
+
+def test_depth_order_bug_caught_and_fixed():
+    """Owner 2026-11-22: the green-wave car was painted over the avenue signal poles that stand in front of it."""
+    if not _has_rev("440b753"):
+        pytest.skip("commit 440b753 not in this clone")
+    spec = qa.spec_of("traffic_light")
+    bad = qa.run_qa(qa.load_video("traffic_light", "440b753"), spec, timing="est", dt=0.5)
+    assert any(i["kind"] == "depth" for i in _errors(bad)), bad["issues"]
+    good = qa.run_qa(qa.load_video("traffic_light"), spec, timing="est", dt=0.5)
+    assert not _errors(good), _errors(good)

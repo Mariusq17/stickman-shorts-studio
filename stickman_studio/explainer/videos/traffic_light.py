@@ -216,12 +216,15 @@ class TrafficScene:
         if world > 0.01:
             self._ground(cam, tr, t, world)
         if g("avenue") > 0.01 or world > 0.9:
-            self._avenue_signals(cam, tr, t)
+            self._avenue_signals(cam, tr, t, "road")
         if world > 0.5:
             self._cars(cam, tr, t, behind=True)
         self._main_signal(cam, tr, t)
         if world > 0.5:
             self._cars(cam, tr, t, behind=False)
+        if g("avenue") > 0.01 or world > 0.9:
+            self._avenue_signals(cam, tr, t, "poles")
+        if world > 0.5:
             self._people(cam, tr, t)
         n = g("night")
         if n > 0.01:
@@ -364,17 +367,22 @@ class TrafficScene:
                 p = (ax + 0.6 + (x - ax - 0.6) * f, 0.5 + (y - 0.5) * f, 0.6 + (h - 0.5 - 0.6) * f)
                 kit.glow_dot(cam, p, 0.035, (255, 120, 120))
 
-    def _avenue_signals(self, cam, tr, t):
+    def _avenue_signals(self, cam, tr, t, part="all"):
+        """part="road": stop lines (under the cars); part="poles": poles + heads at y~1.4-1.6, which are CLOSER to
+        the camera than the lane (y~0.5), so they are drawn after the cars (depth order, owner feedback 2026-11-22)."""
         g = lambda k: tr.get(k, t)
         a = g("avenue")
         if a <= 0.01:
             return
         for wx, key in zip(WAVE_X, ("w1", "w2")):
-            cam.line([(wx - 0.2, 0.02, 0.003), (wx - 0.2, 0.98, 0.003)], (250, 250, 250), 0.06, caps=False)
+            if part in ("all", "road"):
+                cam.line([(wx - 0.2, 0.02, 0.003), (wx - 0.2, 0.98, 0.003)], (250, 250, 250), 0.06, caps=False)
+            if part == "road":
+                continue
             cam.box(wx - 0.05, 1.4, 0, 0.1, 0.1, 2.3 * _sm(a), POLE)
             if a > 0.8:
                 parts.signal_head(cam, wx, 1.58, 1.45, "y", _lamps(g(key), 0, t), 3, 0.2, t)
-        if g("sync") > 0.5:
+        if g("sync") > 0.5 and part != "road":
             for i, wx in enumerate((-1.5,) + WAVE_X):
                 kit.label(cam, (wx, 1.5, 2.75), "SYNC", 0.16, (255, 255, 255), GREEN)
 
@@ -449,7 +457,9 @@ STEPS = open_loop(
     STEPS, "There's one vehicle that can turn every traffic light on your street green.", answer_step=15,
     teaser_frac=0.6, reminder=(8, "Still not the vehicle that turns everything green. Hold on."),
     reveal="Here's the answer.",
-    hook_keys=[("one vehicle", INK), ("every traffic light|every light → green", BLUE)],
+    hook_keys=[("one vehicle", INK), ("every traffic light|every light → green", BLUE)], hook_hl=["one", "green"],
+    hook_bursts=[dict(at="w:green", glyph="?!", color=(226, 52, 64), xy=(0.78, 0.30))],
+    ending_bursts=[dict(at="w:build", glyph="star", color=(240, 170, 40), xy=(0.78, 0.30))],
     ending_text="And that's how you build a traffic light. Follow for more. Because remember,",
     ending_keys=[("build a traffic light|how you build it", BLUE)])  # O6 hook, E2 ending + loop
 

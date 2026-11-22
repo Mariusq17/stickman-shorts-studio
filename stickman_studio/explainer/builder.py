@@ -25,7 +25,7 @@ from ..audio import SR, mix_tracks, music_bed, write_wav
 from ..easing import clamp, ease_in_cubic, ease_out_back, ease_out_cubic
 from ..painter import font
 from ..tts import synthesize_all
-from .iso import IsoCam
+from .iso import ISO_PITCH, ISO_YAW, IsoCam
 from .lib.camera import CameraPath
 from .lib.kit import flush_labels
 from .lib.post import Post, average
@@ -80,6 +80,17 @@ class Timing:
                 e = clip.word_times[k + len(ph) - 1][1]
                 return s + LEAD + WORD_BIAS, e + LEAD
         raise KeyError(f"cue '{phrase}' not found in step {i}: {self.steps[i]['text'][:60]}")
+
+    def word_starts(self, i, phrase):
+        """[(word as written in the phrase, start time relative to the step)] for a phrase spoken in step i."""
+        clip = self.clips[i]
+        toks = [_norm(w) for w in clip.words]
+        raw = phrase.split()
+        ph = [_norm(w) for w in raw]
+        for k in range(len(toks) - len(ph) + 1):
+            if all(toks[k + j].startswith(ph[j]) for j in range(len(ph))):
+                return [(raw[j], clip.word_times[k + j][0] + LEAD + WORD_BIAS) for j in range(len(ph))]
+        raise KeyError(f"kinetic phrase '{phrase}' not found in step {i}: {self.steps[i]['text'][:60]}")
 
     def rel(self, i, cue):
         if isinstance(cue, (int, float)):
@@ -140,6 +151,10 @@ def plan_timeline(steps, clips, initial, size=(1080, 1920), fps=30, extra_end=0.
             keys.append([s0 + a, s0 + b, text, color])
         for p in st.get("pops", []):
             p = dict(p)
+            if p["kind"] == "kinetic":            # word-by-word captions: every word timed to the voice
+                p["words"] = tm.word_starts(i, p["text"])
+                p.setdefault("at", p["words"][0][1] - s0 if p["words"] else 0.0)
+                p["words"] = [(w, s0 + ts) for w, ts in p["words"]]
             p["t0"] = tm.abs(i, p["at"])
             p["t1"] = p["t0"] + p.get("dur", 2.2) if "until" not in p else tm.abs(i, p["until"])
             pops.append(p)
@@ -248,7 +263,7 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
         i = tr.step_at(t)
         img = scene.bg.copy()
         f, z = camp.at(t)
-        cam = IsoCam(img, f, z * ss, (RW / 2, RH * 0.56))
+        cam = IsoCam(img, f, z * ss, (RW / 2, RH * 0.56), tr.get("cam_yaw", t, ISO_YAW), tr.get("cam_pitch", t, ISO_PITCH))
         ts, si, st_ = scene_time(P, t)
         scene.draw(img, cam, P["scene_tracks"], ts, si, st_)
         flush_labels(cam)          # callout labels always on top of every object
@@ -272,7 +287,7 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
             img = post.film(img, t, film)
         img = post.dof(img, clamp((z / bz - 190) / 140) * 0.9)
         img = post.whip(img, camp.whip_amount(t))
-        cam = IsoCam(img, f, z, (W / 2, H * 0.56))
+        cam = IsoCam(img, f, z, (W / 2, H * 0.56), tr.get("cam_yaw", t, ISO_YAW), tr.get("cam_pitch", t, ISO_PITCH))
         for p in pops:
             if p["t0"] - 0.01 <= t <= p["t1"] + 0.35:
                 draw_pop(img, cam, p, t, W, H, tr)

@@ -428,7 +428,9 @@ STEPS = open_loop(
     STEPS, "The self checkout checks you in more ways than you think, and the last one is the sneakiest.",
     answer_step=11, teaser_frac=0.85, reminder=(7, "But the sneakiest check is still coming."),
     reveal="Here's the sneakiest one.",
-    hook_keys=[("more ways than you think", INK), ("sneakiest", RED)],
+    hook_keys=[("more ways than you think", INK), ("sneakiest", RED)], hook_hl=["sneakiest"],
+    hook_bursts=[dict(at="w:sneakiest", glyph="eye", color=(226, 52, 64), xy=(0.22, 0.30))],
+    ending_bursts=[dict(at="w:built", glyph="check", color=(40, 160, 90), xy=(0.78, 0.30))],
     hook_pops=[dict(kind="stamp", at="w:sneakiest", text="SPOTTED", color=RED, pos="mr", until="end")],
     ending_text="And congratulations, you just built a self checkout. Follow for more. Because remember,",
     ending_keys=[("built a self checkout|you built it!", BLUE)])  # O6 hook, E1 ending + loop
