@@ -106,3 +106,10 @@ hook_keys=[..], hook_pops=[..], ending_keys=[..], ending_do=[..])` -> inserts a 
 the answer step (builder `teaser=dict(step, frac)`: the scene plays a later moment), whip-cut into the build,
 mid reminder, reveal line, short loop ending (no end cover - set `end_cover=False` in VIDEO). QA specs: write them
 with original step indices and use `qa.shift_spec(QA, 1)` in VIDEO.
+
+## Camera angle, kinetic captions, bursts (2026-11-22)
+- `IsoCam(..., yaw=45, pitch=35.26)`: default = classic iso (bit-identical). Tracks `cam_yaw` / `cam_pitch` in a step's
+  `do` swing the view (yaw 0 = looking straight at the +y face). Example: `videos/microwave.py` (door glass).
+- Pops `kind="kinetic"` (text = a phrase spoken in that step; words appear as spoken; `hl` = red words) and
+  `kind="burst"` (`glyph` "99%"/"?!"/"bolt"/"star"/"eye"/"check"/"cross", `color`, `xy` as fractions of the frame).
+  `open_loop(..., hook_hl, hook_bursts, ending_hl, ending_bursts)` adds them to the hook and the ending.

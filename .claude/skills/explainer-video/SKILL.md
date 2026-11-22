@@ -105,3 +105,14 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
   No instant cuts unless it is a deliberate whip (flashback).
 - Big plain surfaces (an oven top, a cabinet side) must not fill half the frame for long: make covers see-through
   (outline + glass glints, hide the inner ceiling) when the action is inside - example `videos/microwave.py` `ghost`.
+- Depth (owner 2026-11-22): what is closer to the camera (+x, +y, +z) is drawn LATER. Split props into "ground
+  paint" (drawn first) and "standing parts" (drawn after anything behind them) - e.g. traffic_light avenue
+  poles at y~1.4 are drawn after cars at y~0.5. `qa.py` "depth" errors catch moving objects painted over nearer boxes.
+- Finish every movement (owner 2026-11-22): a moving prop is drawn until it is really off-screen; never cut it at
+  an arbitrary coordinate while visible (`qa.py` "vanish"). Exits: drive/slide fully out, or shrink/fade to 0.
+- Real viewpoint changes: animate `cam_yaw` (45 = iso, 0 = straight at the +y face) and `cam_pitch` (35.26 = iso,
+  ~10 = eye level) in `do` with 1.5-1.8 s "smooth"; e.g. microwave swings to look through the door glass, then back.
+  Keep yaw in [0, 90], pitch in [5, 60] (scenes draw only top/+y/+x faces).
+- Hook + ending are never "blank video + voice": `open_loop` adds kinetic word-by-word captions (lower third,
+  current word yellow, `hl` words red) and `bursts` (badge with rays: "99%", "?!", "bolt", "eye", "star", "check",
+  "cross"). Give every new video 1 burst in the hook and 1 in the ending.

@@ -13,6 +13,7 @@ instead of being painted. On that record we check:
 
   linger      an object from QA["objects"] is on screen during a step it does not belong to
   pass-through two objects overlap while one of them moves (cars through cars...)
+  vanish       a spec object disappears while fully inside the frame (movement not finished)
   depth        a spec object is painted over a box that is entirely closer to the camera (wrong draw order)
   link        a cable/pipe (lines thicker than width_min) does not connect its two end objects
   label       a callout label (kit.label) is cut by the frame edge; text on an object shrunk to unreadable
@@ -436,7 +437,7 @@ def run_qa(video, spec=None, timing="auto", dt=0.25, size=(1080, 1920), log=None
     kit.plane_text = _plane_text_probe
     lingering, prev_pos, hits, link_bad, cut_labels, tiny, checked = {}, {}, {}, {}, {}, {}, {}
     seen_objects = set()
-    depth_bad = {}
+    depth_bad, vanished, prev_cam = {}, {}, None
     try:
         t = 0.0
         while t < total:
@@ -479,7 +480,12 @@ def run_qa(video, spec=None, timing="auto", dt=0.25, size=(1080, 1920), log=None
                     mv = any(nm in prev_pos and math.dist(_center(prev_pos[nm]), _center(pos[nm])) > 0.01 for nm in (a, b))
                     if mv:
                         hits.setdefault((a, b), []).append((t, i))
-            prev_pos = pos
+            # vanish: a spec object that was well inside the frame is gone one sample later (no exit motion)
+            for nm, b in prev_pos.items():
+                if nm not in pos and objects[nm].get("vanish_ok") is not True and prev_cam is not None \
+                        and _on_screen(_screen_box(prev_cam, b), W, H, 0.9):
+                    vanished.setdefault(nm, []).append((t, i))
+            prev_pos, prev_cam = pos, cam
             # links (cables / pipes)
             for L in links:
                 if i not in parse_steps(L.get("steps"), n):
@@ -536,6 +542,10 @@ def run_qa(video, spec=None, timing="auto", dt=0.25, size=(1080, 1920), log=None
             if b - a + dt >= 0.5:
                 add("ERROR", "linger", f"'{name}' still on screen in step {i} ({a:.1f}-{b + dt:.1f} s) - not part of "
                                        f"its steps {objects[name].get('steps')}; make it exit", a, i)
+    for name, sm in vanished.items():
+        for a, b, i in spans(sm):
+            add("WARN", "vanish", f"'{name}' disappears in the middle of the frame at {a:.1f} s (step {i}) - "
+                                  f"let it finish its move off-screen (or shrink/fade it)", a, i)
     for name, sm in depth_bad.items():
         for a, b, i in spans(sm):
             add("ERROR", "depth", f"'{name}' is drawn over something that is closer to the camera (step {i}, "

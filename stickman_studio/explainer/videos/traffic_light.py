@@ -391,7 +391,7 @@ class TrafficScene:
         g = lambda k: tr.get(k, t)
         if behind:
             sy = g("side_y")
-            if -6 < sy < 6:
+            if -6 < sy < 14:            # drawn until it is really off-screen (no vanishing mid-frame)
                 parts.car(cam, -0.5, sy, 0, "y", (90, 140, 220))
             rx = g("run_x")
             if -6 < rx < 14:
