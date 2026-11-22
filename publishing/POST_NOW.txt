@@ -1,0 +1,113 @@
+HOW IT'S BUILT - de postat (ales de owner 2026-11-22)
+Toate textele sunt in engleza, gata de copiat. Ordinea + ora sunt o propunere (2 pe zi).
+Nu postam: toilet, fridge, undersea_cable (le refacem cu motorul imbunatatit).
+
+############################################################
+chatbot v4   ->   20:30 azi (22.11)
+fisier: output/explainers/chatbot.mp4 (ultima versiune primita)
+############################################################
+
+--- YOUTUBE TITLU ---
+Why AI Sounds Sure Even When It's Wrong
+
+--- YOUTUBE DESCRIERE ---
+Why do AI chatbots sound completely sure even when they are wrong? We build one step by step to find out: a machine that guesses the next word and feeds its own guess back in, training on a mountain of text, billions of parameters, graphics chips, attention, tokens, temperature and human feedback. The answer comes at the end: it predicts what sounds right, not what is true.
+
+#ai #howitworks
+
+--- INSTAGRAM / TIKTOK CAPTION ---
+Your chatbot sounds completely sure of itself, even when it's completely wrong 🤖
+We build an AI from a "next word machine": training, parameters, attention, tokens, temperature... and the reason it hallucinates with total confidence.
+#ai #howitworks
+
+--- COMENTARIU FIXAT ---
+Has a chatbot ever told you something totally wrong with a straight face? 🤖
+
+
+############################################################
+traffic_light v5   ->   12:30, 23.11
+fisier: output/explainers/traffic_light.mp4 (ultima versiune primita)
+############################################################
+
+--- YOUTUBE TITLU ---
+The One Vehicle That Turns Every Light Green
+
+--- YOUTUBE DESCRIERE ---
+We build a traffic light from a pole, two lamps and a timer, then fix everything that goes wrong: an inductive loop cut into the road that feels your car, cameras and radar for bikes, a yellow light timed to the road's speed, the all-red clearance, the conflict monitor that stops two greens, the pedestrian button, the green wave along an avenue and emergency vehicle preemption.
+
+#engineering #howitworks
+
+--- INSTAGRAM / TIKTOK CAPTION ---
+One vehicle can turn every traffic light on your street green. Which one? 🚦
+The road can feel your car: a loop of wire, a controller in a box, yellow-light timing, the safety monitor that stops two greens, green waves and ambulance preemption.
+#engineering #howitworks
+
+--- COMENTARIU FIXAT ---
+Did you know there's a loop of wire under the road listening for your car? 👀
+
+
+############################################################
+microwave v4   ->   20:30, 23.11
+fisier: output/explainers/microwave.mp4 (ultima versiune primita)
+############################################################
+
+--- YOUTUBE TITLU ---
+Why Forks Spark in the Microwave
+
+--- YOUTUBE DESCRIERE ---
+A microwave oven built step by step: the magnetron that makes the waves, water molecules that twist and heat up, the waveguide, metal walls that bounce the waves, the turntable that evens out hot and cold spots, the door mesh with holes smaller than the waves, the door interlock, power levels by switching on and off, and why sharp metal like a fork makes sparks while a smooth rack is fine.
+
+#science #howitworks
+
+--- INSTAGRAM / TIKTOK CAPTION ---
+Why does a fork turn your microwave into a tiny thunderstorm? ⚡
+We build a microwave from a too-powerful radio in a metal box: magnetron, waveguide, turntable, the see-through door mesh, the interlock, and what sharp points do to microwaves.
+#science #howitworks
+
+--- COMENTARIU FIXAT ---
+Be honest: have you ever put a fork in the microwave? 🍴⚡
+
+
+############################################################
+streaming v3 (Netflix)   ->   12:30, 24.11
+fisier: output/explainers/streaming.mp4 (ultima versiune primita)
+############################################################
+
+--- YOUTUBE TITLU ---
+You Never Actually Download the Movie
+
+--- YOUTUBE DESCRIERE ---
+Video streaming built step by step: codecs that store only what changes between frames, chunks of a few seconds so playback starts right away, every chunk stored at several qualities for adaptive streaming, the buffer that rides out hiccups, servers placed inside your internet provider's network, and per-show quality tuning.
+
+#technology #howitworks
+
+--- INSTAGRAM / TIKTOK CAPTION ---
+You never actually download the movie you're watching. Not even close 🎬
+We build a streaming service: codecs, chunks, adaptive quality (that's why it starts blurry), the buffer and servers hiding inside your internet provider.
+#technology #howitworks
+
+--- COMENTARIU FIXAT ---
+Ever noticed a video starts blurry and then snaps sharp? Now you know why 👀
+
+
+############################################################
+self_checkout v3   ->   20:30, 24.11 (optional)
+fisier: output/explainers/self_checkout.mp4 (ultima versiune primita)
+############################################################
+
+--- YOUTUBE TITLU ---
+Who Is Judging You at Self-Checkout?
+
+--- YOUTUBE DESCRIERE ---
+A self-checkout built step by step: barcodes that are just product numbers with a check digit, the store database that knows names, prices and weights, the bagging-area scale with a small tolerance, produce codes and the scanner scale, the attendant for age checks, cameras that spot unscanned items, cash validation with light and magnetic ink, and the receipt-scanning exit gate.
+
+#technology #howitworks
+
+--- INSTAGRAM / TIKTOK CAPTION ---
+The self checkout checks you in more ways than you think 😤 The last one is the sneakiest.
+It's a scale doing math: barcode + check digit, the store database, expected weights, tolerance, produce codes, the attendant and the cameras above the scanner.
+#technology #howitworks
+
+--- COMENTARIU FIXAT ---
+What's the most annoying thing a self-checkout has ever told you? 🛒
+

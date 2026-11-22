@@ -103,6 +103,20 @@ Never invent numbers, never present a heuristic as a prediction: say what is **p
   climax), see `explainer-from-idea` 3b. chatbot v3 (open loop) had wrong screen texts/animations (step numbers
   shifted by the inserted hook) and a stamp cut by the frame -> fixed in v4 (engine-level, tested).
   Posting pace: 2 per day (~12:30 and ~20:30 RO) from 2026-11-22.
+  **2026-11-22 end of session - owner disappointed, "we go in circles".** Kept: microwave v4, traffic_light v5,
+  streaming v3, chatbot v4, maybe self_checkout v3. Rejected: toilet v1, fridge v1, undersea_cable v4. Problems named:
+  depth still wrong (undersea: the America-side cable box drawn over the blue Peg), text overflowing, drawing not
+  physically right / not neat (toilet: the S-trap water glitchy, flows wrong), fridge filmed from behind, too far,
+  cluttered with dots. Rules from this:
+  - Fix bug CLASSES in the engine, not single instances: depth must be correct for EVERY object incl. mascots and
+    labels (sort by depth), all text must fit (measure + shrink, QA-checked), water/fluids must follow physics.
+  - Fewer, cleaner elements: no clouds of dots/particles; each frame shows one idea.
+  - Camera system: 4-5 named angles per video chosen by what is explained (wide, front, side, close, top), always
+    with in/out transitions; never film the subject from behind or far away.
+  - "Isolation / exploded view": to explain a part (e.g. a CPU, the trap of a toilet), lift it out of the big
+    scene, open it up in its own clean space, then transition back - keeps the main scene uncluttered.
+  - Quality over quantity: fewer videos, each checked frame by frame before delivery (full contact sheet every
+    ~2 s, close-ups of every mechanism), rather than batches the owner has to debug.
 
 ## Learned rules (from NUMBERS - each with evidence + confidence; updated by the `studio` skill)
 Format: `- [confidence] rule - evidence (videos, numbers)`. Confidence: hypothesis (1-9 videos) / likely /
@@ -122,23 +136,18 @@ confirmed (>= ~10 videos, consistent). Contradicted rules are downgraded or remo
 
 ## Where we left off (updated at every wrap-up - read this first)
 Last session: 2026-11-22 (branch `claude/upbeat-hypatia-l9zq43`, not merged yet).
-- **Posted** (YT + IG, O1/E1 baseline): card_tap 11-20 20:22, elevator 11-21 ~19:00, atm_notes 11-22 ~12:30.
-- **Queue (all rendered + delivered 2026-11-22; MP4s not in git, registry `publishing/VIDEOS.md`)**: chatbot v4 (posted
-  11-22 20:30?), traffic_light v5, microwave v4, self_checkout v3, undersea_cable v4, streaming v3, toilet v1, fridge v1.
-  Pace: 2 posts/day (~12:30 and ~20:30 RO). Texts: `UPLOAD_LIST.txt` + `publishing/<slug>/post.md`.
-- **Done this session**: strategist setup (STRATEGY/STATS/EXPERIMENTS/WINNERS, tools/yt, rotation, qa.py), first
-  numbers analysed (Learned rules), owner decisions (keep long format; open loop; 2/day), engine: teaser steps,
-  `lib/story.py open_loop`, SceneTracks (original step numbers), stamp auto-fit, `pad` per step; camera yaw/pitch;
-  kinetic captions + bursts; qa.py depth + vanish checks; new videos toilet + fridge.
-- **Owner feedback still to verify on the next videos**: hooks must sound natural at normal pace; loop must restart
-  with no gap; no static camera (vary framing every ~5-8 s); answer as late as possible.
-- **Next session, in this order**:
-  1. `studio` start: numbers (48 h / 7 d) for card_tap, elevator, atm_notes + first numbers of chatbot v4 (the first
-     open-loop video: compare "stayed to watch" and the end of the retention curve with the O1/E1 baseline).
-  2. Owner's open question: premium upgrade without changing engines - an OFL font for all overlay text, a CC0-verified
-     SFX layer + music ducking/beat sync, motion vocabulary (read video-shotcraft's Apache-2.0 sound/motion guides for
-     principles). Test on ONE video first, then compare numbers.
-  3. Optional: QA specs for the videos without one; www.youtube.com access for `collect_niche.py`.
+- **Posted**: card_tap 11-20, elevator 11-21, atm_notes 11-22 (O1/E1 baseline). **Posting now** (owner's choice,
+  texts in `publishing/POST_NOW.txt`): chatbot v4, traffic_light v5, microwave v4, streaming v3, maybe self_checkout v3.
+  NOT posted: toilet v1, fridge v1, undersea_cable v4 (to redo after the engine work below).
+- **Next session, in this order** (owner was disappointed - read "2026-11-22 end of session" above first):
+  1. `studio` start: numbers for every posted video (first open-loop data: chatbot) -> STATS.md -> Learned rules.
+  2. Engine before any new video: (a) global depth sorting of all drawables incl. pegs/labels + QA check over ALL
+     boxes, not only spec objects; (b) text fit everywhere (keywords, labels, pops, kinetic) measured + QA;
+     (c) camera rig with 4-5 named angles + transitions; (d) "isolate part" mode: lift a part out, explode it in a
+     clean space, return; (e) tidy fluid/flow drawing (no dot clouds; continuous water shapes that obey gravity).
+  3. Then redo toilet + fridge on the new engine, ONE at a time, with a frame-by-frame contact sheet review before
+     delivery. Then the premium layer (OFL font, CC0 SFX) only if the owner still wants it.
+  4. Optional: QA specs for the older videos; www.youtube.com access for `collect_niche.py`.
 
 ## Commands
 ```bash

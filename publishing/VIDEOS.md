@@ -46,3 +46,5 @@ Descriptions, captions and covers: `publishing/<slug>/post.md` and `cover.png` (
 | 9 | VID-009-v3 | streaming | You Never Actually Download the Movie | 1:26 | 6 | `c662c47` [VID-009-v3] | 2026-11-22 | delivered; kinetic hook/ending + bursts |
 | 10 | VID-010-v1 | toilet | Why Every Toilet Flush Ends With a Gurgle | 1:39 | 7 | `ccbce83` [VID-010-v1] | 2026-11-22 | delivered; new, open loop, dollhouse section |
 | 11 | VID-011-v1 | fridge | Your Fridge Doesn't Make Cold | 1:42 | 8 | `ccbce83` [VID-011-v1] | 2026-11-22 | delivered; new, open loop, door towards camera, camera swing to the back |
+
+Owner verdict 2026-11-22: rejected (not posted) VID-010-v1 toilet, VID-011-v1 fridge, VID-008-v4 undersea_cable; kept VID-003-v4, VID-005-v5, VID-006-v4, VID-009-v3, VID-007-v3 (maybe).

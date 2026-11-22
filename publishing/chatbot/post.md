@@ -1,4 +1,4 @@
-# AI chatbot - "Why does AI sound sure even when it's wrong?" (VID-003-v3, open loop)
+# AI chatbot - "Why does AI sound sure even when it's wrong?" (VID-003-v4, open loop)
 Video: `output/explainers/chatbot.mp4` (re-render if missing). Cover: `cover.png` (Instagram; the v3 MP4 has no
 cover frame at the end - it loops back into the hook). Replaces the v2 upload sitting unpublished in Studio.
 
@@ -11,6 +11,9 @@ Why do AI chatbots sound completely sure even when they are wrong? We build one 
 #ai #howitworks
 
 ## Instagram / TikTok caption
-Your chatbot can be completely wrong and never sound unsure. Why? 🤖
+Your chatbot sounds completely sure of itself, even when it's completely wrong 🤖
 We build an AI from a "next word machine": training, parameters, attention, tokens, temperature... and the reason it hallucinates with total confidence.
 #ai #howitworks
+
+## Pinned comment
+Has a chatbot ever told you something totally wrong with a straight face? 🤖
