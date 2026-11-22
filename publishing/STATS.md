@@ -32,11 +32,11 @@ Current codes are what the rendered files contain; "proposed" = new hook/ending 
 (needs a re-render; the owner decides).
 | Order | Slug | Release | Opening | Ending | Proposed opening | Proposed ending | Length | Fixes | Category |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | elevator | VID-001-v5 | O1 | E1 | O7 | E2 | 2:09 | 11 | transport / safety |
-| 2 | chatbot | VID-003-v2 | O1 | E1 | O2 | E3 | 2:00 | 8 | AI |
-| 3 | atm_notes | VID-004-v2 | O1 | E1 | O4 | E2 | 1:48 | 9 | money |
-| 4 | traffic_light | VID-005-v2 | O1 | E1 | O2 | E4 | 1:42 | 8 | city / transport |
+| 1 | elevator | VID-001-v5 | O1 | E1 | O2 | E2 | 2:09 | 11 | transport / safety |
+| 2 | chatbot | VID-003-v2 | O1 | E1 | O6 | E3 | 2:00 | 8 | AI |
+| 3 | atm_notes | VID-004-v2 | O1 | E1 | O3 | E2 | 1:48 | 9 | money |
+| 4 | traffic_light | VID-005-v2 | O1 | E1 | O6 | E4 | 1:42 | 8 | city / transport |
 | 5 | microwave | VID-006-v1 | O1 | E1 | O5 | E3 | 1:41 | 7 | kitchen |
-| 6 | self_checkout | VID-007-v1 | O1 | E1 | O2 | E1 | 1:32 | 9 | shopping |
-| 7 | undersea_cable | VID-008-v2 | O1 | E1 | O3 | E2 | 1:31 | 7 | internet |
-| 8 | streaming | VID-009-v1 | O1 | E1 | O4 | E4 | 1:23 | 6 | internet / entertainment |
+| 6 | self_checkout | VID-007-v1 | O1 | E1 | O6 | E1 | 1:32 | 9 | shopping |
+| 7 | undersea_cable | VID-008-v2 | O1 | E1 | O2 | E2 | 1:31 | 7 | internet |
+| 8 | streaming | VID-009-v1 | O1 | E1 | O5 | E4 | 1:23 | 6 | internet / entertainment |

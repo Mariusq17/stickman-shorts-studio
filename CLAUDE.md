@@ -2,6 +2,14 @@
 
 The owner talks in **Romanian**; answer in Romanian. Videos are produced in **English**.
 
+## Claude's role: strategist + content creator of "How It's Built"
+Not just "the one who renders". Claude decides what we make and why, and evolves after every posted video.
+The goal is videos that are **watched to the end, shared and followed** - not videos the owner (or Claude) likes.
+The owner's impressions matter; **YouTube Studio numbers have the final word**. Everything learned goes into the
+repo files (this file, the skills, `LIBRARY.md`, `publishing/*.md`) so the next session is smarter.
+Never invent numbers, never present a heuristic as a prediction: say what is **proven (N videos)**, what is a
+**hypothesis (N videos)** and what is a **heuristic** (tool/lint). Under ~10 measured videos everything is a hypothesis.
+
 ## What this repo is
 1. **Stickman Video Studio** (`app.py`, `stickman_studio/`): offline Streamlit app that makes
    stickman shorts from template scripts (Piper/SAPI voices, music, subtitles). Started with
@@ -12,6 +20,11 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
    Library of reusable pieces: `explainer/lib/` - documented in `explainer/LIBRARY.md`.
 3. **Publishing** (`publishing/`): channel brand (avatar, banner, bios in `channel.md`), per-video
    `post.md` + `cover.png`, `VIDEOS.md` registry (every version + commit), `UPLOAD_LIST.txt` (posting queue).
+4. **Learning loop** (`publishing/`): `STRATEGY.md` (diagnostic + strategy notes), `STATS.md` (DNA + numbers per
+   posted video, planned DNA of the queue), `EXPERIMENTS.md` (one variable per video), `WINNERS.md` (best scripts
+   by numbers), `QUEUE_PROPOSALS.md` (new hooks/endings/titles for unposted videos).
+5. **Tools**: `stickman_studio/explainer/qa.py` (scene QA without rendering), `tools/rotation.py` (opening/ending
+   rotation), `tools/yt/` (vendored MIT heuristics: hookscore, title, retention, swipe), `tools/collect_niche.py`.
 
 ## How to handle requests
 | The owner asks for... | Do this |
@@ -23,6 +36,21 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
 | end of session / "save progress" | skill `studio` (mode wrap-up) |
 | re-render an OLD video version / list of all videos made | skill `video-archive` (registry `publishing/VIDEOS.md`) |
 | post a video: titles, descriptions, captions, covers/thumbnails, channel avatar/banner/bios | skill `publish-kit` (output in `publishing/`) |
+| numbers / stats / retention CSV / "how did it do" | skill `studio` (start, step "Numbers first") -> `publishing/STATS.md` |
+| "is this scene OK?" / before any preview or render | `python -m stickman_studio.explainer.qa <slug>` |
+
+## Order of work per new video (strategist pipeline)
+1. **Evidence**: `STATS.md` (missing numbers? ask), `EXPERIMENTS.md` (which variable does this video test?),
+   "Learned rules" below, `WINNERS.md`, `python tools/rotation.py` (allowed opening/ending codes).
+2. **Idea**: `explainer-ideas` (score /25 + niche outliers via `swipe.py` when YouTube is reachable).
+3. **Script**: `explainer-from-idea` - 5 hooks from the formulas, scored with `hookscore.py`, best allowed one
+   wins; ending from the rotation menu; length = the experiment's target.
+4. **Scene + QA**: `explainer-video` - scene file with a `QA` spec, `qa.py` must show 0 errors, then targeted
+   contact sheets (ss=1), release commit, render in background, deliver the MP4 at once.
+5. **Package**: `publish-kit` - title + cover checked as a pair with `title.py`; post texts; planned DNA row in
+   `STATS.md` (table C).
+6. **After posting**: owner gives 48 h / 7 d numbers -> `STATS.md` -> conclusions as "Learned rules" (with
+   evidence + confidence) -> `EXPERIMENTS.md` result -> `WINNERS.md` if it earns it.
 
 ## Owner preferences (keep this list updated - it is the project's memory)
 - Quality first: premium, viral-ready, but stylised (no realistic textures).
@@ -51,10 +79,10 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   (title, commit, date) so any old version can be re-rendered exactly (skill `video-archive`).
 - Handle: `@HowItsBuiltShorts_Official` (name "How It's Built"); same on YouTube, Instagram, TikTok.
 - Wants the process as automatic as possible so they can work on other things meanwhile.
-- Open idea (owner asked, NOT approved yet - ask before applying): vary the opening/closing formula per video
-  (paradox question / "Did you know..." / "simplest X, also terrible, let's fix it" / current "If you put...";
-  endings "And that's how you build a...", "Now you know more about X than 99% of people", current
-  "Congratulations..."), never the same one twice in a row in posting order.
+- **Approved 2026-11-22**: vary the opening/closing formula per video - never the same opening code or ending
+  code twice in a row in posting order. Menu (O1-O7, E1-E5) in `explainer-from-idea`; check `tools/rotation.py`.
+- 2026-11-22: owner wants Claude as the channel strategist (see "Claude's role"); numbers beat taste; tools from
+  youtube-agent-skill (MIT) are lints, not predictions; stickman-video-director = inspiration only, no code copied.
 - Channel launched 2026-11-20: card_tap posted on YouTube + Instagram; owner waits 1-2 days for reach, then
   wants to discuss stats (views, average % watched, traffic sources) to tune the next batch.
 - Prefers working in fresh sessions per batch (cheaper/faster than one huge chat); expects the
@@ -68,23 +96,37 @@ The owner talks in **Romanian**; answer in Romanian. Videos are produced in **En
   batch 2 (2026-11-20): quality drops towards the end of videos - traffic_light: the red car stays all video
   and other cars/ambulance drive through it; undersea_cable (better): cable ends not connected to the stations.
 
+## Learned rules (from NUMBERS - each with evidence + confidence; updated by the `studio` skill)
+Format: `- [confidence] rule - evidence (videos, numbers)`. Confidence: hypothesis (1-9 videos) / likely /
+confirmed (>= ~10 videos, consistent). Contradicted rules are downgraded or removed, never silently kept.
+- [heuristic, 0 videos] Hooks that state the topic only at the end of a 6-8 s sentence and open no question are
+  a retention risk - evidence: hookscore 9/9 WEAK (38-43); no audience numbers yet. -> test (EXP-002).
+- [heuristic, 0 videos] Long wind-down after the last fix (13-33% of runtime) is where Shorts usually lose viewers
+  - evidence: qa.py DNA numbers; no retention chart yet. -> test (EXP-003).
+- [hypothesis, 0 videos] ~60 s may raise average % viewed vs 1:30-2:10 - EXP-001 (planned).
+(No rule is confirmed yet: first post 2026-11-20, numbers not received.)
+
 ## Where we left off (updated at every wrap-up - read this first)
-Last session: 2026-11-20/21 (branch `claude/serene-maxwell-jzugub`, merged into `main`).
+Last session: 2026-11-22 (branch `claude/upbeat-hypatia-l9zq43`, not merged yet). Strategist upgrade, no renders.
 - **Channel live**: "How It's Built" @HowItsBuiltShorts_Official on YouTube + Instagram (TikTok not created yet).
-  Posted: card_tap (VID-002-v2) on 2026-11-20. Queue for the next posts (1 every 1-2 days, evening RO time):
-  `publishing/UPLOAD_LIST.txt` = elevator, chatbot, atm_notes, traffic_light (use v2), microwave,
-  self_checkout, undersea_cable (use v2), streaming. MP4s are NOT in git - re-render with `video-archive` if
-  the owner lost them (latest versions in `publishing/VIDEOS.md`).
-- **Videos made**: 9 (VID-001..009), all delivered. Library grew: kit.py (labels on top, perspective text,
-  sheet, packet...), parts car/signal_head/phone/server_rack/bank_building, branding.py (avatar, banner, covers).
+  Posted: card_tap (VID-002-v2) on 2026-11-20. Queue (1 every 1-2 days, evening RO time): `UPLOAD_LIST.txt` =
+  elevator, chatbot, atm_notes, traffic_light (v2), microwave, self_checkout, undersea_cable (v2), streaming.
+  MP4s are NOT in git - re-render with `video-archive` if lost (latest versions in `publishing/VIDEOS.md`).
+- **Done this session**: diagnostic (`publishing/STRATEGY.md`); vendored tools `tools/yt/` (MIT) + `tools/rotation.py`
+  + `tools/collect_niche.py`; learning loop `STATS.md` / `EXPERIMENTS.md` (EXP-001 = ~60 s, planned) / `WINNERS.md`;
+  `explainer/qa.py` (catches traffic_light v1 + undersea_cable v1, passes v2; QA specs only in those 2 videos);
+  skills rewritten (studio, explainer-from-idea, explainer-ideas, publish-kit, explainer-video);
+  `publishing/QUEUE_PROPOSALS.md` = new hooks/endings/titles/covers for the 8 queued videos.
+- **Waiting for the owner**: (a) card_tap numbers at 48 h (YT + IG) and 7 d (due 2026-11-27) - fields listed in
+  STATS.md; (b) decision A/B/C in QUEUE_PROPOSALS.md (re-render queue with new hooks or not; recommended C =
+  post as is + new titles/covers); (c) whether to allow www.youtube.com in the cloud environment for
+  `collect_niche.py` (blocked here), or run it on the laptop.
 - **Next session, in this order**:
-  1. Ask the owner for stats of the first post(s): views, average % viewed, swipe-away rate, traffic source.
-     Use them to tune hooks/length (videos are ~1:25-2:10; streaming is the shortest, 6 fixes).
-  2. Ask whether to apply the varied opening/closing formula (see "Open idea" above) - then write it into
-     the `explainer-from-idea` skill as a rotation menu.
-  3. Next batch from `ideas/IDEAS.md` #11-#20 (recommended: #11 fridge, #12 escalator, #13 toilet).
-     Apply all scene-hygiene rules + full-timeline contact sheet before rendering; `--jobs 4`.
-  4. Optional: streaming v2 with 2-3 extra steps; TikTok account + same handle.
+  1. `studio` start: collect numbers -> STATS.md -> analysis -> Learned rules (confidence levels).
+  2. Apply the owner's A/B/C choice (titles/covers in post.md + UPLOAD_LIST.txt + branding COVERS; re-renders only if A/B).
+  3. EXP-001: next new video at ~60 s (recommended idea #13 toilet or #11 fridge) - hooks via hookscore, rotation
+     (next allowed: anything but O1/E1 after card_tap... check `tools/rotation.py`), QA spec + `qa.py` 0 errors.
+  4. Optional: add `QA` specs to the other 7 videos (objects + links) when they are touched next.
 
 ## Commands
 ```bash
@@ -94,11 +136,16 @@ python -m stickman_studio.explainer.render <slug>                             # 
 python -m stickman_studio.explainer.render --batch a b c --jobs 2             # resumable batch
 python -m pytest -q tests                                                     # app tests
 python -m stickman_studio.voices --download en ro                             # Piper voices (once)
+python -m stickman_studio.explainer.qa <slug>                                 # scene QA, no render (~1 s)
+python tools/rotation.py [--proposed]                                         # opening/ending rotation
+python3 -I tools/yt/hookscore.py hooks.txt                                    # score hook candidates
+python3 -I tools/yt/title.py --title "..." --thumb "COVER WORDS"              # title + cover pair
 ```
 Container notes: Hugging Face may be blocked (Piper EN voices come from GitHub mirrors; the RO voice
 needs Hugging Face). Install `espeak-ng` + `piper-tts` if missing. Rendering costs no tokens.
 
 ## Keep the system learning
-Whenever the owner gives feedback or a new preference, update the section above, the relevant
+Whenever the owner gives feedback, a new preference or NUMBERS, update the sections above ("Owner preferences",
+"Learned rules" with evidence + confidence, `publishing/STATS.md`/`EXPERIMENTS.md`), the relevant
 skill (`.claude/skills/*`) or `LIBRARY.md` in the same session, and commit. New generic visuals go
 into `explainer/lib/`. Never delete history in `ideas/IDEAS.md`; update statuses.
