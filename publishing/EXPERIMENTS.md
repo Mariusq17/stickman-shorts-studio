@@ -22,7 +22,12 @@ baseline if posted as they are.
 3. EXP-001 ~60 s - elevator (2:10) did not do worse on % viewed than card_tap (1:54), so length looks less urgent.
 The owner decides the order; EXP-001 was the owner's first pick.
 
-## EXP-001 - Length ~60 s (status: planned)
+**Decision 2026-11-22 (owner):** keep the long format. EXP-002 (hook) + EXP-003 (ending) run TOGETHER on the next
+video, length unchanged: they are read on different metrics (hook -> "stayed to watch"; ending -> retention in the
+last ~15 s / end cliff), so their effects stay separable. Targets (unverified heuristic): stayed >= 70%, avg % viewed
+>= 70%. EXP-001 (~60 s) postponed: run it only if, after hook + ending fixes, avg % viewed stays under ~70%.
+
+## EXP-001 - Length ~60 s (status: postponed 2026-11-22)
 - **Variable:** duration ~55-65 s (5-6 fixes, ~170-190 words) instead of our usual 1:30-2:10 (7-11 fixes).
 - **Why first:** biggest expected effect on "average % viewed", zero engine work, easy to read in Studio.
   Proposed by the owner and ranked #1 in the diagnostic (`STRATEGY.md`).

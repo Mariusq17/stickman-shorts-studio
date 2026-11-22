@@ -81,6 +81,10 @@ Never invent numbers, never present a heuristic as a prediction: say what is **p
 - Wants the process as automatic as possible so they can work on other things meanwhile.
 - **Approved 2026-11-22**: vary the opening/closing formula per video - never the same opening code or ending
   code twice in a row in posting order. Menu (O1-O7, E1-E5) in `explainer-from-idea`; check `tools/rotation.py`.
+- 2026-11-22: **keep the long format (~1:30-2:10)**; owner's thesis: long videos that hold >= 70-80% to the end have
+  viral potential. Targets (orientation only - from a Gemini chat in YT Studio, unverified heuristic): long Shorts
+  60-120 s -> stayed-to-watch >= 70-75%, avg % viewed >= 70-80%; 30-50 s -> 70-80% / 85-100%; 10-25 s -> 75-85% / 110-140%.
+  Fix the first seconds + the ending before cutting length.
 - 2026-11-22: owner wants Claude as the channel strategist (see "Claude's role"); numbers beat taste; tools from
   youtube-agent-skill (MIT) are lints, not predictions; stickman-video-director = inspiration only, no code copied.
 - Channel launched 2026-11-20: card_tap posted on YouTube + Instagram; owner waits 1-2 days for reach, then
@@ -132,8 +136,9 @@ Last session: 2026-11-22 (branch `claude/upbeat-hypatia-l9zq43`, not merged yet)
 - **Next session, in this order**:
   1. `studio` start: collect numbers -> STATS.md -> analysis -> Learned rules (confidence levels).
   2. Apply the owner's A/B/C choice (titles/covers in post.md + UPLOAD_LIST.txt + branding COVERS; re-renders only if A/B).
-  3. EXP-001: next new video at ~60 s (recommended idea #13 toilet or #11 fridge) - hooks via hookscore, rotation
-     (allowed codes: `python tools/rotation.py`), QA spec + `qa.py` 0 errors.
+  3. EXP-002+003 together on the next video (proposed: re-render chatbot, waiting for the owner's yes): new ~3 s hook
+     with a visual teaser + short loop ending, same length. Hook -> read "stayed to watch"; ending -> shape of the
+     last ~15 s of the curve (separate metrics, so both can change at once). EXP-001 (~60 s) postponed.
   4. Optional: add `QA` specs to the other 7 videos (objects + links) when they are touched next.
 
 ## Commands
