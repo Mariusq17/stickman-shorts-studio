@@ -99,3 +99,10 @@ their steps, moving objects overlapping, cables/pipes not connecting their end o
 objects. Per-video spec: `QA = dict(objects=..., links=..., static_ok=...)` in the video module (+ `qa=QA` in
 VIDEO). Examples: `videos/traffic_light.py` (cars), `videos/undersea_cable.py` (cable with bridges).
 `python -m stickman_studio.explainer.qa <slug> [--rev <commit>] [--srt out.srt] [--json]`, `--all` for every video.
+
+## Story structure (`lib/story.py`)
+`open_loop(STEPS, hook, answer_step, ending_text, teaser_frac=.., reminder=(i, text), reveal="Here's the answer.",
+hook_keys=[..], hook_pops=[..], ending_keys=[..], ending_do=[..])` -> inserts a ~3 s question hook over a teaser of
+the answer step (builder `teaser=dict(step, frac)`: the scene plays a later moment), whip-cut into the build,
+mid reminder, reveal line, short loop ending (no end cover - set `end_cover=False` in VIDEO). QA specs: write them
+with original step indices and use `qa.shift_spec(QA, 1)` in VIDEO.

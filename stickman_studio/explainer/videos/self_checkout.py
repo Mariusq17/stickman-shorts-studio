@@ -5,6 +5,7 @@ import math
 
 from ..iso import IsoCam, mix, shade
 from ..lib import kit, parts
+from ..lib.story import open_loop
 from ..lib.palette import PEG_COLORS
 from ..lib.shadows import ShadowLayer
 
@@ -422,8 +423,18 @@ class CheckoutScene:
             kit.label(cam, (1.7, 3.25, 1.3), "EXIT", 0.14, (255, 255, 255), GREEN if op > 0.5 else RED)
 
 
+# open-loop structure (2026-11-22): question hook + teaser, reminder, late answer, loop ending
+STEPS = open_loop(
+    STEPS, "The self checkout checks you in more ways than you think. The last one is the sneakiest.",
+    answer_step=11, teaser_frac=0.85, reminder=(7, "But the sneakiest check is still coming."),
+    reveal="Here's the sneakiest one.",
+    hook_keys=[("more ways than you think", INK), ("sneakiest", RED)],
+    hook_pops=[dict(kind="stamp", at="w:sneakiest", text="SPOTTED", color=RED, pos="mr", until="end")],
+    ending_text="And congratulations, you just built a self checkout. Follow for more. Because remember,",
+    ending_keys=[("built a self checkout|you built it!", BLUE)])  # O6 hook, E1 ending + loop
+
 VIDEO = dict(
     slug="self_checkout",
     title="'Unexpected item in bagging area': who is judging you?",
-    steps=STEPS, scene=CheckoutScene, initial=INITIAL, overlays=None, tracker=dict(label="FIXES"),
+    steps=STEPS, end_cover=False, scene=CheckoutScene, initial=INITIAL, overlays=None, tracker=dict(label="FIXES"),
 )

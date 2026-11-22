@@ -8,6 +8,8 @@ from PIL import Image
 
 from ..iso import IsoCam, mix, shade
 from ..lib import kit, parts
+from ..lib.story import open_loop
+from ..qa import shift_spec
 from ..lib.palette import PEG_COLORS
 from ..lib.shadows import ShadowLayer
 
@@ -160,7 +162,7 @@ STEPS = [
          sfx=[("w:follow", "pop")]),
 ]
 
-# Scene QA (stickman_studio/explainer/qa.py): which steps each moving prop belongs to. Outside them it must
+# Scene QA (stickman_studio/explainer/qa.py) - ORIGINAL step indices (VIDEO uses shift_spec(QA, 1) after open_loop inserted the hook). Which steps each moving prop belongs to. Outside them it must
 # drive away; while moving it must never overlap another car.
 QA = dict(
     objects={
@@ -442,8 +444,17 @@ class TrafficScene:
                     seed=3, pose=tr.peg_pose(t), floor=WALK)
 
 
+# open-loop structure (2026-11-22): question hook + teaser, reminder, late answer, loop ending
+STEPS = open_loop(
+    STEPS, "One vehicle can turn every traffic light on your street green. Which one?", answer_step=15,
+    teaser_frac=0.6, reminder=(8, "Still not the vehicle that turns everything green. Hold on."),
+    reveal="Here's the answer.",
+    hook_keys=[("one vehicle", INK), ("every traffic light|every light → green", BLUE), ("which one|which one?", RED)],
+    ending_text="And that's how you build a traffic light. Follow for more. Because remember,",
+    ending_keys=[("build a traffic light|how you build it", BLUE)])  # O6 hook, E2 ending + loop
+
 VIDEO = dict(
     slug="traffic_light",
     title="How does the traffic light know you're waiting?",
-    steps=STEPS, scene=TrafficScene, initial=INITIAL, overlays=None, tracker=dict(label="FIXES"), qa=QA,
+    steps=STEPS, end_cover=False, scene=TrafficScene, initial=INITIAL, overlays=None, tracker=dict(label="FIXES"), qa=shift_spec(QA, 1),
 )

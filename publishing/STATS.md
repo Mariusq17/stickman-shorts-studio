@@ -14,7 +14,7 @@ Where the owner finds the numbers (YouTube Studio app or studio.youtube.com -> t
 Per-1k numbers are computed here: `likes / views * 1000` (Claude does the maths).
 
 ## A. DNA of each posted video (posting order)
-Codes: opening O1-O7 and ending E1-E5 = rotation menu in `.claude/skills/explainer-from-idea/SKILL.md`.
+Codes: opening O1-O7 and ending E1-E5 (+L = loop tail into the hook) = rotation menu in `.claude/skills/explainer-from-idea/SKILL.md`.
 | # | Slug | Release | Posted (date, RO time) | Where | Opening | Ending | First frame | Length | Fixes | Category | Experiment |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | card_tap | VID-002-v2 | 2026-11-20 20:22 | YT + IG | O1 | E1 | chip + wire loop appear on a blank card | 1:54 | 8 | payments / everyday tech | - (baseline) |
@@ -41,9 +41,9 @@ Current codes are what the rendered files contain; "proposed" = new hook/ending 
 (needs a re-render; the owner decides).
 | Order | Slug | Release | Opening | Ending | Proposed opening | Proposed ending | Length | Fixes | Category |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | chatbot | VID-003-v2 (already uploaded to Studio, not published) | O1 | E1 | O6 | E3 | 2:00 | 8 | AI |
-| 2 | traffic_light | VID-005-v2 | O1 | E1 | O2 | E4 | 1:42 | 8 | city / transport |
-| 3 | microwave | VID-006-v1 | O1 | E1 | O5 | E3 | 1:41 | 7 | kitchen |
-| 4 | self_checkout | VID-007-v1 | O1 | E1 | O6 | E1 | 1:32 | 9 | shopping |
-| 5 | undersea_cable | VID-008-v2 | O1 | E1 | O2 | E2 | 1:31 | 7 | internet |
-| 6 | streaming | VID-009-v1 | O1 | E1 | O5 | E4 | 1:23 | 6 | internet / entertainment |
+| 1 | chatbot | VID-003-v3 (open loop) | O2 | E3+L | O2 | E3+L | ~2:05 | 8 | AI |
+| 2 | traffic_light | VID-005-v3 (open loop) | O6 | E2+L | O6 | E2+L | ~1:47 | 8 | city / transport |
+| 3 | microwave | VID-006-v2 (open loop) | O2 | E3+L | O2 | E3+L | ~1:43 | 7 | kitchen |
+| 4 | self_checkout | VID-007-v2 (open loop) | O6 | E1+L | O6 | E1+L | ~1:35 | 9 | shopping |
+| 5 | undersea_cable | VID-008-v3 (open loop) | O2 | E2+L | O2 | E2+L | ~1:39 | 7 | internet |
+| 6 | streaming | VID-009-v2 (open loop) | O5 | E3+L | O5 | E3+L | ~1:25 | 6 | internet / entertainment |

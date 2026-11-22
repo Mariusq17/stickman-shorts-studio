@@ -8,6 +8,7 @@ from PIL import ImageDraw
 from ...painter import font
 from ..iso import IsoCam, mix, shade
 from ..lib import kit, parts
+from ..lib.story import open_loop
 from ..lib.palette import PEG_COLORS
 from ..lib.shadows import ShadowLayer
 
@@ -365,8 +366,16 @@ def overlays(img, tr, t, W, H):
     draw_bubble(img, tr, t, W, H)
 
 
+# open-loop structure (2026-11-22): question hook + teaser, reminder, late answer, loop ending
+STEPS = open_loop(
+    STEPS, "You never actually download the movie you're watching. Not even close.", answer_step=13,
+    teaser_frac=0.5, reminder=(5, "But that's still not the real trick."), reveal="Here's the real trick.",
+    hook_keys=[("never actually download", RED), ("not even close", RED)],
+    ending_text="Now you know more about streaming than 99% of people. Follow for more. Because remember,",
+    ending_keys=[("99% of people|smarter than 99%", BLUE)])  # O5 hook, E3 ending + loop
+
 VIDEO = dict(
     slug="streaming",
     title="Why does a movie start instantly if the file is gigabytes?",
-    steps=STEPS, scene=StreamScene, initial=INITIAL, overlays=overlays, tracker=dict(label="FIXES"),
+    steps=STEPS, end_cover=False, scene=StreamScene, initial=INITIAL, overlays=overlays, tracker=dict(label="FIXES"),
 )

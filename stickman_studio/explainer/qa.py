@@ -270,6 +270,27 @@ def load_video(slug, rev=None):
     return mod.VIDEO
 
 
+def shift_spec(spec, n):
+    """Same QA spec with every step index moved by n (e.g. +1 after open_loop() inserted a hook step)."""
+    def mv(x):
+        if x is None or x == "":
+            return x
+        out = []
+        for part in str(x).replace(" ", "").split(","):
+            if "-" in part:
+                a, b = part.split("-")
+                out.append(f"{int(a) + n}-{int(b) + n}" if b else f"{int(a) + n}-")
+            else:
+                out.append(str(int(part) + n))
+        return ",".join(out)
+    spec = dict(spec)
+    spec["objects"] = {k: dict(o, steps=mv(o.get("steps"))) for k, o in spec.get("objects", {}).items()}
+    spec["links"] = [dict(L, steps=mv(L.get("steps"))) for L in spec.get("links", [])]
+    if spec.get("static_ok"):
+        spec["static_ok"] = mv(spec["static_ok"])
+    return spec
+
+
 def spec_of(slug):
     from .videos import load
     v = load(slug)

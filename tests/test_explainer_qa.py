@@ -83,13 +83,14 @@ def test_static_screen_warning():
 
 # ------------------------------------------------------------------ known bugs: v1 must fail, v2 must pass
 @pytest.mark.parametrize("slug,old,fixed,kinds", [
-    ("traffic_light", "cc47131", None, {"linger", "pass-through"}),     # red car stayed; cars drove through it
-    ("undersea_cable", "876fb6a", None, {"link"}),                       # cable ends not connected to stations
+    ("traffic_light", "cc47131", "bcf4216", {"linger", "pass-through"}),  # red car stayed; cars drove through it
+    ("undersea_cable", "876fb6a", "7322c98", {"link"}),                    # cable ends not connected to stations
 ])
 def test_known_bugs_caught_and_fixed_versions_pass(slug, old, fixed, kinds):
-    if not _has_rev(old):
-        pytest.skip(f"commit {old} not in this clone (shallow?)")
-    spec = qa.spec_of(slug)
+    if not (_has_rev(old) and _has_rev(fixed)):
+        pytest.skip(f"commits {old}/{fixed} not in this clone (shallow?)")
+    import importlib
+    spec = importlib.import_module(f"stickman_studio.explainer.videos.{slug}").QA   # original step indices
     bad = qa.run_qa(qa.load_video(slug, old), spec, timing="est")
     assert kinds <= {i["kind"] for i in _errors(bad)}, bad["issues"]
     good = qa.run_qa(qa.load_video(slug, fixed), spec, timing="est")
@@ -145,3 +146,17 @@ def test_vendored_tools_run_without_dependencies():
     for tool in ("retention.py", "swipe.py"):
         out = subprocess.run([sys.executable, "-I", os.path.join(ROOT, "tools", "yt", tool)], capture_output=True)
         assert b"python3" in out.stdout          # prints its usage, no import errors
+
+
+def test_shift_spec_and_open_loop():
+    from stickman_studio.explainer.lib.story import open_loop
+    sp = qa.shift_spec(dict(objects={"a": dict(color=(1, 2, 3), steps="1-4,7")}, links=[dict(steps="10-")]), 1)
+    assert sp["objects"]["a"]["steps"] == "2-5,8" and sp["links"][0]["steps"] == "11-"
+    steps = [dict(text="Build it.", cam=((0, 0, 0), 100)), dict(text="The answer is here.", cam=((1, 0, 0), 100)),
+             dict(text="Congratulations, you built it. Follow for more.", cam=((0, 0, 0), 100), min=8.4,
+                  sfx=[("w:built", "ding"), ("w:follow", "pop")])]
+    out = open_loop(steps, "Why is it so?", answer_step=1, ending_text="Follow for more. Because remember,",
+                    reminder=(0, "Hold that thought."), reveal="Here's the answer.")
+    assert len(out) == 4 and out[0]["teaser"]["step"] == 2 and out[1]["cam_dur"] == 0.01
+    assert out[1]["text"].endswith("Hold that thought.") and out[2]["text"].startswith("Here's the answer.")
+    assert out[-1]["sfx"] == [("w:follow", "pop")] and out[-1]["min"] == 6.0

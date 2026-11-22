@@ -1,15 +1,16 @@
-# AI chatbot - "How does an AI chatbot write word by word?"
-Video: `output/explainers/chatbot.mp4` (re-render if missing). Cover: `cover.png`.
+# AI chatbot - "Why does AI sound sure even when it's wrong?" (VID-003-v3, open loop)
+Video: `output/explainers/chatbot.mp4` (re-render if missing). Cover: `cover.png` (Instagram; the v3 MP4 has no
+cover frame at the end - it loops back into the hook). Replaces the v2 upload sitting unpublished in Studio.
 
 ## YouTube Shorts title
-Why AI Chatbots Type One Word at a Time
+Why AI Sounds Sure Even When It's Wrong
 
 ## YouTube description
-How large language models work, built step by step: a machine that guesses the next word, feeds its own guess back in, trains on a mountain of text by tuning billions of parameters on graphics chips, uses attention to know what "it" refers to, reads tokens instead of letters, rolls weighted dice (temperature), learns manners from human feedback, and why it can be wrong with total confidence.
+Why do AI chatbots sound completely sure even when they are wrong? We build one step by step to find out: a machine that guesses the next word and feeds its own guess back in, training on a mountain of text, billions of parameters, graphics chips, attention, tokens, temperature and human feedback. The answer comes at the end: it predicts what sounds right, not what is true.
 
 #ai #howitworks
 
 ## Instagram / TikTok caption
-Every word a chatbot types is a fresh guess 🤖
-We build an AI from a "next word machine": training, parameters, attention, tokens, temperature, and why it sometimes hallucinates with total confidence.
+Your chatbot can be completely wrong and never sound unsure. Why? 🤖
+We build an AI from a "next word machine": training, parameters, attention, tokens, temperature... and the reason it hallucinates with total confidence.
 #ai #howitworks

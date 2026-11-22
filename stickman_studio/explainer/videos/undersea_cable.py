@@ -8,6 +8,8 @@ from PIL import ImageDraw
 from ...painter import font
 from ..iso import IsoCam, mix, shade
 from ..lib import kit, parts
+from ..lib.story import open_loop
+from ..qa import shift_spec
 from ..lib.palette import PEG_COLORS
 
 RED, BLUE, INK, GREEN = (226, 52, 64), (40, 110, 235), (25, 25, 32), (40, 160, 90)
@@ -142,7 +144,7 @@ STEPS = [
          sfx=[("w:follow", "pop")]),
 ]
 
-# Scene QA (stickman_studio/explainer/qa.py): the cable must visibly connect its two ends - laser -> receiver
+# Scene QA (stickman_studio/explainer/qa.py) - ORIGINAL step indices (VIDEO uses shift_spec(QA, 1) after open_loop inserted the hook). The cable must visibly connect its two ends - laser -> receiver
 # before the landing stations exist, station -> station after. Bridges = where it is legitimately out of
 # sight: buried in the trench near the left shore, and going into the right cliff.
 _TRENCH = (X0 - 0.6, YC - 0.12, -2.5, X0 + 2.25, YC + 0.12, -0.2)
@@ -534,8 +536,16 @@ def overlays(img, tr, t, W, H):
     draw_bubble(img, tr, t, W, H)
 
 
+# open-loop structure (2026-11-22): question hook + teaser, reminder, late answer, loop ending
+STEPS = open_loop(
+    STEPS, "Somewhere under the ocean, a ship is fishing for the internet. Why?", answer_step=12,
+    teaser_frac=0.7, reminder=(7, "And that fishing ship? It's coming."), reveal="Here's where the ship comes in.",
+    hook_keys=[("under the ocean", INK), ("fishing for the internet", RED), ("why|why?", INK)],
+    ending_text="And that's how you build an undersea internet cable. Follow for more. Because remember,",
+    ending_keys=[("undersea internet cable|how you build it", BLUE)], ending_do=[])  # O2 hook, E2 ending + loop
+
 VIDEO = dict(
     slug="undersea_cable",
     title="How does a message cross the ocean?",
-    steps=STEPS, scene=CableScene, initial=INITIAL, overlays=overlays, tracker=dict(label="FIXES"), qa=QA,
+    steps=STEPS, end_cover=False, scene=CableScene, initial=INITIAL, overlays=overlays, tracker=dict(label="FIXES"), qa=shift_spec(QA, 1),
 )

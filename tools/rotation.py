@@ -15,7 +15,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATS = os.path.join(ROOT, "publishing", "STATS.md")
 OPENINGS = [f"O{i}" for i in range(1, 8)]
-ENDINGS = [f"E{i}" for i in range(1, 6)]
+ENDINGS = ["E1", "E2", "E3", "E5"]          # E4 retired: the loop is a "+L" tail on every ending
 
 
 def _table(md: str, heading_prefix: str):
@@ -53,6 +53,7 @@ def repeats(seq):
     for (s0, k0, o0, e0), (s1, k1, o1, e1) in zip(seq, seq[1:]):
         if k0 == k1 == "posted":           # already published: history, not something we can still fix
             continue
+        e0, e1 = e0.split("+")[0], e1.split("+")[0]   # "+L" (loop tail) is not part of the ending code
         if o0 == o1:
             bad.append(f"opening {o1} twice in a row: {s0} -> {s1}")
         if e0 == e1:
@@ -61,7 +62,7 @@ def repeats(seq):
 
 
 def allowed_next(seq):
-    last_o, last_e = (seq[-1][2], seq[-1][3]) if seq else (None, None)
+    last_o, last_e = (seq[-1][2], seq[-1][3].split("+")[0]) if seq else (None, None)
     return [o for o in OPENINGS if o != last_o], [e for e in ENDINGS if e != last_e]
 
 

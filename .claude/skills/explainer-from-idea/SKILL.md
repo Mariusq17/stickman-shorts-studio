@@ -49,6 +49,17 @@ Pick the best score **among the formulas allowed by the rotation**; on a tie pre
 can be shown best. Show the owner the 5 hooks with scores in one compact table. Hookscore is a lint, not a
 prediction (see `tools/yt/README.md`): never say "this hook will perform better", say "it scores higher on X".
 
+## 3b. Open loop - the owner's rule (2026-11-22): build anticipation, answer as LATE as possible
+- The hook asks the question whose answer comes LAST (the climax at ~70-90% of the video, before the payoff),
+  not something answered in step 1. Pick the most surprising late fact / moment of the chain.
+- The hook is spoken over a **teaser** of that answer moment (builder `teaser` step: the scene plays the late
+  step early, ~3 s), then a whip-cut into the first build step. Never reveal the answer in the teaser's words.
+- Mini-answers keep coming (every fix), so nobody feels cheated; 1 reminder at ~50% ("Still not the reason
+  it ... Hold that thought."); the answer step starts with a reveal line ("Here's the answer.").
+- Implementation: `stickman_studio/explainer/lib/story.py` -> `open_loop(STEPS, hook, answer_step, ending_text, ...)`;
+  examples: `videos/traffic_light.py`, `videos/microwave.py`; QA specs keep original indices + `shift_spec(QA, 1)`.
+- The title must promise the SAME question (title.py pair check). Evidence level: hypothesis, 0 videos measured.
+
 ## 4. Write the script (English, ~3.2 words/s at voice 1.2x)
 - Length = the open experiment's target, otherwise the current rule in CLAUDE.md "Learned rules"
   (default until numbers exist: ~1:30-2:00, ~300-420 words).
@@ -72,8 +83,11 @@ Endings:
 | E1 | "And congratulations, you just built a <thing>." |
 | E2 | "And that's how you build a <thing>." |
 | E3 | "Now you know more about <thing> than 99% of people." |
-| E4 | loop ending: the last sentence leads back into the first line (replay) |
+| E4 | (retired 2026-11-22: the loop is now a tail on EVERY ending, written "+L") |
 | E5 | question to the comments ("Which fix surprised you?") then "Follow for more." |
+**Loop tail (+L), standard since 2026-11-22:** the ending phrase, then "Follow for more. Because remember," -
+those words run straight into the hook line when the Short replays; the last frame uses the hook's camera; no
+cover frame at the end (`end_cover=False`); CTA step `min` ~6 s. Rotation applies to the ending phrase code.
 Record the codes in the video's planned row in `publishing/STATS.md` (queue table) when the script is approved.
 
 ## 5. Storyboard each step (show the user a compact table first)

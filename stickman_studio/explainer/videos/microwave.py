@@ -8,6 +8,7 @@ from PIL import ImageDraw
 from ...painter import font
 from ..iso import IsoCam, mix, shade
 from ..lib import kit, parts
+from ..lib.story import open_loop
 from ..lib.palette import PEG_COLORS
 from ..lib.shadows import ShadowLayer
 
@@ -471,8 +472,16 @@ def overlays(img, tr, t, W, H):
     draw_bubble(img, tr, t, W, H)
 
 
+# open-loop structure (2026-11-22): question hook + teaser, reminder, late answer, loop ending
+STEPS = open_loop(
+    STEPS, "A fork in your microwave turns into a tiny thunderstorm. Why?", answer_step=10,
+    teaser_frac=0.85, reminder=(5, "Still no fork. We're getting there."),
+    hook_keys=[("fork", RED), ("tiny thunderstorm", RED), ("why|why?", INK)],
+    ending_text="Now you know more about microwaves than 99% of people. Follow for more. Because remember,",
+    ending_keys=[("99% of people|smarter than 99%", BLUE)], ending_do=[])  # O2 hook, E3 ending + loop
+
 VIDEO = dict(
     slug="microwave",
     title="Why does a fork spark in the microwave?",
-    steps=STEPS, scene=MicrowaveScene, initial=INITIAL, overlays=overlays, tracker=dict(label="FIXES"),
+    steps=STEPS, end_cover=False, scene=MicrowaveScene, initial=INITIAL, overlays=overlays, tracker=dict(label="FIXES"),
 )
