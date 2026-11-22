@@ -10,7 +10,7 @@ A self-checkout built step by step: barcodes that are just product numbers with 
 #technology #howitworks
 
 ## Instagram / TikTok caption
-"Unexpected item in the bagging area" 😤 Who is actually judging you?
+The self checkout checks you in more ways than you think 😤 The last one is the sneakiest.
 It's a scale doing math: barcode + check digit, the store database, expected weights, tolerance, produce codes, the attendant and the cameras above the scanner.
 #technology #howitworks
 

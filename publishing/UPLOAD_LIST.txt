@@ -1,3 +1,6 @@
+ACTUALIZARE 2026-11-22: chatbot, traffic_light, microwave, self_checkout, undersea_cable, streaming = versiunile noi
+(hook cu intrebare + final bucla). Folositi MP4-urile noi. Elevator si ATM sunt deja postate.
+
 HOW IT'S BUILT - texte de postare (8 videouri)
 ============================================================
 Pe fiecare: titlu YouTube, descriere YouTube, caption Instagram/TikTok, comentariu fixat (pin).
@@ -30,7 +33,7 @@ Would you still take the stairs after watching this? 🛗
 ############################################################
 
 --- YOUTUBE TITLU ---
-Why AI Chatbots Type One Word at a Time
+Why AI Sounds Sure Even When It's Wrong
 
 --- YOUTUBE DESCRIERE ---
 How large language models work, built step by step: a machine that guesses the next word, feeds its own guess back in, trains on a mountain of text by tuning billions of parameters on graphics chips, uses attention to know what "it" refers to, reads tokens instead of letters, rolls weighted dice (temperature), learns manners from human feedback, and why it can be wrong with total confidence.
@@ -38,7 +41,7 @@ How large language models work, built step by step: a machine that guesses the n
 #ai #howitworks
 
 --- INSTAGRAM / TIKTOK CAPTION ---
-Every word a chatbot types is a fresh guess 🤖
+Your chatbot can be completely wrong and never sound unsure. Why? 🤖
 We build an AI from a "next word machine": training, parameters, attention, tokens, temperature, and why it sometimes hallucinates with total confidence.
 #ai #howitworks
 
@@ -72,7 +75,7 @@ Has an ATM ever given you the wrong amount? 🏧
 ############################################################
 
 --- YOUTUBE TITLU ---
-How the Traffic Light Knows You're Waiting
+The One Vehicle That Turns Every Light Green
 
 --- YOUTUBE DESCRIERE ---
 We build a traffic light from a pole, two lamps and a timer, then fix everything that goes wrong: an inductive loop cut into the road that feels your car, cameras and radar for bikes, a yellow light timed to the road's speed, the all-red clearance, the conflict monitor that stops two greens, the pedestrian button, the green wave along an avenue and emergency vehicle preemption.
@@ -80,7 +83,7 @@ We build a traffic light from a pole, two lamps and a timer, then fix everything
 #engineering #howitworks
 
 --- INSTAGRAM / TIKTOK CAPTION ---
-Ever sat at a red light at 3 AM with nobody around? 🚦
+One vehicle can turn every traffic light on your street green. Which one? 🚦
 The road can feel your car: a loop of wire, a controller in a box, yellow-light timing, the safety monitor that stops two greens, green waves and ambulance preemption.
 #engineering #howitworks
 
@@ -122,7 +125,7 @@ A self-checkout built step by step: barcodes that are just product numbers with 
 #technology #howitworks
 
 --- INSTAGRAM / TIKTOK CAPTION ---
-"Unexpected item in the bagging area" 😤 Who is actually judging you?
+The self checkout checks you in more ways than you think 😤 The last one is the sneakiest.
 It's a scale doing math: barcode + check digit, the store database, expected weights, tolerance, produce codes, the attendant and the cameras above the scanner.
 #technology #howitworks
 
@@ -135,7 +138,7 @@ What's the most annoying thing a self-checkout has ever told you? 🛒
 ############################################################
 
 --- YOUTUBE TITLU ---
-How Your Message Crosses the Ocean
+Why a Ship Goes Fishing for the Internet
 
 --- YOUTUBE DESCRIERE ---
 Almost all data between continents travels through cables on the ocean floor. We build one from a glass thread and a laser: optical fiber, repeaters that boost the light, electricity sent through the cable to power them, a garden-hose-thin cable in the deep sea, steel armor near the coast, many colors of light per fiber, landing stations, and repair ships when a cable breaks.
@@ -143,7 +146,7 @@ Almost all data between continents travels through cables on the ocean floor. We
 #technology #howitworks
 
 --- INSTAGRAM / TIKTOK CAPTION ---
-Your messages don't go to space 🛰️ They crawl along the ocean floor 🌊
+Somewhere under the ocean, a ship is fishing for the internet. Why? 🌊
 We build an undersea internet cable: glass fiber, repeaters, power through the cable, steel armor near shore, colors of light as channels, and the ships that fix it.
 #technology #howitworks
 
@@ -156,7 +159,7 @@ Did you think the internet between continents went through satellites? 🛰️
 ############################################################
 
 --- YOUTUBE TITLU ---
-Why Movies Start Instantly Even Though the File Is Huge
+You Never Actually Download the Movie
 
 --- YOUTUBE DESCRIERE ---
 Video streaming built step by step: codecs that store only what changes between frames, chunks of a few seconds so playback starts right away, every chunk stored at several qualities for adaptive streaming, the buffer that rides out hiccups, servers placed inside your internet provider's network, and per-show quality tuning.
@@ -164,7 +167,7 @@ Video streaming built step by step: codecs that store only what changes between 
 #technology #howitworks
 
 --- INSTAGRAM / TIKTOK CAPTION ---
-A movie is gigabytes. So why does it start in one second? 🎬
+You never actually download the movie you're watching. Not even close 🎬
 We build a streaming service: codecs, chunks, adaptive quality (that's why it starts blurry), the buffer and servers hiding inside your internet provider.
 #technology #howitworks
 
