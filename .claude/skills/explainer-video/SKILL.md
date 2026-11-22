@@ -20,14 +20,21 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
    - Visual bar = elevator v4: room/backdrop context, soft shadows (`ShadowLayer` after static
      geometry), moderate detail (bolts, seams, LEDs, displays), moving indicators that show motion,
      Pegs mascots reacting (expr + pose), 1-3 widgets per explanation-heavy step.
-3. **Preview, don't guess**: `python -m stickman_studio.explainer.render <slug> --preview t1,t2,...`
+3. **Scene QA (no rendering, ~1 s)**: give the scene file a `QA = dict(objects=..., links=..., static_ok=...)`
+   spec (format in the docstring of `stickman_studio/explainer/qa.py`): every moving/temporary prop with the
+   fill colour of its boxes and the steps it belongs to; every cable/pipe with its two end objects. Then
+   `python -m stickman_studio.explainer.qa <slug>`. **All ERRORs must be fixed before any preview or render**
+   (linger, pass-through, link). WARNs (static > 2 s while talking, keyword < 0.9 s, label cut by the frame,
+   unreadable text on objects) are fixed when cheap, otherwise listed to the owner. The report also prints the
+   DNA numbers for `publishing/STATS.md` (length, hook seconds, fixes, wind-down %).
+4. **Preview, don't guess**: `python -m stickman_studio.explainer.render <slug> --preview t1,t2,...`
    then Read the PNG. Check every step at ~30% and ~85% of its duration, and the hook second by
    second (0.2, 0.7, 1.1 ... 5 s). Fix before rendering.
-4. **Release commit + push before the long render**: `[VID-<idx>-v<ver>] <slug>: <title>` (see skill
+5. **Release commit + push before the long render**: `[VID-<idx>-v<ver>] <slug>: <title>` (see skill
    `video-archive`), then after the render add the row to `publishing/VIDEOS.md`.
-5. **Render** (background): `python -m stickman_studio.explainer.render <slug>` (~20 min per 2 min
+6. **Render** (background): `python -m stickman_studio.explainer.render <slug>` (~20 min per 2 min
    video on 4 CPU cores). Verify with `stickman_studio.pipeline.verify_video`.
-6. **Deliver immediately**: send the MP4 with SendUserFile as soon as it is verified - never wait
+7. **Deliver immediately**: send the MP4 with SendUserFile as soon as it is verified - never wait
    for the rest of a batch.
 
 ## Batch of several videos
@@ -70,6 +77,9 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
   into the plane's perspective and shrunk to fit. Never `cam.d.text` on a 3D surface (only billboards/labels).
 - Callouts: `kit.label(...)` is automatically drawn above the whole scene; use it for part names.
   Use `now=True` only for text that should be occluded on purpose.
+- `qa.py` is the first line of defence for the WHOLE timeline (it caught traffic_light v1 and undersea_cable v1,
+  which needed v2 renders); a new kind of visual bug the owner reports -> add a check to `qa.py` + a test in
+  `tests/test_explainer_qa.py`, so it is never relearned.
 - Check the WHOLE timeline, not only each step: a final contact sheet every ~4 s from start to end, looking
   for props that linger after their step, objects driving through each other, and cables/pipes that stop
   short of their endpoints. The second half of a video gets the same care as the hook.

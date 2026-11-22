@@ -90,3 +90,12 @@ Positions: `tl tr ml mr bl br bc c`. Timing: `at` + `dur` or `until` (cues).
   (see `undersea_cable._water`) - cheap and keeps everything behind visible.
 - See-through fronts (microwave door, cutaway): an "x-ray" track that skips the front panel/top while a
   hidden part (magnetron) is explained.
+
+## Scene QA (`explainer/qa.py`)
+Checks a video **without rendering**: runs the scene's own draw() on a recording camera and the planned
+timeline (`builder.plan_timeline`, Piper word times or a calibrated estimate). Errors: props lingering after
+their steps, moving objects overlapping, cables/pipes not connecting their end objects. Warnings: static screen
+> 2 s while talking, keywords readable < 0.9 s or spoken twice, labels cut by the frame, unreadable text on
+objects. Per-video spec: `QA = dict(objects=..., links=..., static_ok=...)` in the video module (+ `qa=QA` in
+VIDEO). Examples: `videos/traffic_light.py` (cars), `videos/undersea_cable.py` (cable with bridges).
+`python -m stickman_studio.explainer.qa <slug> [--rev <commit>] [--srt out.srt] [--json]`, `--all` for every video.

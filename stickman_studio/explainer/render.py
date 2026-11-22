@@ -89,6 +89,7 @@ def preview(slug, times, out_png, ss=1):
         x, y = (k % cols) * tw, (k // cols) * th
         sheet.paste(im.resize((tw, th), Image.LANCZOS), (x, y))
         d.text((x + 8, y + th - 30), f"{t:.1f}s", font=font(22), fill=(200, 0, 0))
+    os.makedirs(os.path.dirname(os.path.abspath(out_png)), exist_ok=True)
     sheet.save(out_png)
     print("steps:", len(durs), "total:", round(sum(durs), 1), "s")
     print("step starts:", [round(s, 1) for s in starts])

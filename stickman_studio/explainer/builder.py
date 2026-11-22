@@ -96,23 +96,17 @@ class Timing:
         return self.starts[i] + self.rel(i, cue)
 
 
-# ------------------------------------------------------------------ build
-def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps=30, size=(1080, 1920),
-                    ss=2, voice_rate=1.2, music_volume=0.07, log=print, progress=None, preview_frames=None,
-                    preview_times=None, return_plan=False, tracker=None, motion_blur=True, end_cover=None,
-                    cover_dur=0.5):
-    t0 = time.time()
-    texts = [s["text"] for s in steps]
-    clips, engine = synthesize_all(texts, "auto", voice_rate, language="en", log=log)
-    log(f"TTS: {engine}")
+# ------------------------------------------------------------------ plan (no audio, no pixels)
+def plan_timeline(steps, clips, initial, size=(1080, 1920), fps=30, extra_end=0.0):
+    """Resolve every cue of the script against the narration clips: step starts/durations, animation
+    tracks, camera path, keywords, pop-ups, sfx and FIXES times. Used by build_explainer and by qa.py
+    (which checks a video without rendering it)."""
     durs = [max(s.get("min", 0.0), LEAD + c.duration + TAIL) for s, c in zip(steps, clips)]
     starts = list(np.cumsum([0.0] + durs[:-1]))
     total = float(sum(durs))
     content_total = total
-    cover_img = None
-    if end_cover and os.path.exists(end_cover):     # cover frame at the very end: pickable as Shorts thumbnail
-        cover_img = Image.open(end_cover).convert("RGB").resize(size, Image.LANCZOS)
-        total += cover_dur
+    if extra_end:                                   # e.g. the cover frame appended at the very end
+        total += extra_end
     tm = Timing(steps, clips, starts, durs)
     tr = StepTracks(starts, steps)
     for k, v in initial.items():
@@ -165,6 +159,29 @@ def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps
         k.append(replaced)
     camp = CameraPath(tr, total, fps, width=W)
     sfx += [(c - 0.12, "whoosh", 0.55) for c in camp.cuts if c > 0.2]
+    return dict(durs=durs, starts=starts, total=total, content_total=content_total, tm=tm, tracks=tr,
+                keys=keys, pops=pops, sfx=sfx, fixes=fixes, camp=camp, W=W, H=H, bz=bz)
+
+
+# ------------------------------------------------------------------ build
+def build_explainer(steps, scene_cls, out_path, initial, draw_overlays=None, fps=30, size=(1080, 1920),
+                    ss=2, voice_rate=1.2, music_volume=0.07, log=print, progress=None, preview_frames=None,
+                    preview_times=None, return_plan=False, tracker=None, motion_blur=True, end_cover=None,
+                    cover_dur=0.5):
+    t0 = time.time()
+    texts = [s["text"] for s in steps]
+    clips, engine = synthesize_all(texts, "auto", voice_rate, language="en", log=log)
+    log(f"TTS: {engine}")
+    cover_img = None
+    extra = 0.0
+    if end_cover and os.path.exists(end_cover):     # cover frame at the very end: pickable as Shorts thumbnail
+        cover_img = Image.open(end_cover).convert("RGB").resize(size, Image.LANCZOS)
+        extra = cover_dur
+    P = plan_timeline(steps, clips, initial, size, fps, extra)
+    durs, starts, total, content_total = P["durs"], P["starts"], P["total"], P["content_total"]
+    tr, keys, pops, sfx, fixes, camp = P["tracks"], P["keys"], P["pops"], P["sfx"], P["fixes"], P["camp"]
+    W, H = size
+    bz = P["bz"]
     # ---------------------------------------------------------- audio
     voice = [(s0 + LEAD, c.samples) for s0, c in zip(starts, clips)]
     sfx += [(p["t0"], {"warn": "sting", "check": "ding", "count": "tick", "card": "pop"}.get(p["kind"], "pop"), 0.3)

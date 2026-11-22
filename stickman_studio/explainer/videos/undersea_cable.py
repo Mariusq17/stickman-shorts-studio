@@ -142,6 +142,26 @@ STEPS = [
          sfx=[("w:follow", "pop")]),
 ]
 
+# Scene QA (stickman_studio/explainer/qa.py): the cable must visibly connect its two ends - laser -> receiver
+# before the landing stations exist, station -> station after. Bridges = where it is legitimately out of
+# sight: buried in the trench near the left shore, and going into the right cliff.
+_TRENCH = (X0 - 0.6, YC - 0.12, -2.5, X0 + 2.25, YC + 0.12, -0.2)
+_RIGHT_CLIFF = (X1 + 0.6, 0.0, -DEPTH, X1 + 3.0, D, 0.37)
+QA = dict(
+    links=[
+        dict(name="cable laser->receiver", steps="1-15", width_min=0.03, tol=0.12,
+             when=[("station", "<", 0.5), ("broken", "<", 0.5), ("land", ">", 0.95)],
+             ends=[dict(color=(60, 64, 76), near=(X0 - 0.7, YC, 0.05), radius=0.5),
+                   dict(color=(60, 64, 76), near=(X1 + 1.15, YC, 0.5), radius=0.6)],
+             bridges=[_TRENCH, _RIGHT_CLIFF]),
+        dict(name="cable station->station", steps="10-15", width_min=0.03, tol=0.12,
+             when=[("station", ">", 0.9), ("broken", "<", 0.5)],
+             ends=[dict(color=(90, 110, 150), near=(X0 - 1.2, 1.35, 0.6), radius=0.6),
+                   dict(color=(90, 110, 150), near=(X1 + 1.2, 1.35, 0.6), radius=0.6)],
+             bridges=[_TRENCH, _RIGHT_CLIFF]),
+    ],
+)
+
 INITIAL = dict(thread=0, ocean=0, laser=0, pulse=0, land=0, bubble=0, bubble_kind=0, fade=0, rep=0, nopower=0, power=0,
                anchor=0, snag=0, armor=0, bury=0, colors=0, station=0, netlines=0, broken=0, second=0, reroute=0, ship=0,
                hook=0, sat=0, sat_x=0, fast=0, shark=0)
@@ -517,5 +537,5 @@ def overlays(img, tr, t, W, H):
 VIDEO = dict(
     slug="undersea_cable",
     title="How does a message cross the ocean?",
-    steps=STEPS, scene=CableScene, initial=INITIAL, overlays=overlays, tracker=dict(label="FIXES"),
+    steps=STEPS, scene=CableScene, initial=INITIAL, overlays=overlays, tracker=dict(label="FIXES"), qa=QA,
 )

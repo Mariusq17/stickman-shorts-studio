@@ -160,6 +160,18 @@ STEPS = [
          sfx=[("w:follow", "pop")]),
 ]
 
+# Scene QA (stickman_studio/explainer/qa.py): which steps each moving prop belongs to. Outside them it must
+# drive away; while moving it must never overlap another car.
+QA = dict(
+    objects={
+        "red car": dict(color=(226, 70, 70), steps="1-4,6-7,16-17"),
+        "yellow car (runs the yellow)": dict(color=(250, 196, 70), steps="8"),
+        "blue side car": dict(color=(90, 140, 220), steps="8"),
+        "green wave car": dict(color=(120, 200, 140), steps="13-14"),
+        "ambulance": dict(color=(250, 250, 250), steps="15"),
+    },
+)
+
 INITIAL = dict(pole=0, lamp_r=0, lamp_g=0, timer=0, world=0, yel=0, ms=0, ss=0, night=0, car_x=-9.0, loop=0, field=0,
                sense=0, cabinet=0, wire_lit=0, bike=0, bike_x=-6.0, cam_on=0, skid=0, run_x=-6.0, side_y=-6.0,
                cabinet_alarm=0, monitor=0, flash=0, ped=0, button=0, press=0, walk=0, ped_x=0, avenue=0, wave_x=-9.0,
@@ -433,5 +445,5 @@ class TrafficScene:
 VIDEO = dict(
     slug="traffic_light",
     title="How does the traffic light know you're waiting?",
-    steps=STEPS, scene=TrafficScene, initial=INITIAL, overlays=None, tracker=dict(label="FIXES"),
+    steps=STEPS, scene=TrafficScene, initial=INITIAL, overlays=None, tracker=dict(label="FIXES"), qa=QA,
 )
