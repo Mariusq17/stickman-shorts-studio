@@ -99,3 +99,9 @@ user) - copy its structure. Language: **English**. Format: 1080x1920, 30 fps, 2-
   "Banana. Seven. Purple." boxes because the hook shifted every step by 1 -> fixed in v4; covered by a test.
 - After restructuring a script (hook inserted, steps moved), preview the steps with step-specific content
   (screens, special props), not only the hook - QA cannot see "the right text on the right step".
+- Camera variety (owner, 2026-11-22, microwave): never hold one framing for long stretches - change framing every
+  ~5-8 s with smooth moves (`cams` with 0.9-1.4 s): push in close for what happens inside, pull back wide when the
+  explanation is done, try other vantage points. The iso angle is fixed, so variety = focus + zoom + reframing.
+  No instant cuts unless it is a deliberate whip (flashback).
+- Big plain surfaces (an oven top, a cabinet side) must not fill half the frame for long: make covers see-through
+  (outline + glass glints, hide the inner ceiling) when the action is inside - example `videos/microwave.py` `ghost`.

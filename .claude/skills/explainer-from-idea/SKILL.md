@@ -59,6 +59,10 @@ prediction (see `tools/yt/README.md`): never say "this hook will perform better"
 - Implementation: `stickman_studio/explainer/lib/story.py` -> `open_loop(STEPS, hook, answer_step, ending_text, ...)`;
   examples: `videos/traffic_light.py`, `videos/microwave.py`; QA specs keep original indices + `shift_spec(QA, 1)`.
 - The title must promise the SAME question (title.py pair check). Evidence level: hypothesis, 0 videos measured.
+- Owner's ear (2026-11-22): the hook is ONE natural sentence at the video's normal pace - never a lone "Why?" or
+  "Which one?" tacked on (sounds forced in Piper). Statement hooks loop with "...Follow for more. Because remember,"
+  + hook; question hooks loop with "...Follow for more. And next time someone asks you," + hook. No pause after the
+  last word: the replay must start immediately.
 
 ## 4. Write the script (English, ~3.2 words/s at voice 1.2x)
 - Length = the open experiment's target, otherwise the current rule in CLAUDE.md "Learned rules"
