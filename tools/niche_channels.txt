@@ -1,0 +1,13 @@
+# Public YouTube channels close to our niche ("how things work" explainers, mostly Shorts).
+# One @handle per line. Handles were written from memory: the collector prints a failure for a wrong one -
+# fix or delete it. Add channels the owner sees in their own Shorts feed (the best source).
+@TheEngineeringMindset
+@BranchEducation
+@Animagraffs
+@RealEngineering
+@SciShow
+@minutephysics
+@Veritasium
+@SteveMould
+@TechnologyConnections
+@PracticalEngineeringChannel
