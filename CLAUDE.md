@@ -75,6 +75,11 @@ Never invent numbers, never present a heuristic as a prediction: say what is **p
 - No GPU (work laptop, Intel Arc) -> Blender path was tested (`blender_render.py`) but parked;
   stay on the Python 2.5D renderer.
 - Deliver each finished MP4 immediately (SendUserFile); commit + push code before long renders.
+- **Thumbnail frame is essential** (owner 2026-11-22): every YouTube MP4 ends with the cover for **0.2 s** (pickable in
+  the Shorts frame picker, almost invisible in the loop). Loop videos are rendered with `end_cover=False`, then
+  `python tools/append_cover.py <slug> --dur 0.2` -> `output/explainers/<slug>_cover.mp4` (YouTube file). Instagram:
+  the plain MP4 + `publishing/<slug>/cover.png` uploaded as the Reel cover. Regenerate the cover
+  (`branding cover <slug>`) whenever the title or the timeline changes.
 - Every approved video gets a release commit `[VID-<idx>-v<ver>] ...` and a row in `publishing/VIDEOS.md`
   (title, commit, date) so any old version can be re-rendered exactly (skill `video-archive`).
 - Handle: `@HowItsBuiltShorts_Official` (name "How It's Built"); same on YouTube, Instagram, TikTok.
@@ -138,6 +143,7 @@ confirmed (>= ~10 videos, consistent). Contradicted rules are downgraded or remo
 Last session: 2026-11-22 (branch `claude/upbeat-hypatia-l9zq43`, not merged yet).
 - **Posted**: card_tap 11-20, elevator 11-21, atm_notes 11-22 (O1/E1 baseline). **Posting now** (owner's choice,
   texts in `publishing/POST_NOW.txt`): chatbot v4, traffic_light v5, microwave v4, streaming v3, maybe self_checkout v3.
+  YouTube files = `<slug>_cover.mp4` (cover 0.2 s at the end); Instagram = plain MP4 + cover.png.
   NOT posted: toilet v1, fridge v1, undersea_cable v4 (to redo after the engine work below).
 - **Next session, in this order** (owner was disappointed - read "2026-11-22 end of session" above first):
   1. `studio` start: numbers for every posted video (first open-loop data: chatbot) -> STATS.md -> Learned rules.

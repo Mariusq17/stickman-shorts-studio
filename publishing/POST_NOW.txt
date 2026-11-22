@@ -1,10 +1,12 @@
 HOW IT'S BUILT - de postat (ales de owner 2026-11-22)
 Toate textele sunt in engleza, gata de copiat. Ordinea + ora sunt o propunere (2 pe zi).
 Nu postam: toilet, fridge, undersea_cable (le refacem cu motorul imbunatatit).
+YOUTUBE: fisierul <video>_cover.mp4 (coperta 0,2 s la final -> o alegi ca thumbnail).
+INSTAGRAM: fisierul fara coperta + publishing/<video>/cover.png la 'Edit cover'.
 
 ############################################################
 chatbot v4   ->   20:30 azi (22.11)
-fisier: output/explainers/chatbot.mp4 (ultima versiune primita)
+fisier: output/explainers/ (YouTube: varianta _cover) chatbot.mp4 (ultima versiune primita)
 ############################################################
 
 --- YOUTUBE TITLU ---
@@ -26,7 +28,7 @@ Has a chatbot ever told you something totally wrong with a straight face? 🤖
 
 ############################################################
 traffic_light v5   ->   12:30, 23.11
-fisier: output/explainers/traffic_light.mp4 (ultima versiune primita)
+fisier: output/explainers/ (YouTube: varianta _cover) traffic_light.mp4 (ultima versiune primita)
 ############################################################
 
 --- YOUTUBE TITLU ---
@@ -48,7 +50,7 @@ Did you know there's a loop of wire under the road listening for your car? 👀
 
 ############################################################
 microwave v4   ->   20:30, 23.11
-fisier: output/explainers/microwave.mp4 (ultima versiune primita)
+fisier: output/explainers/ (YouTube: varianta _cover) microwave.mp4 (ultima versiune primita)
 ############################################################
 
 --- YOUTUBE TITLU ---
@@ -70,7 +72,7 @@ Be honest: have you ever put a fork in the microwave? 🍴⚡
 
 ############################################################
 streaming v3 (Netflix)   ->   12:30, 24.11
-fisier: output/explainers/streaming.mp4 (ultima versiune primita)
+fisier: output/explainers/ (YouTube: varianta _cover) streaming.mp4 (ultima versiune primita)
 ############################################################
 
 --- YOUTUBE TITLU ---
@@ -92,7 +94,7 @@ Ever noticed a video starts blurry and then snaps sharp? Now you know why 👀
 
 ############################################################
 self_checkout v3   ->   20:30, 24.11 (optional)
-fisier: output/explainers/self_checkout.mp4 (ultima versiune primita)
+fisier: output/explainers/ (YouTube: varianta _cover) self_checkout.mp4 (ultima versiune primita)
 ############################################################
 
 --- YOUTUBE TITLU ---
