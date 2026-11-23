@@ -77,3 +77,14 @@ below is a **hypothesis or heuristic**, ordered by the estimated impact on reten
 - **Instagram** outperforms YouTube on views for elevator/atm (1.7K each vs ~1.2K / 329) with 0 shares.
 - **Covers**: 49 thumbnail impressions in total - the feed decides, not the cover.
 Next measurement: elevator + atm curves (do they also cliff at the CTA?), 48 h / 7 d snapshots, traffic sources.
+
+## Numbers 2026-11-23 (4 videos - hypotheses only)
+- chatbot v4 (first open-loop video): stayed 64.5% = inside the O1 baseline range (55.7-65.7%) -> the new hook did not
+  move the first-seconds number on this one video. Avg view duration 0:52 of 2:08 (~41%) - lower than card_tap (59%).
+  Views rose to ~240 in ~4 h, then flattened: the feed tested it on a small audience and stopped. 1 video, no conclusion.
+- Views per video are falling (card 1.3K, elevator 1.2K, ATM 436, chatbot 317) - could be topic, quality, time of day
+  or pace; 4 videos cannot separate these. No evidence (ours) that posting often is penalised.
+- Audience: 100% new viewers, US top (14.9%), 94% male, 25-34 the biggest group (43%).
+- **Niche proof (owner, YT Research tab 2026-11-23):** another channel's video "How does the traffic light know you're
+  waiting?" did ~71x its channel's typical views (102K, channel 13.4K subs, ~1 month old). Strongest topic signal we
+  have: traffic_light should go out next, with packaging on that angle ("knows you're waiting"), not a copied title.

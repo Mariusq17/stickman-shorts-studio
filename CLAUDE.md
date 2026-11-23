@@ -137,7 +137,11 @@ confirmed (>= ~10 videos, consistent). Contradicted rules are downgraded or remo
 - [hypothesis, 3 videos] Instagram: 0 shares on all three; likes 28-42 per 1k. Shareability is a gap.
 - [fact, 3 videos] YouTube thumbnail impressions are tiny (49 total until 11-21): Shorts traffic comes from the
   feed, so covers/titles matter far less than the first seconds. Covers = low priority for experiments.
-(No rule is confirmed yet: 3 videos measured at 5-45 h, all with the same O1 hook and E1 ending.)
+- [hypothesis, 1 video] The open-loop hook did not raise "stayed to watch" yet: chatbot v4 64.5% vs O1 baseline
+  55.7-65.7%; its avg % viewed was ~41% (0:52/2:08). Topic (AI) may explain it - needs 2-3 more open-loop videos.
+- [hypothesis, niche, 1 outlier] "How the traffic light knows you're waiting" is proven demand (another channel: ~71x
+  its typical views, 102K). Prefer topics with a niche outlier; package them on the proven angle.
+(No rule is confirmed yet: 4 videos measured at 5-45 h.)
 
 ## Where we left off (updated at every wrap-up - read this first)
 Last session: 2026-11-22 (branch `claude/upbeat-hypatia-l9zq43`, not merged yet).

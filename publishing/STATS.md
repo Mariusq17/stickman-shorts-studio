@@ -31,6 +31,10 @@ chart by eye. Raw Studio export: `stats_raw/2026-11-22_yt_studio_table_until_202
 | 1 | card_tap | ~2 d (11-22 17:21) | IG | 362 | - | - | ? | ? | 27.6 (10) | 0 (0 sends) | 0 | ? | ? | ? | |
 | 2 | elevator | ~21 h | IG | ~1,700 | - | - | ? | ? | ~42 (71) | 0 | 0 | ? | ? | ? | |
 | 3 | atm_notes | ~5 h | IG | ~1,700 | - | - | ? | ? | ~31 (52) | 0 | 1 | ? | ? | ? | IG caption started "The ATM just pinched every..." |
+| 4 | chatbot | ~16 h (11-23 12:48) | YT | 317 | 200 | 64.5% | ~41% (0:52 / 2:08) | 0:52 | ? | ? | ? | ~3 (1 sub?) | not ready | Shorts feed 9 / other YT 2 / other 1 (first 60 min) | views ~240 in the first ~4 h, then flat |
+| 2 | elevator | ~42 h (11-23) | YT | ~1,200 | ? | (59.6% at 22 h) | ? | ? | ? | ? | ? | ? | not given | ? | "watched right now" list |
+| 3 | atm_notes | ~24 h (11-23) | YT | 436 | ? | (55.7% at 5 h) | ? | ? | ? | ? | ? | ? | not given | ? | |
+| - | CHANNEL | 28 days (11-23) | YT | 3.2K | - | - | - | - | - | - | - | 6 subs total | - | - | 41.8 watch hours; 100% new viewers; US 14.9% (top), Indonesia 3.3, Philippines 3.1, India 2.8, UK 2.2; 94.3% male; 25-34 = 43.1%, 18-24 17.5%, 35-44 19.9%, 13-17 10.5% |
 | 1 | card_tap | 7 d | YT + IG | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | due 2026-11-27 |
 | 2 | elevator | 48 h / 7 d | YT + IG | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | due 11-23 / 11-28 |
 | 3 | atm_notes | 48 h / 7 d | YT + IG | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | due 11-24 / 11-29 |
