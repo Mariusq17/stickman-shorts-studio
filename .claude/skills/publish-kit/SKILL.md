@@ -63,6 +63,13 @@ If the channel name changes, also change the follow card text in `lib/widgets.py
 Send the cover PNG(s) with SendUserFile, paste title + captions in the reply (ready to copy), commit
 `publishing/` + `branding.py`. Mark the video in `ideas/IDEAS.md` as `posted` only when the owner says so.
 
+## Cover style from niche outliers (owner's YT Research, 2026-11-23 - 5 covers of 64-100x outliers; heuristic)
+Shared pattern: 2-4 huge words with ONE highlighted word (yellow, or a red box), a bright high-contrast scene with ONE
+big object, often an arrow pointing at the hidden mechanism ("IT'S NOT A TIMER" + arrow to the loop in the road,
+"WHAT HAPPENS AT HALF-TIME?", "LIVING IN A HILL"). Titles: a concrete curiosity question or "Why X does Y".
+Our tool for it: `COVERS[slug]` extras in `branding.py` - `brighten`, `glow` (outline of the mechanism), `arrow`,
+`tag` (example: traffic_light). Never copy another channel's title or cover text: same angle, our words.
+
 ## Rules learned
 - Channel texts (bios, channel description, banner) must stay topic-agnostic: never name specific videos or
   topics there - the channel will cover many more subjects. Topic details belong only in per-video posts.

@@ -38,7 +38,9 @@ COVERS = {
     "chatbot": dict(t=59.0, cam=((-2.6, 0.9, 1.0), 165),
                     lines=[("SOUNDS 100% SURE", (255, 255, 255)), ("STILL WRONG", YELLOW)]),
     "traffic_light": dict(t=23.6, cam=((-2.4, 0.4, 0.5), 200),
-                          lines=[("ONE VEHICLE", YELLOW), ("TURNS EVERY", (255, 255, 255)), ("LIGHT GREEN", (255, 255, 255))]),
+                          lines=[("THE ROAD", (255, 255, 255)), ("KNOWS YOU'RE", YELLOW), ("WAITING", YELLOW)],
+                          brighten=1.45, glow=[(290, 1195), (565, 1357), (925, 1192), (645, 1035)],
+                          arrow=((870, 720), (1010, 930), (905, 1150)), tag="A WIRE IN THE ROAD"),
     "microwave": dict(t=77.5, cam=((0.85, 0.35, 1.45), 380),
                       lines=[("WHY FORKS", (255, 255, 255)), ("SPARK", YELLOW), ("IN MICROWAVES", (255, 255, 255))]),
     "self_checkout": dict(t=42.4, cam=((1.9, 0.5, 1.15), 280),
@@ -151,6 +153,43 @@ def banner(out=None):
 
 
 # ------------------------------------------------------------------ covers
+def _cover_extras(img, spec):
+    """Outlier-style cover extras (owner's research 2026-11-23): brighten the scene below the title, a glowing outline
+    around the hidden mechanism, a curved arrow pointing at it and a small red tag. All in 1080x1920 cover pixels:
+    brighten=1.45, glow=[(x, y), ...] closed outline, arrow=((x0, y0), (cx, cy), (x1, y1)), tag="TEXT", tag_y=1520."""
+    import math
+    from PIL import ImageEnhance, ImageFilter
+    W, H = img.size
+    if spec.get("brighten"):
+        b = ImageEnhance.Contrast(ImageEnhance.Brightness(img).enhance(spec["brighten"])).enhance(1.1)
+        m = Image.linear_gradient("L").resize((W, H)).point(lambda v: 0 if v < 95 else min(255, int((v - 95) * 3)))
+        img = Image.composite(b, img, m)
+    d = ImageDraw.Draw(img)
+    if spec.get("glow"):
+        pts = list(spec["glow"]) + [spec["glow"][0]]
+        g = Image.new("L", (W, H), 0)
+        ImageDraw.Draw(g).line(pts, fill=255, width=34, joint="curve")
+        img.paste((80, 230, 255), (0, 0, W, H), g.filter(ImageFilter.GaussianBlur(14)))
+        d = ImageDraw.Draw(img)
+        d.line(pts, fill=(120, 240, 255), width=10, joint="curve")
+    if spec.get("arrow"):
+        p0, c, p1 = spec["arrow"]
+        arc = [((1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * c[0] + t * t * p1[0],
+                (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * c[1] + t * t * p1[1]) for t in [i / 24 for i in range(25)]]
+        d.line(arc[:-2], fill=YELLOW, width=12, joint="curve")
+        (x0, y0), (x1, y1) = arc[-4], arc[-1]
+        a, L = math.atan2(y1 - y0, x1 - x0), 44
+        d.polygon([(x1, y1), (x1 - L * math.cos(a - 0.45), y1 - L * math.sin(a - 0.45)),
+                   (x1 - L * math.cos(a + 0.45), y1 - L * math.sin(a + 0.45))], fill=YELLOW)
+    if spec.get("tag"):
+        f = font(46)
+        tw = d.textlength(spec["tag"], font=f)
+        y = spec.get("tag_y", 1520)
+        d.rounded_rectangle((W / 2 - tw / 2 - 26, y - 40, W / 2 + tw / 2 + 26, y + 40), radius=22, fill=(226, 52, 64))
+        d.text((W / 2, y), spec["tag"], font=f, fill=(255, 255, 255), anchor="mm")
+    return img
+
+
 def cover(slug, out=None, spec=None, ss=2):
     """Vertical 1080x1920 cover: a clean scene frame (no keywords/pop-ups) + a big title.
     Title sits inside the centre 3:4 area so it survives the Instagram grid crop."""
@@ -186,6 +225,7 @@ def cover(slug, out=None, spec=None, ss=2):
     d = ImageDraw.Draw(img)
     d.rounded_rectangle((W * 0.31, H * 0.105, W * 0.69, H * 0.105 + 64), radius=32, fill=ORANGE)
     d.text((W / 2, H * 0.105 + 32), BRAND, font=font(36), fill=(255, 255, 255), anchor="mm")
+    img = _cover_extras(img, spec)
     out = out or os.path.join(PUB, slug, "cover.png")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     img.save(out)
