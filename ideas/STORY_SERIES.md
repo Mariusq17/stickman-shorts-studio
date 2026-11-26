@@ -91,3 +91,17 @@ Proposal v2 - **"He lied on his dating profile"**:
 - Daily pressure: her story or text pokes one lie ("send me a pic of your husky!", "say something in French").
 - Vote: which lie he turns into truth next (or how he dodges today's test); losing option returns escalated.
 - Spicy: a rival who likes every one of her stories; long-term twist: maybe Mia lied too (payoff late).
+
+### v3 (owner 2026-11-26): he asks her out as a JOKE, not expecting a yes; "why would she swipe on him?" must be airtight
+Logic chain (proposal):
+1. Roommate Dan, sick of Kevin whining, makes him a dating profile as a prank/bet: Kevin's photos run through an
+   AI "glow-up" app (jawline, abs) + a bio of lies (chef, owns a husky, fluent French, marathon runner).
+2. Overnight: a match with Mia, way out of his league -> she swiped because the profile is literally perfect.
+   She writes first: "a chef with a husky? 👀"
+3. Kevin is sure it's a bot or Dan's prank -> answers sarcastically: "yes. dinner at mine, I cook, the husky judges
+   you. 8 pm?" - expecting nothing.
+4. She: "lol ok 😂 I'm a flight attendant, on rotation for a month. Day 30, 8 pm. Don't flake."
+   -> she accepts BECAUSE he sounded confident and funny (he didn't care), and a date in 30 days costs her nothing.
+5. Kevin realises: she has seen the AI photos and believes every lie. 30 days to make the profile true.
+Why the delay is real: flight-attendant rotation -> daily stories from a different city (visual variety) + texts that
+test one lie each day. Why he doesn't confess: he's tempted every episode (a possible vote option later).
