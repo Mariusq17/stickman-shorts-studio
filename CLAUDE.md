@@ -162,6 +162,9 @@ Last session: 2026-11-20..26 (branch `claude/upbeat-hypatia-l9zq43`; merge into 
 - **What the numbers say (hypotheses, 8 videos):** every video gets one ~1.1-1.4K test burst and stops; open-loop hooks
   raise stayed-to-watch (68.6% vs 63.4%, microwave 76%) but lower % viewed (56.6% vs 64%); shortest = best % viewed
   (streaming 1:27, 80%); shares ~0. IG: ~1.7-1.8K views + 50-70 likes on most reels, 2 reels only ~300 (unknown why).
+- **2026-11-26: story series designed and MOVED OUT** of this repo: bible + reference analysis in `ideas/STORY_SERIES.md`,
+  kickoff prompt for a new local repo in `ideas/STORY_SERIES_KICKOFF_PROMPT.md` (rich cartoon style, free CPU-only tools,
+  probably a separate/rebranded account). THIS repo/chat stays for "How It's Built" only.
 - **Next session - the owner starts a NEW chat:**
   1. Owner sends 2 reference videos of an interactive story series -> analyse them, then design OUR OWN series
      (`ideas/STORY_SERIES.md`): character, premise, episode structure, the vote at the end, engagement asks.
