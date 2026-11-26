@@ -137,11 +137,17 @@ confirmed (>= ~10 videos, consistent). Contradicted rules are downgraded or remo
 - [hypothesis, 3 videos] Instagram: 0 shares on all three; likes 28-42 per 1k. Shareability is a gap.
 - [fact, 3 videos] YouTube thumbnail impressions are tiny (49 total until 11-21): Shorts traffic comes from the
   feed, so covers/titles matter far less than the first seconds. Covers = low priority for experiments.
-- [hypothesis, 1 video] The open-loop hook did not raise "stayed to watch" yet: chatbot v4 64.5% vs O1 baseline
-  55.7-65.7%; its avg % viewed was ~41% (0:52/2:08). Topic (AI) may explain it - needs 2-3 more open-loop videos.
-- [hypothesis, niche, 1 outlier] "How the traffic light knows you're waiting" is proven demand (another channel: ~71x
-  its typical views, 102K). Prefer topics with a niche outlier; package them on the proven angle.
-(No rule is confirmed yet: 4 videos measured at 5-45 h.)
+- [hypothesis, 8 videos] Every video gets ONE test burst of ~1.1-1.4K YouTube views in its first ~24 h and then stops
+  (all 8 in 1,085-1,378) - none passed the test into a wider audience. The bar to beat: stayed-to-watch AND avg %
+  viewed together; no video has both high yet (best stayed: microwave 76%; best % viewed: streaming 80%).
+- [hypothesis, 5 vs 3 videos] Open-loop hooks raise stayed-to-watch: mean 68.6% (5 videos) vs 63.4% (3 O1 videos);
+  the question-hook microwave is the top at 76.3%. But avg % viewed is LOWER for open-loop videos (mean 56.6% vs 64.0%):
+  more people stay for the start, then leave in the middle.
+- [hypothesis, 8 videos] Shorter holds better: the shortest video (streaming, 1:27) has the best avg % viewed (80%);
+  the 2:08-2:10 videos sit at 46-61%. Weak correlation (traffic_light 1:46 only 46%) - EXP-001 (~60-80 s) is back on.
+- [hypothesis, 8 videos] Shares are ~0 (4 shares / 10K views) and subs ~1.1 per 1K views - nothing in the videos makes
+  people send them to someone.
+(No rule is confirmed yet: 8 videos, 1-6 days old.)
 
 ## Where we left off (updated at every wrap-up - read this first)
 Last session: 2026-11-22 (branch `claude/upbeat-hypatia-l9zq43`, not merged yet).

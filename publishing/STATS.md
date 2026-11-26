@@ -39,6 +39,22 @@ chart by eye. Raw Studio export: `stats_raw/2026-11-22_yt_studio_table_until_202
 | 2 | elevator | 48 h / 7 d | YT + IG | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | due 11-23 / 11-28 |
 | 3 | atm_notes | 48 h / 7 d | YT + IG | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | due 11-24 / 11-29 |
 
+### Snapshot 2026-11-25 (YouTube Studio export, `stats_raw/2026-11-26_*`) - all 8 posted videos
+| Video | Hook | Posted | Length | Views | Engaged | Stayed to watch | Avg % viewed | Avg view dur. | Likes | Shares | Subs + |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| microwave v4 | open loop (question) | 11-24 | 1:45 | 1,377 | 1,003 | **76.3%** | 54.7% | 0:57 | 40 | 3 | 2 |
+| streaming v3 | open loop (claim) | 11-24 | 1:27 | 1,378 | 882 | 66.2% | **80.4%** | 1:09 | 22 | 0 | 0 |
+| card_tap v2 | O1 | 11-20 | 1:54 | 1,343 | 866 | 65.9% | 60.0% | 1:08 | 31 | 1 | 2 |
+| traffic_light v5 | open loop (claim) | 11-23 | 1:46 | 1,271 | 850 | 69.4% | 46.3% | 0:49 | 23 | 0 | 0 |
+| elevator v5 | O1 | 11-21 | 2:10 | 1,256 | 754 | 59.9% | 60.9% | 1:19 | 40 | 0 | 5 |
+| self_checkout v3 | open loop (claim) | 11-25 | 1:38 | 1,200 | 758 | 63.4% | 56.1% | 0:55 | 37 | 0 | ? (young) |
+| chatbot v4 | open loop (claim) | 11-22 | 2:08 | 1,173 | 763 | 67.6% | 45.6% | 0:58 | 27 | 0 | 2 |
+| atm_notes v2 | O1 | 11-22 | 1:49 | 1,085 | 688 | 64.3% | 71.2% | 1:17 | 26 | 0 | 1 |
+| **Channel** | | | | **10,083** | 6,564 | 66.7% | 58.6% | 1:03 | 246 | 4 | 13 (-2) |
+Daily engaged views: every video gets its burst within ~24 h, then almost nothing (traffic_light 793 -> 7 -> 50;
+microwave 13 -> 967 -> 23; streaming 764 -> 118). Thumbnail impressions 978, CTR 0.72% (irrelevant for Shorts).
+Instagram (owner, 11-26): ~1,700-1,800 views and 50-70 likes on most reels; 2 reels only ~300 views (which ones: ?).
+
 ## C. Queue - planned DNA (posting order, next first)
 Opening/ending codes of videos not yet posted. `python tools/rotation.py` checks A + C for repeats.
 Current codes are what the rendered files contain; "proposed" = new hook/ending suggested in `STRATEGY.md`
