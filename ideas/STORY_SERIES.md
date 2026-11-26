@@ -64,3 +64,17 @@ blocked). Mechanics only - we do NOT reuse the character, premise, gags or art.
 - Own character, own premise, own deadline event, own gags; our visual style (not the reference's chubby cartoon).
 - Produce episode N+1 within ~24 h of episode N (vote window ~20 h): the pipeline must be templated (scenes,
   HUD, phone screen, vote card) so one episode = writing + one render.
+
+## Owner's direction (2026-11-26): a dating-app premise ("a super hot girl's profile", modern setting)
+Claude's proposal (to confirm) - made different enough from the reference (no reunion, no lie about looks, no glow-up meter):
+- **"Day 1 of 30: Kevin matched with HER."** Kevin swipes right on everyone (thousands of swipes, zero matches).
+  One night: a match. Mia, impossibly perfect profile. Her bio = a list of 10 requirements (cooks, dances, owns a car,
+  has a dog, can swim, reads books, has a real job, ...). She texts: "I'm abroad for 30 days. Tick all 10 and we have a
+  date the day I land."
+- HUD: `DAYS LEFT 30` + `MIA'S LIST 0/10` (a checklist instead of a %, every tick = visible progress).
+- Vote = which item from HER list Kevin attacks next; the losing item returns escalated.
+- Recurring beats: Mia's texts/travel selfies ("progress?"); a rival match; Kevin's over-confidence (he is a
+  confident try-hard, not a passive slob - our own character comedy).
+- Long-term mystery: Mia's photos are a bit TOO perfect - is she even real? (comment theories = engagement; payoff late).
+- Fictional app name and logo (never the real Tinder name/logo/UI in the video); titles say "dating app".
+- Tasteful: Mia is attractive in a cartoon way, nothing sexualised.
