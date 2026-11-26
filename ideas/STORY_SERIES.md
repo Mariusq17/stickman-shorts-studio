@@ -24,3 +24,43 @@ views in 3 days on a brand-new account). Watch them, extract the mechanics, then
   current limits in the app settings), so the choice is reversible.
 - Tools: the repo's original Stickman Video Studio (`app.py`, `stickman_studio/`) already makes stickman story
   shorts - starting point for the visuals; the 2.5D explainer engine is NOT needed for stories.
+
+## Reference analysis (2026-11-26, Claude) - 2 episodes received (Day 1 = 1:38, Day 2 = 1:53, 720x1280)
+Transcript reconstructed from the burned-in captions (no speech-to-text available in the container: Hugging Face
+blocked). Mechanics only - we do NOT reuse the character, premise, gags or art.
+
+### Format DNA
+- **Persistent HUD** top-left on every frame: `DAYS LEFT 30` + `GLOW-UP 0%` meter. Countdown = stakes, meter = progress
+  the viewer wants to see move (still 0% on Day 2 -> slow burn, people come back to see it rise).
+- **Captions**: 1-3 words at a time, huge white bold, key word coloured (names pink, choices blue/green, failures red).
+  Every ~0.5 s new caption -> constant motion even when the art is static.
+- **Art**: flat 2D cartoon, one front-facing character, simple full-screen backgrounds that change every 5-10 s
+  (bedroom, bathroom, kitchen, street, shop, park, phone screen). Cheap to produce; the WRITING carries it.
+- **Phone-text screens** (iMessage-style) are a recurring beat: the crush's messages, him typing/deleting/sending.
+
+### Episode structure (both episodes follow it)
+| Time | Beat | Day 1 | Day 2 |
+|---|---|---|---|
+| 0-4 s | Countdown + stakes in the first sentence | "Thirty days. That's how long James has until his high school reunion." | "Twenty-nine days..." same line |
+| 4-10 s | Recap of the VOTE (viewer agency) | - (Day 1: roast intro instead: "Look at him. James is a chud. Headset on, Cheeto dust up to the elbow, hasn't seen sunlight since the last patch update.") | "Yesterday YOU picked his teeth. So today James is going to brush them properly." |
+| 13-25 s | Inciting text / the open question | "Then Sarah texts. Not a Sarah. THE Sarah. Prom Sarah." -> "Thirty days to fix everything. Where do we even start?" | obstacle: "He's never owned one" (toothbrush) |
+| 25-75 s | 6-8 locations x 5-8 s, each one gag (rule of 3, exaggerated personification) | mirror fogs up "out of embarrassment", fridge note says NO, sun hits him "like a jumpscare", dog files a complaint, shop employee walks him to the deodorant "personally", puddle reflection looks away "hmph" | callbacks: same employee, "NOT TODAY" -> "EXTRA FIRM" toothbrush; brushing gags ("the bristles bend", "seen things", "respect"); small win: first person ever smiles at him; dog = "just a warning"; puddle doesn't look away "for about one second" |
+| 75-85 s | Crush beat = cringe button | types a long reply, deletes, sends "k". "And that's his opening move." | Sarah: "haha you haven't changed at all" - he reads it x4, deletes, sends a smiley |
+| last ~12 s | **The vote**: split screen 2 options, each with a funny one-line subtitle, "COMMENT ONE WORD", VOTE NOW button | TEETH ("brush them. properly.") vs SHEETS ("wash them. first time since 2019.") - "One of them changes his life today. Vote now. Day two starts with your choice." | the LOSING option comes back escalated: SHEETS ("they have eyes now") vs TOENAILS ("they click on the floor") - "Day three starts with your choice." |
+
+### Why it works (hypotheses, from 2 episodes + the reported 4M / 1.3M views)
+1. Stakes + deadline in sentence 1, and the countdown never leaves the screen.
+2. Viewer agency: "YOU picked" -> the commenter feels ownership -> comes back for the next episode (and comments again).
+3. Voting costs ONE word -> lowest-effort comment possible -> huge comment volume -> algorithm push.
+4. Running callbacks (employee, dog, puddle, crush texts) reward returning viewers; each episode stands alone too.
+5. Small wins + new humiliation in every episode; the main payoff (the reunion / the meter at 100%) is 30 episodes away.
+6. Losing option recycled and escalated -> the "other" voters get a second chance, tension builds.
+7. Gag density: one joke every ~5-8 s, mostly personification of objects (mirror, fridge, sun, dog, puddle).
+
+### Rules for OUR series (from this analysis)
+- Same skeleton: HUD (countdown + meter), stakes line first, recap "Yesterday you picked X", 6-8 gag locations,
+  a recurring "pressure" beat (texts/calls), vote with 2 one-word options + joke subtitles, losing option returns.
+- Length 1:30-1:55 is fine for this format (the gags reset attention every few seconds).
+- Own character, own premise, own deadline event, own gags; our visual style (not the reference's chubby cartoon).
+- Produce episode N+1 within ~24 h of episode N (vote window ~20 h): the pipeline must be templated (scenes,
+  HUD, phone screen, vote card) so one episode = writing + one render.
