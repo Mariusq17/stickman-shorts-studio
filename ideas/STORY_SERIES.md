@@ -78,3 +78,16 @@ Claude's proposal (to confirm) - made different enough from the reference (no re
 - Long-term mystery: Mia's photos are a bit TOO perfect - is she even real? (comment theories = engagement; payoff late).
 - Fictional app name and logo (never the real Tinder name/logo/UI in the video); titles say "dating app".
 - Tasteful: Mia is attractive in a cartoon way, nothing sexualised.
+
+### Revision after owner feedback (2026-11-26): the "10-item list" premise was illogical -> replaced
+Owner: nobody announces "tick my list and I date you"; she is online, so leaving doesn't matter by itself. Wanted:
+they chat, he asks her out, THEN she has to leave, but she keeps texting / posting stories daily so he feels pressure
+to become good enough; and it must rest on a LIE that creates tension - "spicy", keeps you on edge.
+Proposal v2 - **"He lied on his dating profile"**:
+- Kevin's profile is all lies: 6'1", chef, owns a husky, speaks French, runs marathons, drives a sports car.
+  Mia matches BECAUSE of the lies. They chat great, he asks her out, she says yes - "but I fly abroad tomorrow for
+  a month for work. Day 30, 8 pm, it's a date - and you're cooking for me ;)".
+- HUD: `DAYS LEFT 30` + `LIES LEFT 6` + a `SUSPICION` meter (rises when he dodges her questions).
+- Daily pressure: her story or text pokes one lie ("send me a pic of your husky!", "say something in French").
+- Vote: which lie he turns into truth next (or how he dodges today's test); losing option returns escalated.
+- Spicy: a rival who likes every one of her stories; long-term twist: maybe Mia lied too (payoff late).
