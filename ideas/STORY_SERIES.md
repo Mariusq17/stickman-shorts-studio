@@ -117,3 +117,36 @@ Claude's take: not stupid - a planted twist is the strongest comment/share drive
   the barista / the girl from the dog shelter who sees his whole journey). Final beat: Dan's jaw drops at the giga-chad
   Kevin, Kevin walks out... and the real girl is there. Twist + happy ending.
 - Option: let the audience vote the very last choice (forgive Dan? / ask her out?) to keep the comment engine to the end.
+
+---
+# SERIES BIBLE v1 (owner + Claude, 2026-11-26) - supersedes the dating-app drafts above
+Working title: **"30 Days to Mia"** (episode titles: "Day N of 30: ..."). Language: English. All twists SECRET.
+
+## Spine (season 1)
+- **Kevin**: couch guy, funny, zero confidence. Does NOT know anything below.
+- **Dan**, his roommate/best friend, secretly runs **"Mia"**: a small but believable account on a photo app (a few
+  older posts, some followers, old comments). Explanation revealed only at the end: it's his cousin's old account
+  (she moved abroad / left social media; she's in on it) - or "an old experiment". Mia's texts are written by Dan (with AI).
+- Day 1: Mia likes an old post of Kevin and DMs him. Kevin, sure it's a bot, answers as a JOKE and invites her out
+  ("dinner at mine, I cook, 8 pm? lol"). She says yes - but she's a flight attendant on rotation: "Day 30, 8 pm,
+  the terrace at <cafe>. Don't flake." In the chat Kevin also bragged as a joke (chef, runs, speaks French) and she
+  believed it -> pressure.
+- Days 2-29: Mia's texts and stories (Dan's training program in disguise: "I love guys who cook", "my ex never ran
+  with me") -> Kevin improves one thing per episode; viewers vote WHICH (2 options, losing one returns escalated).
+  HUD: `DAYS LEFT` + a visible progress meter (exact meter TBD).
+- Clues that Mia = Dan, planted from Day 1 (same odd emoji/typo, Dan always on his phone when Mia writes, she never
+  takes video calls, tiny AI glitches in her stories). Comment theories = engagement.
+- **The waitress** (name TBD, e.g. Lena): appears early at the cafe Kevin passes daily; new at the job, works extra
+  shifts for money (we don't know why yet). She sees his whole transformation; small moments between them.
+- **Day 30 finale**: Kevin, now giga-chad, waits on the terrace. "Mia" = Dan. Dan's jaw drops: "look at you, bro".
+  Kevin asks how the account was so believable -> the cousin/old-experiment explanation. Then the waitress serves his
+  table... she steals his heart -> cliffhanger: "Season 2?" (comments decide).
+## Season 2+ (improvised, driven by comments)
+- The waitress has her own problems/challenges (why she needs the money). She may turn out to be a villain at some
+  point: Kevin loses everything except the mindset he rebuilt in season 1, which gets him out of trouble at the end.
+## Rules
+- Votes choose the ORDER and the flavour of the improvements + side choices; they never break the spine.
+- Fictional app/brand names in the video (no real Instagram/Facebook logos or UI).
+- Each episode stands alone (stakes line + recap in the first 10 s) and rewards returning viewers (callbacks, clues).
+- Measure every episode (STATS.md): stayed-to-watch, % viewed, comments/1K (the vote!), shares, follows.
+  If the numbers are bad after ~5 episodes, compress the remaining days rather than drag.
