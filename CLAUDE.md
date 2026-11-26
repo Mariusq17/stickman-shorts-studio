@@ -90,6 +90,11 @@ Never invent numbers, never present a heuristic as a prediction: say what is **p
   viral potential. Targets (orientation only - from a Gemini chat in YT Studio, unverified heuristic): long Shorts
   60-120 s -> stayed-to-watch >= 70-75%, avg % viewed >= 70-80%; 30-50 s -> 70-80% / 85-100%; 10-25 s -> 75-85% / 110-140%.
   Fix the first seconds + the ending before cutting length.
+- 2026-11-26: add natural engagement asks to every video: mainly LIKES and COMMENTS (they push the algorithm) -
+  e.g. a question viewers can answer in one word, "comment which fix surprised you"; follow/subscribe only at the end.
+  Never begging, never more than 2 asks per video.
+- 2026-11-26: owner proposes an interactive story series (viewers vote the next episode in the comments) - see
+  `ideas/STORY_SERIES.md`; reference videos come in a new chat.
 - 2026-11-22: owner wants Claude as the channel strategist (see "Claude's role"); numbers beat taste; tools from
   youtube-agent-skill (MIT) are lints, not predictions; stickman-video-director = inspiration only, no code copied.
 - Channel launched 2026-11-20: card_tap posted on YouTube + Instagram; owner waits 1-2 days for reach, then
@@ -150,20 +155,21 @@ confirmed (>= ~10 videos, consistent). Contradicted rules are downgraded or remo
 (No rule is confirmed yet: 8 videos, 1-6 days old.)
 
 ## Where we left off (updated at every wrap-up - read this first)
-Last session: 2026-11-22 (branch `claude/upbeat-hypatia-l9zq43`, not merged yet).
-- **Posted**: card_tap 11-20, elevator 11-21, atm_notes 11-22 (O1/E1 baseline). **Posting now** (owner's choice,
-  texts in `publishing/POST_NOW.txt`): chatbot v4, traffic_light v5, microwave v4, streaming v3, maybe self_checkout v3.
-  YouTube files = `<slug>_cover.mp4` (cover 0.2 s at the end); Instagram = plain MP4 + cover.png.
-  NOT posted: toilet v1, fridge v1, undersea_cable v4 (to redo after the engine work below).
-- **Next session, in this order** (owner was disappointed - read "2026-11-22 end of session" above first):
-  1. `studio` start: numbers for every posted video (first open-loop data: chatbot) -> STATS.md -> Learned rules.
-  2. Engine before any new video: (a) global depth sorting of all drawables incl. pegs/labels + QA check over ALL
-     boxes, not only spec objects; (b) text fit everywhere (keywords, labels, pops, kinetic) measured + QA;
-     (c) camera rig with 4-5 named angles + transitions; (d) "isolate part" mode: lift a part out, explode it in a
-     clean space, return; (e) tidy fluid/flow drawing (no dot clouds; continuous water shapes that obey gravity).
-  3. Then redo toilet + fridge on the new engine, ONE at a time, with a frame-by-frame contact sheet review before
-     delivery. Then the premium layer (OFL font, CC0 SFX) only if the owner still wants it.
-  4. Optional: QA specs for the older videos; www.youtube.com access for `collect_niche.py`.
+Last session: 2026-11-20..26 (branch `claude/upbeat-hypatia-l9zq43`; merge into `main` if the owner agreed).
+- **Posted (all 8, YT + IG):** card_tap, elevator, atm_notes (O1 baseline) + chatbot v4, traffic_light v5, microwave v4,
+  streaming v3, self_checkout v3 (open loop). Numbers until 11-25 in `publishing/STATS.md` ("Snapshot 2026-11-25").
+  Rejected, not posted: toilet v1, fridge v1, undersea_cable v4.
+- **What the numbers say (hypotheses, 8 videos):** every video gets one ~1.1-1.4K test burst and stops; open-loop hooks
+  raise stayed-to-watch (68.6% vs 63.4%, microwave 76%) but lower % viewed (56.6% vs 64%); shortest = best % viewed
+  (streaming 1:27, 80%); shares ~0. IG: ~1.7-1.8K views + 50-70 likes on most reels, 2 reels only ~300 (unknown why).
+- **Next session - the owner starts a NEW chat:**
+  1. Owner sends 2 reference videos of an interactive story series -> analyse them, then design OUR OWN series
+     (`ideas/STORY_SERIES.md`): character, premise, episode structure, the vote at the end, engagement asks.
+     Decide with the owner: separate channel/account (recommended) or the same one.
+  2. For "How It's Built" (if continued): test a ~70-80 s video with a question hook (microwave style) and a
+     shareable fact early; natural like/comment asks; then the engine work below.
+  3. Engine work still pending (owner's 2026-11-22 list): global depth sorting incl. pegs/labels, text fit everywhere,
+     4-5 named camera angles, "isolate part / exploded view", tidy fluids; then redo toilet + fridge one at a time.
 
 ## Commands
 ```bash
