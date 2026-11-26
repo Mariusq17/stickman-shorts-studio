@@ -127,14 +127,21 @@ Working title: **"30 Days to Mia"** (episode titles: "Day N of 30: ..."). Langua
 - **Dan**, his roommate/best friend, secretly runs **"Mia"**: a small but believable account on a photo app (a few
   older posts, some followers, old comments). Explanation revealed only at the end: it's his cousin's old account
   (she moved abroad / left social media; she's in on it) - or "an old experiment". Mia's texts are written by Dan (with AI).
-- **Kevin's own profile is REAL and visibly loser-ish** (few followers, old cringe gaming posts, a blurry selfie).
-  That's why it's a WOW that she writes to him. No fake photos of Kevin anywhere.
-- **Mia's profile = the wow**: stunning, flight attendant, bio "📍 <our city> | ✈️ + a row of country flags",
-  posts from Dubai/Tokyo/Rio; local, so a date is realistic. Why him? "your old comment made me laugh" (Dan's line).
-- Day 1: Mia likes an old post of Kevin and DMs him. Kevin, sure it's a bot, answers as a JOKE and invites her out
-  ("dinner at mine, I cook, 8 pm? lol"). She says yes - but she's a flight attendant on rotation: "Day 30, 8 pm,
-  the terrace at <cafe>. Don't flake." In the chat Kevin also bragged as a joke about things his profile can't show
-  (chef, runs, speaks French); she: "a chef? your profile is 90% video games lol. prove it on Day 30" -> pressure.
+- **Kevin's own profile is REAL, cringe but relatable**: bio "gamer | gym (soon) | looking for player 2";
+  posts: one gym selfie "Day 1 💪" from 2021 (there was never a Day 2), a sunset with a deep quote, his PC setup,
+  a food-delivery haul, a birthday photo with mom. Few followers. That's why it's a WOW that anyone answers him.
+- **How he finds her (realistic)**: desperate, Kevin follows girls from his "mutuals" and sends them all the same
+  no-rizz opener ("hey wyd?", "hi cf?", a single 👋). We see his chat list: only girls' names, all "Seen 3w" or
+  "Delivered"; the only active chat is MOM ("did you eat?? 🥺" - he hasn't even opened it). One of the girls is
+  **Mia** - Dan's old fake account, in Kevin's suggestions because Dan follows it ("Followed by dan.xyz" = clue #1).
+  Dan sees the DM land in his fake account... and decides to answer. A while later, miracle: Mia replies.
+- **Mia's profile = the wow**: stunning, few but good posts (Dubai, Tokyo, Rio), bio = "✈️" + a row of country
+  flags (NO city). The chat reveals she's from THEIR city ("wait, you're in <city> too?") -> a date is possible.
+- Day 1 chat: Mia replies to his dumb opener ("lol. bold opener. most guys start with 'hey beautiful'"). Kevin, sure
+  it's a bot, invites her out as a JOKE ("dinner at mine, I cook, 8 pm? lol"). She says yes - but she's a flight
+  attendant on rotation: "Day 30, 8 pm, the terrace at <cafe>. Don't flake." He also bragged as a joke about things
+  his profile can't show (chef, runs, speaks French); she: "a chef? your profile is 90% video games lol. prove it on
+  Day 30 😏" -> pressure.
 - Days 2-29: Mia's texts and stories (Dan's training program in disguise: "I love guys who cook", "my ex never ran
   with me") -> Kevin improves one thing per episode; viewers vote WHICH (2 options, losing one returns escalated).
   HUD: `DAYS LEFT` + a visible progress meter (exact meter TBD).
