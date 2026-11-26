@@ -127,10 +127,14 @@ Working title: **"30 Days to Mia"** (episode titles: "Day N of 30: ..."). Langua
 - **Dan**, his roommate/best friend, secretly runs **"Mia"**: a small but believable account on a photo app (a few
   older posts, some followers, old comments). Explanation revealed only at the end: it's his cousin's old account
   (she moved abroad / left social media; she's in on it) - or "an old experiment". Mia's texts are written by Dan (with AI).
+- **Kevin's own profile is REAL and visibly loser-ish** (few followers, old cringe gaming posts, a blurry selfie).
+  That's why it's a WOW that she writes to him. No fake photos of Kevin anywhere.
+- **Mia's profile = the wow**: stunning, flight attendant, bio "📍 <our city> | ✈️ + a row of country flags",
+  posts from Dubai/Tokyo/Rio; local, so a date is realistic. Why him? "your old comment made me laugh" (Dan's line).
 - Day 1: Mia likes an old post of Kevin and DMs him. Kevin, sure it's a bot, answers as a JOKE and invites her out
   ("dinner at mine, I cook, 8 pm? lol"). She says yes - but she's a flight attendant on rotation: "Day 30, 8 pm,
-  the terrace at <cafe>. Don't flake." In the chat Kevin also bragged as a joke (chef, runs, speaks French) and she
-  believed it -> pressure.
+  the terrace at <cafe>. Don't flake." In the chat Kevin also bragged as a joke about things his profile can't show
+  (chef, runs, speaks French); she: "a chef? your profile is 90% video games lol. prove it on Day 30" -> pressure.
 - Days 2-29: Mia's texts and stories (Dan's training program in disguise: "I love guys who cook", "my ex never ran
   with me") -> Kevin improves one thing per episode; viewers vote WHICH (2 options, losing one returns escalated).
   HUD: `DAYS LEFT` + a visible progress meter (exact meter TBD).
