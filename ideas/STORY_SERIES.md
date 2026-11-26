@@ -105,3 +105,15 @@ Logic chain (proposal):
 5. Kevin realises: she has seen the AI photos and believes every lie. 30 days to make the profile true.
 Why the delay is real: flight-attendant rotation -> daily stories from a different city (visual variety) + texts that
 test one lie each day. Why he doesn't confess: he's tempted every episode (a possible vote option later).
+
+### Ending (owner idea 2026-11-26, SECRET - never in titles/captions): Mia was Dan all along
+Day 30: Kevin, now fully glowed-up, waits at the restaurant -> "Mia" is Dan (AI photos + AI-written texts).
+Claude's take: not stupid - a planted twist is the strongest comment/share driver, IF it's fair:
+- Plant clues from Day 1 that commenters can spot: Mia and Dan use the same odd emoji/typo; Dan is always on his phone
+  when Mia texts; Mia never picks up a video call; her stories have tiny AI glitches (6 fingers, melting background
+  sign); Mia "knows" things only Dan saw. Comment theories ("Dan is Mia!!") = engagement every episode.
+- Dan's motive turns wholesome: started as a prank, kept going because Kevin finally got off the couch.
+- Don't punish the audience that wanted the romance: plant a REAL girl from Day 1-2 (recurring side character, e.g.
+  the barista / the girl from the dog shelter who sees his whole journey). Final beat: Dan's jaw drops at the giga-chad
+  Kevin, Kevin walks out... and the real girl is there. Twist + happy ending.
+- Option: let the audience vote the very last choice (forgive Dan? / ask her out?) to keep the comment engine to the end.
